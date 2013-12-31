@@ -1,0 +1,25 @@
+.ui-title {
+    text-align : left !important;
+    margin-left: 40px !important;
+}
+
+#lblWatch li {
+    text-align: center;
+}
+#watch li {
+    text-align: center;
+}
+
+#laptimeList li {
+    text-align: center;
+}
+#datetimeList li {
+    text-align: center;
+}
+
+#map-iframe {
+    border-width: 1px;
+    border-color: #333;
+    background: #FFF;
+    border-style: solid;    
+}

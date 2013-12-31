@@ -1,0 +1,29 @@
+{
+    "name": "Hayate",
+    "launch_path": "index.html",
+    "icons": {
+        "60": "/img/hayate60.png",
+        "128": "/img/hayate128.png"
+    },
+
+    "default_locale": "en",
+    "locales": {
+        "en": {
+          "description": "For runners",
+          "developer": {
+            "url": "https://github.com/kazhik"
+          }
+        },
+        "es": {
+            "description": "For runners",
+            "developer": {
+              "url": "https://github.com/kazhik"
+            }
+        }
+    },
+    "type": "privileged",    
+    "permissions": {
+        "systemXHR": {},
+        "geolocation": {}
+    }    
+}
