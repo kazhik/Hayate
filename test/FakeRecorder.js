@@ -40,15 +40,17 @@ Hayate.Recorder = function() {
         };
         callEventListeners(posJson);
         
-        posJson.timestamp = Date.now();
-        posJson.coords.latitude = 35.692472;
-        posJson.coords.longitude = 139.820033;
-        callEventListeners(posJson);
+        var posJson2 = JSON.parse(JSON.stringify(posJson));
+        posJson2.timestamp = Date.now();
+        posJson2.coords.latitude = 35.692472;
+        posJson2.coords.longitude = 139.820033;
+        callEventListeners(posJson2);
         
-        posJson.timestamp = Date.now();
-        posJson.coords.latitude = 35.6851;
-        posJson.coords.longitude = 139.820741;
-        callEventListeners(posJson);
+        var posJson3 = JSON.parse(JSON.stringify(posJson));
+        posJson3.timestamp = Date.now();
+        posJson3.coords.latitude = 35.6851;
+        posJson3.coords.longitude = 139.820741;
+        callEventListeners(posJson3);
         
     }
 

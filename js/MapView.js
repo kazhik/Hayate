@@ -7,16 +7,16 @@ Hayate.MapView = function() {
 
     function loadPositionList(positionList) {
         if (!Array.isArray(positionList)) {
+            console.log("Invalid positionList data: " + JSON.stringify(positionList));
             return;
         }
-        var latLngArray = [];
-        for (var i = 0; i < positionList.length; i++) {
-            var latLng = new google.maps.LatLng(
-                positionList[i].latitude,
-                positionList[i].longitude);
-            latLngArray.push(latLng);
-        }
-        drawRoute(latLngArray);
+        var posList = {
+            type: "positionlist",
+            list: positionList
+        };
+        var mapIframe = document.getElementById("map-iframe");
+        mapIframe.contentWindow.postMessage(JSON.stringify(posList), '*');
+
     }
     function onPosition(newPosition) {
         if (typeof newPosition === "undefined") {
@@ -27,7 +27,7 @@ Hayate.MapView = function() {
         }
         var newCoords = newPosition.coords;
 
-        if (prevCoords !== null &&
+        if (typeof prevCoords !== "undefined" &&
             newCoords.latitude === prevCoords.latitude &&
             newCoords.longitude === prevCoords.longitude) {
             return;
@@ -37,28 +37,7 @@ Hayate.MapView = function() {
         var mapIframe = document.getElementById("map-iframe");
         mapIframe.contentWindow.postMessage(JSON.stringify(newPosition), '*');
 
-        prevPosition = newPosition;
-    }
-    function drawRoute(latLngArray) {
-        console.log("drawRoute");
-        
-        var newPath = new google.maps.Polyline({
-          path: latLngArray,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
-      
-        newPath.setMap(mapMarker.getMap());        
-    }
-    function drawNewRoute(newPosition) {
-        var newPathCoords = [
-            prevPosition,
-            newPosition
-        ];
-
-        drawRoute(newPathCoords);
+        prevCoords = newCoords;
     }
     
     function init() {
@@ -75,15 +54,16 @@ Hayate.MapView = function() {
             return content_height;
         }
         function onPageShow(e, data) {
-            if (prevCoords !== null) {
-                return;
-            }
+            console.log("onPageShow: " + getRealContentHeight());
             $('#map-iframe').height(getRealContentHeight());
         
+        }
+        function onLoadMap() {
             var mapIframe = document.getElementById("map-iframe");
             config.type = "init";
+            
             mapIframe.contentWindow.postMessage(JSON.stringify(config), '*');
-        
+            
         }
         
         if (typeof Hayate.Config === "undefined") {
@@ -99,14 +79,14 @@ Hayate.MapView = function() {
         Hayate.Recorder.addListener(onPosition);
         
         $("#Map").on("pageshow", onPageShow);
-        
+        $("#map-iframe").on("load", onLoadMap);
         
     }
     
     var publicObj = {};
     var recorder;
-    var prevCoords = null;
-    var config = null;
+    var prevCoords;
+    var config;
     
     publicObj.start = function() {
         init();

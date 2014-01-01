@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Hayate</title>
+    <meta charset="utf-8">
+    <meta name="viewport" content="initial-scale=1.0, user-scalable=no" />
+    <link rel="stylesheet" href="../lib/style/jquery.mobile-1.4.0.min.css" />
+    <link rel="stylesheet" href="../style/hayate.css" />
+
+    <script src="../lib/js/jquery-1.10.2.min.js"></script>
+    <script src="../lib/js/jquery.mobile-1.4.0.min.js"></script>
+
+    <script src="../js/Config.js"></script>
+    <script src="../js/MapView.js"></script>
+    <script src="FakeRecorder.js"></script>
+    <script src="MapViewTest.js"></script>
+  </head>
+  <body>
+    
+    <div data-role="page" id="Map" data-theme="b">
+    
+      <div data-role="content" id="map-content" data-theme="b">	
+        <iframe id="map-iframe"
+          src="http://map-kazhik.rhcloud.com/"
+          width="100%"
+          marginwidth="0"
+          marginheight="0"
+          frameborder="no"
+          scrolling="yes">
+        </iframe>
+          
+      </div><!-- /content -->
+      <div data-role="footer" data-position="fixed" data-theme="b">
+        <div data-role="navbar">
+          <ul>
+            <li>
+              <a href="#Stopwatch" data-l10n-id="stopwatch">Stopwatch</a>
+            </li>
+            <li>
+              <a href="#Laps" data-l10n-id="laps">Laps</a>
+            </li>
+          </ul>
+        </div><!-- /navbar -->
+      </div><!-- /footer -->
+        
+    </div><!-- /page Map -->
+    
+  </body>
+</html>

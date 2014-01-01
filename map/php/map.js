@@ -7,6 +7,7 @@ Hayate.Map = function() {
 
     function loadPositionList(positionList) {
         if (!Array.isArray(positionList)) {
+            alert("Invalid positionList data: " + JSON.stringify(positionList));
             return;
         }
         var latLngArray = [];
@@ -21,16 +22,18 @@ Hayate.Map = function() {
     function onPosition(position) {
         var currentCoords = position.coords;
         if (typeof currentCoords === "undefined") {
+            alert("Invalid position data: " + JSON.stringify(position));
             return;
         }
         if (typeof mapMarker === "undefined") {
+            alert("google map not initialized");
             return;
         }
         var newPosition = new google.maps.LatLng(
             currentCoords.latitude,
             currentCoords.longitude);        
 
-        if (prevPosition !== null && newPosition.equals(prevPosition)) {
+        if (typeof prevPosition !== "undefined" && newPosition.equals(prevPosition)) {
             return;
         }
             
@@ -41,7 +44,7 @@ Hayate.Map = function() {
         mapCircle.setCenter(newPosition);
         mapCircle.setRadius(currentCoords.accuracy);
         
-        if (prevPosition !== null) {
+        if (typeof prevPosition !== "undefined") {
             drawNewRoute(newPosition);
         }
         prevPosition = newPosition;
@@ -69,15 +72,16 @@ Hayate.Map = function() {
     
     function init() {
 
-        if (prevPosition !== null) {
+        if (typeof prevPosition !== "undefined") {
             return;
         }
     
-        if (config === null) {
+        if (typeof config === "undefined") {
             return;
         }
         
         if (typeof google === "undefined") {
+            alert("init error: google undefined");
             return;
         }
         var initialPosition = new google.maps.LatLng(
@@ -115,6 +119,10 @@ Hayate.Map = function() {
             init();
         } else if (jsonObj.type === "position") {
             onPosition(jsonObj);
+        } else if (jsonObj.type === "positionlist") {
+            loadPositionList(jsonObj.list);
+        } else {
+            alert("Unknown message: " + event.data);
         }
     }
     
@@ -122,8 +130,8 @@ Hayate.Map = function() {
     var map;
     var mapMarker;
     var mapCircle;
-    var prevPosition = null;
-    var config = null;
+    var prevPosition;
+    var config;
 
     window.addEventListener('message', receiveMessage, false);
 
