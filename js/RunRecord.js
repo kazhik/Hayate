@@ -20,18 +20,18 @@ Hayate.RunRecord = function() {
         }
     }
     function moved(newCoords) {
-        if (newCoords.latitude !== prev.coords.latitude) {
+        if (newCoords.latitude !== prevCoords.latitude) {
             return true;
         }
-        if (newCoords.longitude !== prev.coords.longitude) {
+        if (newCoords.longitude !== prevCoords.longitude) {
             return true;
         }
         return false;
     }
     // calculates flat distance
     function calculateFlatDistance(newLat, newLon) {
-        var prevLat = prev.coords.latitude;
-        var prevLon = prev.coords.longitude;
+        var prevLat = prevCoords.latitude;
+        var prevLon = prevCoords.longitude;
         var x = toRad(newLon - prevLon) * Math.cos(toRad(prevLat + newLat) / 2);
         var y = toRad(newLat - prevLat);
         var latestFlatMove = Math.sqrt(x * x + y * y) * Constant.earthRadius;
@@ -44,7 +44,7 @@ Hayate.RunRecord = function() {
             console.log("altAccuracy: " + altAccuracy);
             realMove = latestFlatMove;
         }
-        var prevAlt = prev.coords.altitude;
+        var prevAlt = prevCoords.altitude;
         if (newAlt === null || prevAlt === null) {
             realMove = latestFlatMove;
         }
@@ -59,9 +59,11 @@ Hayate.RunRecord = function() {
         if (typeof newCoords === "undefined") {
             return 0;
         }
+        if (typeof prevCoords === "undefined") {
+            return 0;
+        }
         var latestFlatMove = calculateFlatDistance(
             newCoords.latitude, newCoords.longitude);
-
         var latestRealMove = calculateRealDistance(
             latestFlatMove, newCoords.altitude, newCoords.altitudeAccuracy);
         
@@ -79,19 +81,20 @@ Hayate.RunRecord = function() {
         var currentCoords = newRec.coords;
         if (laptimes.length === 0) {
             addLap(newRec.timestamp, 0);
-        } else {
+        } else if (typeof currentCoords !== "undefined") {
             var latestRealMove = calculateDistance(currentCoords);
             
             autoLap(newRec.timestamp, latestRealMove);
             
             realDistance += latestRealMove;
+ 
+            if (currentCoords.speed !== null) {
+                // converts metres/sec to min/km or min/miles
+            }
             
-        }
-        if (typeof currentCoords !== "undefined" && currentCoords.speed !== null) {
-            // converts metres/sec to min/km or min/miles
-        }
-        prev = newRec;
-        
+            prevCoords = currentCoords;
+        }           
+
     }
     function init() {
         if (typeof Hayate.Config === "undefined") {
@@ -101,8 +104,8 @@ Hayate.RunRecord = function() {
 
         config = Hayate.Config.get(["geolocation"]);
         
-        prev = null;
-        laptimes = [];
+        prevCoords = undefined;
+        laptimes.length = 0;
         realDistance = 0;
         
     }
@@ -112,7 +115,7 @@ Hayate.RunRecord = function() {
     };    
     var laptimes = [];
     var realDistance = 0;
-    var prev = null;
+    var prevCoords;
     
     var config;
     
@@ -136,6 +139,7 @@ Hayate.RunRecord = function() {
         if (laptimes.length === 0) {
             return 0;
         }
+        
         return newTimestamp - laptimes[laptimes.length - 1].timestamp;
 
     }
@@ -144,7 +148,7 @@ Hayate.RunRecord = function() {
     }
     
     publicObj.addLap = function(newTimestamp) {
-        addLap(newTimestamp, getDistance());
+        addLap(newTimestamp, realDistance);
     }
     return publicObj;
     

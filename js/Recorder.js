@@ -24,7 +24,7 @@ Hayate.Recorder = function() {
         return posJson;
     }
 
-    function onPosition(position) {
+    function onNewPosition(position) {
         // store position in configured interval
         if (positionHistory.length !== 0) {
             var prevRecTimestamp = positionHistory[positionHistory.length - 1].timestamp;
@@ -39,18 +39,35 @@ Hayate.Recorder = function() {
             console.log("accuracy: " + currentCoords.accuracy + "; min: " + config["min"]["accuracy"]);
             return;
         }
-        
 
         var posJson = convertPositionToJSON(position);
         
+        onPosition(posJson);
+    }
+    function storePosition(posJson) {
+        // store position
+        if (positionHistory.length === 0) {
+            var data = {
+                StartTime: posJson.timestamp,
+                Position: posJson
+            }
+            Hayate.Database.add(objStoreName, data);
+        } else {
+            Hayate.Database.addItem(objStoreName,
+                positionHistory[0].timestamp, "Position", posJson);
+        }
         positionHistory.push(posJson);
+    }
+    function onPosition(posJson) {
+        if (intervalId === 0) {
+            return;
+        }
+        storePosition(posJson);
         
-        // store position in db
-        Hayate.Database.add(objStoreName, posJson);
-
         // call event listeners
         callEventListeners(posJson);
     }
+
     function onError(posErr) {
         console.log("code:" + posErr.code + "; error:" + posErr.message);
     }
@@ -62,11 +79,13 @@ Hayate.Recorder = function() {
         }
     }
     function onTimeout() {
-        var newRec = {};
-        newRec.timestamp = Date.now();
+        var newRec = {
+            timestamp: Date.now()
+        };
         if (positionHistory.length > 0) {
             newRec.coords = positionHistory[positionHistory.length - 1].coords;
         }
+
         callEventListeners(newRec);
     }
     var watchId = 0;
@@ -81,7 +100,7 @@ Hayate.Recorder = function() {
             enableHighAccuracy: true,
             maximumAge: 0
         };
-        watchId = navigator.geolocation.watchPosition(onPosition, onError, option);
+        watchId = navigator.geolocation.watchPosition(onNewPosition, onError, option);
     }
     function stopWatchPosition() {
         if (!("geolocation" in navigator)) {
@@ -89,13 +108,36 @@ Hayate.Recorder = function() {
         }
         navigator.geolocation.clearWatch(watchId);
     }
+    function clear() {
+        // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
+        positionHistory.length = 0;
+    }
+    function importGpx(gpxData) {
+        var posJson = {
+            timestamp: gpxData.trktime,
+            coords: {
+                latitude: gpxData.latitude,
+                longitude: gpxData.longitude,
+                altitude: gpxData.elevation,
+                accuracy: 1,
+                altitudeAccuracy: 1,
+                heading: null,
+                speed: null
+            }
+        };
+        storePosition(posJson);
+        
+    }
+    function finishImport() {
+        console.log("finishImport");
+        callEventListeners(positionHistory);
+    }
 
     var publicObj = {};
     var config = null;
     var intervalId = 0;
-    var objStoreName = null;
-    publicObj.init = function(osname) {
-        objStoreName = osname;
+    var objStoreName = "GeoLocation";
+    publicObj.init = function() {
         config = Hayate.Config.get(["geolocation"]);
         
         startWatchPosition();
@@ -104,10 +146,15 @@ Hayate.Recorder = function() {
         stopWatchPosition();
     };
     publicObj.start = function() {
+        clear();
         intervalId = setInterval(onTimeout, 100);
     };
+    publicObj.clear = function() {
+        clear();
+    }
     publicObj.stop = function() {
         clearInterval(intervalId);
+        intervalId = 0;
     };
     publicObj.addListener = function(listener) {
         listeners[listener.name] = listener;
@@ -115,7 +162,13 @@ Hayate.Recorder = function() {
     publicObj.removeListener = function(listener) {
         delete listeners[listener.name];
     };
-   
+    publicObj.importGpx = function(gpxData) {
+        importGpx(gpxData);
+    };
+    publicObj.finishImport = function() {
+        finishImport();
+        
+    };
     
     return publicObj;
 }();

@@ -1,5 +1,6 @@
 {
     "name": "Hayate",
+	"version": "0.1",
     "launch_path": "index.html",
     "icons": {
         "60": "/img/hayate60.png",
@@ -23,7 +24,13 @@
     },
     "type": "privileged",    
     "permissions": {
-        "systemXHR": {},
-        "geolocation": {}
+        "geolocation": {
+            "description": "geolocation API"
+        },
+        "device-storage:sdcard": {
+            "description": "DeviceStorage API",
+            "access": "readwrite"
+        }
+
     }    
 }

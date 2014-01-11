@@ -5,26 +5,27 @@ if (Hayate === undefined) {
 }
 Hayate.MapView = function() {
 
-    function loadPositionList(positionList) {
-        if (!Array.isArray(positionList)) {
-            console.log("Invalid positionList data: " + JSON.stringify(positionList));
-            return;
-        }
-        var posList = {
+    function loadData(posArray) {
+        var positionlist = {
             type: "positionlist",
-            list: positionList
-        };
+            list: posArray
+        }
+        console.log("send positionlist");
         var mapIframe = document.getElementById("map-iframe");
-        mapIframe.contentWindow.postMessage(JSON.stringify(posList), '*');
-
+        mapIframe.contentWindow.postMessage(JSON.stringify(positionlist), '*');            
     }
     function onPosition(newPosition) {
         if (typeof newPosition === "undefined") {
             return;
         }
+        if (Array.isArray(newPosition)) {
+            loadData(newPosition);
+            return;
+        }
         if (typeof newPosition.coords === "undefined") {
             return;
         }
+ 
         var newCoords = newPosition.coords;
 
         if (typeof prevCoords !== "undefined" &&
@@ -39,7 +40,10 @@ Hayate.MapView = function() {
 
         prevCoords = newCoords;
     }
-    
+    function stop() {
+        Hayate.Recorder.removeListener(onPosition);
+        
+    }
     function init() {
         function getRealContentHeight() {
             var header = $.mobile.activePage.find("div[data-role='header']:visible");
@@ -55,6 +59,7 @@ Hayate.MapView = function() {
         }
         function onPageShow(e, data) {
             console.log("onPageShow: " + getRealContentHeight());
+            config = Hayate.Config.get(["map"]);
             $('#map-iframe').height(getRealContentHeight());
         
         }
@@ -74,8 +79,8 @@ Hayate.MapView = function() {
             console.log("Recorder undefined");
             return;
         }
-        
         config = Hayate.Config.get(["map"]);
+        
         Hayate.Recorder.addListener(onPosition);
         
         $("#Map").on("pageshow", onPageShow);
@@ -88,12 +93,13 @@ Hayate.MapView = function() {
     var prevCoords;
     var config;
     
-    publicObj.start = function() {
+    publicObj.init = function() {
         init();
     };
-    publicObj.loadPositionList = function(positionList) {
-        loadPositionList(positionList);
-    }
+    publicObj.stop = function() {
+        stop();
+    };
+
     
     return publicObj;
 }();

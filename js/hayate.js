@@ -5,74 +5,47 @@ if (typeof Hayate === "undefined") {
 }
 
 Hayate.start = function() {
-    function initLog() {
-        var consolelog = console.log;
-        console.log = function (message) {
-            var log = {
-                timestamp: Date.now(),
-                message: message,
-            };
-            Hayate.Database.add("ConsoleLog", log);
-            
-            $("#logList").prepend("<li>")
-                .append(message)
-                .listview("refresh");
-            
-            $("#message").text(message);
-            consolelog.apply(console, arguments);
-        };
+    function initUI() {
         
-    }
-    function onOpenRecords() {
-        console.log("onOpenRecords");
-    }
-    function onCloseSettings() {
-        var config = {
-            "geolocation": {
-                "min" : {
-                    "accuracy": $("#select-minAccurary").val(),
-                    "altAccuracy": $("#select-minAltAccurary").val(),
-                    "timeInterval": $("#select-minTimeInterval").val(),
-                    "distanceInterval": $("#select-minDistanceInterval").val()
-                },
-                "autoLap": {
-                    "on": $("#flip-autolap").val(),
-                    "distance": $("#input-autolap-distance").val()
-                },
-                "distanceUnit": $("#select-distance-unit").val()
-            },
-            "map": {
-                "zoom": $("#select-zoom").val()
-            },
-            "debug": $("#flip-debug").val()
-        };
-        Hayate.Config.save(config);
+        // Panel
+        $("#LeftPanel").panel();
+        $("#panel-menu").listview().listview("refresh");
+        
+        Hayate.LogView.init();
+        Hayate.StorageView.init();
+        Hayate.ConfigView.init();
+        Hayate.RecordsView.init();
+
+        // Main Tabs
+        Hayate.WatchView.init();
+        Hayate.MapView.init();
+        Hayate.LapsView.init();
+
+        Hayate.Util.init();        
+        
     }
     function startApp() {
-        function onLocalized() {
-            Hayate.WatchView.start();
-            Hayate.MapView.start();
-        }
-        if (Hayate.Config.get(["debug"]) === true) {
-            initLog();
-        }
-        
-        Hayate.Recorder.init("GeoLocation");
+        Hayate.Recorder.init();
 
-        $("#logList").listview().listview("refresh");
-        
-        $( "body>[data-role='panel']" ).panel();
-        $( "body>[data-role='panel'] ul" ).listview();
+        initUI();
         
         $("#message").text("Hayate started");
-
-        window.addEventListener('localized', onLocalized, false);
-
-        $("#close-settings").click(onCloseSettings);
-        $("#open-records").click(onOpenRecords);
+        
     }
     function onFail(e) {
         console.log(e);
+    }
+    function onLocalized() {
+        Hayate.WatchView.localize();
+    }
+    
+    function preventAppQuit() {
+        if (window.navigator) {
+            var ua = navigator.userAgent;
+            if (ua.match(/Mobile/) !== null && ua.match(/Mobile; rv/) === null) {
+                window.navigator.requestWakeLock("cpu");
+            }
+        }        
     }
     
     if (typeof Hayate.Config === "undefined") {
@@ -95,34 +68,58 @@ Hayate.start = function() {
         console.log("Hayate.MapView undefined");
         return;
     }
+    if (typeof Hayate.StorageView === "undefined") {
+        console.log("Hayate.StorageView undefined");
+        return;
+    }
+    if (typeof Hayate.LogView === "undefined") {
+        console.log("Hayate.LogView undefined");
+        return;
+    }    
+    if (typeof Hayate.ConfigView === "undefined") {
+        console.log("Hayate.ConfigView undefined");
+        return;
+    }
+    if (typeof Hayate.RecordsView === "undefined") {
+        console.log("Hayate.RecordsView undefined");
+        return;
+    }
+    if (typeof Hayate.LapsView === "undefined") {
+        console.log("Hayate.LapsView undefined");
+        return;
+    }
+    
+    preventAppQuit();
+
+    // https://bugzilla.mozilla.org/show_bug.cgi?id=882592
+    window.addEventListener("localized", onLocalized, false);
     
     var dbInfo = {
         name: "Hayate",
-        version: 10,
+        version: 12,
         objStore: [
             {
                 name: "Config",
-                keyPath: "appname",
-                indexes: []
+                keyPath: "appname"
             },
             {
                 name: "ConsoleLog",
-                indexes: ["timestamp"]
+                keyPath: null
             },
             {
                 name: "GeoLocation",
-                indexes: ["StartTime"]
+                keyPath: "StartTime"
             }
         ]
     };
-    var lock = window.navigator.requestWakeLock('screen');
     
     Hayate.Database.open(dbInfo)
         .then(Hayate.Config.load)
         .done(startApp)
         .fail(onFail);
+
     
 };
 
-$(document).on("pageinit", Hayate.start);
+$(document).on("pagecreate", "#Stopwatch", Hayate.start);
 

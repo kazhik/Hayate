@@ -29,30 +29,38 @@ Hayate.Database = function() {
             dfd.reject(request.error);
         };
         var onUpgradeNeeded = function (e) {
+            console.log("Upgrading Database");
             var db = e.target.result;
             
             for (var i = 0; i < dbInfo.objStore.length; i++) {
                 var osname = dbInfo.objStore[i].name;
+                
+                // Delete existing object store
                 if (db.objectStoreNames.contains(osname)) {
-                    console.log("deleteObjectStore:" + osname);
                     db.deleteObjectStore(osname);
                 }
                 
+                // Create a new object store
                 var osOption = {};
-                if (typeof dbInfo.objStore[i].keyPath !== "undefined") {
-                    osOption.keyPath = dbInfo.objStore[i].keyPath;
-                } else {
+                if (dbInfo.objStore[i].keyPath === null) {
                     osOption.autoIncrement = true;
+                } else {
+                    osOption.keyPath = dbInfo.objStore[i].keyPath;
                 }
-                console.log("createObjectStore:" + osname);
                 var ostore = db.createObjectStore(osname, osOption);
+                
+                // Create indexes
                 var indexes = dbInfo.objStore[i].indexes;
+                if (typeof indexes === "undefined") {
+                    continue;
+                }
                 for (var j = 0; j < indexes.length; j++) {
                     ostore.createIndex(indexes[j], indexes[j]);
                 }
             }
         };
-        var dfd = $.Deferred();
+        
+        var dfd = new $.Deferred();
         var request = window.indexedDB.open(dbInfo.name, dbInfo.version);
         request.onsuccess = onSuccess;
         request.onupgradeneeded = onUpgradeNeeded;
@@ -110,7 +118,7 @@ Hayate.Database = function() {
         return executeCommand(osname, "clear");
     };
 
-    publicObj.remove = function (osname, key, value) {
+    publicObj.remove = function (osname, keyValue) {
         
         var onTranError = function() {
             dfd.reject(tran.error);
@@ -118,14 +126,8 @@ Hayate.Database = function() {
         var onError = function() {
             dfd.reject(request.error);
         };
-        var onSuccess = function (event) {
-            var cursor = event.target.result;
-            if (cursor) {
-                cursor.delete();
-                cursor.continue();
-            } else {
-                dfd.resolve();    
-            }
+        var onSuccess = function () {
+            dfd.resolve();    
         };
         var dfd = new $.Deferred();
         
@@ -133,15 +135,14 @@ Hayate.Database = function() {
         tran.onerror = onTranError;
 
         var os = tran.objectStore(osname);
-        var request = os.index(key)
-            .openCursor(value);
+        var request = os.delete(keyValue);
         
         request.onsuccess = onSuccess;
         request.onerror = onError;
         return dfd.promise();
 
     };
-    publicObj.get = function (osname, key, value) {
+    publicObj.get = function (osname, keyValue) {
         var results = [];
         
         var onTranError = function() {
@@ -150,38 +151,7 @@ Hayate.Database = function() {
         var onError = function() {
             dfd.reject(request.error);
         };
-        var onSuccess = function (event) {
-            var cursor = event.target.result;
-            if (cursor) {
-                results.push(cursor.value);
-                cursor.continue();
-            } else {
-                dfd.resolve(results);    
-            }
-        };
-        var dfd = new $.Deferred();
-        
-        var tran = db.transaction([osname], "readonly");
-        tran.onerror = onTranError;
-
-        var os = tran.objectStore(osname);
-        var request = os.index(key)
-            .openCursor(value);
-        
-        request.onsuccess = onSuccess;
-        request.onerror = onError;
-        return dfd.promise();
-
-    };
-
-    publicObj.getObject = function (osname, key) {
-        var onTranError = function() {
-            dfd.reject(tran.error);
-        };
-        var onError = function() {
-            dfd.reject(request.error);
-        };
-        var onSuccess = function (event) {
+        var onSuccess = function () {
             dfd.resolve(request.result);    
         };
         var dfd = new $.Deferred();
@@ -190,13 +160,104 @@ Hayate.Database = function() {
         tran.onerror = onTranError;
 
         var os = tran.objectStore(osname);
-        var request = os.get(key);
+        var request = os.get(keyValue);
         
         request.onsuccess = onSuccess;
         request.onerror = onError;
         return dfd.promise();
 
     };
+    publicObj.getSummary = function (osname, itemArray) {
+        var resultList = [];
+        
+        var onTranError = function() {
+            dfd.reject(tran.error);
+        };
+        var onError = function() {
+            dfd.reject(request.error);
+        };
+        var onSuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                var result = {};
+                result[os.keyPath] = cursor.value[os.keyPath];
+                for (var i = 0; i < itemArray.length; i++) {
+                    result[itemArray[i]] = cursor.value[itemArray[i]];
+                }
+                resultList.push(result);
+                cursor.continue();
+            } else {
+                dfd.resolve(resultList);    
+            }
+        };
+        var dfd = new $.Deferred();
+        
+        var tran = db.transaction([osname], "readonly");
+        tran.onerror = onTranError;
+
+        var os = tran.objectStore(osname);
+        var request = os.openCursor();
+        
+        request.onsuccess = onSuccess;
+        request.onerror = onError;
+        return dfd.promise();
+
+    };
+
+    publicObj.getKeyList = function (osname) {
+        var resultList = [];
+        
+        var onTranError = function() {
+            dfd.reject(tran.error);
+        };
+        var onError = function() {
+            dfd.reject(request.error);
+        };
+        var onSuccess = function (event) {
+            var cursor = event.target.result;
+            if (cursor) {
+                resultList.push(cursor.value[os.keyPath]);
+                cursor.continue();
+            } else {
+                dfd.resolve(resultList);    
+            }
+        };
+        var dfd = new $.Deferred();
+        
+        var tran = db.transaction([osname], "readonly");
+        tran.onerror = onTranError;
+
+        var os = tran.objectStore(osname);
+        var request = os.openCursor();
+        
+        request.onsuccess = onSuccess;
+        request.onerror = onError;
+        return dfd.promise();
+
+    };
+    publicObj.addItem = function(osname, keyValue, itemName, itemValue) {
+        var onError = function(err) {
+            dfd.reject(err);
+        };
+        var onGetSuccess = function (result) {
+            var onPutSuccess = function() {
+                dfd.resolve();    
+            };
+            result[itemName].push(itemValue);
+            publicObj.put(osname, result)
+                .done(onPutSuccess)
+                .fail(onError);
+        };
+        
+        var dfd = new $.Deferred();
+ 
+        publicObj.get(osname, keyValue)
+            .done(onGetSuccess)
+            .fail(onError);
+        
+        return dfd.promise();        
+    };
+
     
     return publicObj;
 }();

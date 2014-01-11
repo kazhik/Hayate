@@ -18,6 +18,12 @@
     <script src="js/Recorder.js"></script>
     <script src="js/WatchView.js"></script>
     <script src="js/MapView.js"></script>
+    <script src="js/StorageView.js"></script>
+    <script src="js/LogView.js"></script>
+    <script src="js/LapsView.js"></script>
+    <script src="js/ConfigView.js"></script>
+    <script src="js/RecordsView.js"></script>
+    <script src="js/Util.js"></script>
     <script src="js/hayate.js"></script>
   </head>
   <body>
@@ -181,6 +187,8 @@
         <a href="#" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
     
         <h1>Hayate</h1>
+
+        <a href="#" id="delete-log" data-icon="delete" data-iconpos="notext">Back</a>
       </div> 
 
       <div data-role="content" data-theme="b">
@@ -190,6 +198,20 @@
         
     </div><!-- /page Log -->
 
+    <div data-role="page" id="Import" data-theme="b">
+      <div data-role="header">
+        <a href="#" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
+    
+        <h1>Hayate</h1>
+      </div> 
+
+      <div data-role="content" data-theme="b">
+        <ul id="importSourceList" data-role="listview">
+        </ul>    
+      </div>
+        
+    </div><!-- /page Import -->    
+    
     <div data-role="page" id="Settings" data-theme="b">
       <div data-role="header">
         <a href="#" id="close-settings" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
@@ -275,12 +297,33 @@
 
         
     </div><!-- /page Settings -->
-    
+
+    <div data-role="popup"
+         id="confirm-dialog"
+         data-overlay-theme="b"
+         data-theme="b"
+         data-dismissible="false">
+        <div data-role="header" data-theme="a">
+        <h1 id="confirm-title">TITLE</h1>
+        </div>
+        <div role="main" class="ui-content">
+            <h3 id="confirm-message">MESSAGE</h3>
+            <a href="#" id="confirm-no"
+               class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b"
+               data-rel="back">NO</a>
+            <a href="#" id="confirm-yes"
+               class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b"
+               data-rel="back" data-transition="flow">YES</a>
+        </div>
+    </div>
+
+
+
     <div data-role="panel" id="LeftPanel" data-position="left" data-display="reveal" data-theme="b">
-      <ul data-role="listview">
+      <ul id="panel-menu" data-role="listview">
         <li><a id="open-records" href="#Records">Records</a></li>
-        <li><a href="#Log">Log</a></li>
-        <li data-icon="gear"><a href="#Settings">Settings</a></li>
+        <li><a href="#Import">Import</a></li>
+        <li data-icon="gear"><a id="open-settings" href="#Settings">Settings</a></li>
       </ul>
     </div><!-- /LeftPanel -->
     

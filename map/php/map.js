@@ -10,14 +10,28 @@ Hayate.Map = function() {
             alert("Invalid positionList data: " + JSON.stringify(positionList));
             return;
         }
+        clearRoute();
+        
         var latLngArray = [];
+        var latLng;
         for (var i = 0; i < positionList.length; i++) {
-            var latLng = new google.maps.LatLng(
+            latLng = new google.maps.LatLng(
                 positionList[i].latitude,
                 positionList[i].longitude);
             latLngArray.push(latLng);
         }
         drawRoute(latLngArray);
+
+        map.setCenter(latLng);
+        mapMarker.setPosition(latLng);
+        mapCircle.setCenter(latLng);
+        
+    }
+    function clearRoute() {
+        var newPath = new google.maps.Polyline({
+          map: mapMarker.getMap()
+        });
+        newPath.setMap(null);
     }
     function onPosition(position) {
         var currentCoords = position.coords;

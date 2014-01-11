@@ -70,7 +70,7 @@ asyncTest( "database: add & get", 1, function() {
     
     var dbInfo = {
         name: "Hayate",
-        version: 1,
+        version: 10,
         objStore: [
             {
                 name: "GeoLocation",
@@ -135,7 +135,7 @@ asyncTest( "database: add, get, remove", 4, function() {
     
     var dbInfo = {
         name: "Hayate",
-        version: 1,
+        version: 10,
         objStore: [
             {
                 name: "GeoLocation",
@@ -188,11 +188,61 @@ asyncTest( "database: add, get, remove", 4, function() {
 
 });
 
+asyncTest( "database: getList", 0, function() {
+    
+    var dbInfo = {
+        name: "Hayate",
+        version: 10,
+        objStore: [
+            {
+                name: "GeoLocation",
+                indexes: ["StartTime"]
+            }
+        ]
+    }
+
+    var osname = dbInfo.objStore[0].name;
+    var startTime = Date.now();
+    
+    var data = {
+        StartTime: startTime,
+        CurrentTime: startTime + 1,
+        DataNo: 1
+    };
+    var data2 = {
+        StartTime: startTime,
+        CurrentTime: startTime + 2,
+        DataNo: 2
+    };
+    var data3 = {
+        StartTime: startTime + 1,
+        CurrentTime: startTime + 3,
+        DataNo: 3
+    };
+    Hayate.Database.open(dbInfo)
+        .then(Hayate.Database.clear.bind(null, osname))
+        .then(Hayate.Database.add.bind(null, osname, data))
+        .then(Hayate.Database.add.bind(null, osname, data2))
+        .then(Hayate.Database.add.bind(null, osname, data3))
+        .then(Hayate.Database.getList.bind(null, osname, "StartTime"))
+        .done(onGetList)
+        .fail(onFail);
+        
+    function onFail(err) {
+        console.log(err.name + "(" + err.message + ")" );
+    }
+    function onGetList(results) {
+        console.log(JSON.stringify(results));
+        start();
+    }
+
+});
+
 asyncTest( "database: config", 3, function() {
     
     var dbInfo = {
         name: "Hayate",
-        version: 4,
+        version: 10,
         objStore: [
             {
                 name: "Config",

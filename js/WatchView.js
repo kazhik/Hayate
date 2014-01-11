@@ -5,33 +5,36 @@ if (Hayate === undefined) {
 }
 Hayate.WatchView = function() {
 
-    function formatTime(msec) {
-        var hour = ("0" + Math.floor(msec / (1000 * 60 * 60))).slice(-2);
-        var min = ("0" + (Math.floor(msec / (1000 * 60)) - (hour * 60))).slice(-2);
-        var sec = ("0" + Math.floor((msec % (1000 * 60)) / 1000)).slice(-2);
+    function loadData(recArray) {
+        record.init();
+        for (var i = 0; i < recArray.length; i++) {
+            record.onNewRecord(recArray[i]);
+        }
+        updateLapAndSplit(recArray[recArray.length - 1].timestamp);
+        updateDistance();
         
-        return hour + ":" + min + ":" + sec; 
     }
-    function formatDateTime(msec) {
-        var datetime = new Date(msec);
-//        return datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString(); 
-        return datetime.toLocaleTimeString(); 
+    function updateLapAndSplit(timestamp) {
+        var splitTime = record.getSplitTime(timestamp);
+        $("#txtSplitTime").text(Hayate.Util.formatTime(splitTime));
+
+        var lapTime = record.getLapTime(timestamp);
+        $("#txtLapTime").text(Hayate.Util.formatTime(lapTime));
     }
-
-    function onNewRecord(newRec) {
-        $("#message").text("WatchView.onNewRecord: " + JSON.stringify(newRec));
-        
-        record.onNewRecord(newRec);
-
-        var splitTime = record.getSplitTime(newRec.timestamp);
-        $("#txtSplitTime").text(formatTime(splitTime));
-        var lapTime = record.getLapTime(newRec.timestamp);
-        $("#txtLapTime").text(formatTime(lapTime));
-        
+    function updateDistance() {
         // TODO: convert distance unit
         var distance = record.getDistance();
         $("#txtDistance").text(Math.ceil(distance));
-
+    }
+    function onNewRecord(newRec) {
+        if (Array.isArray(newRec)) {
+            loadData(newRec);
+            return;
+        }
+        record.onNewRecord(newRec);
+        
+        updateLapAndSplit(newRec.timestamp);
+        updateDistance();
         // TODO: Pace
     }
     function onClickStart() {
@@ -70,19 +73,13 @@ Hayate.WatchView = function() {
             onClickStop();
         }
     }
-    function addLaptimeToList(latestTime) {
-        var strTime = formatDateTime(latestTime);
-        $("#datetimeList").append("<li>")
-            .append(strTime)
-            .listview("refresh");
-
-        var lastLaptime = record.getLastLaptime();
-        var strLap = formatTime(latestTime - lastLaptime);
-        $("#laptimeList").append("<li>")
-            .append(strLap)
-            .listview("refresh");
+    function addLaptime(latestTime) {
+        var laptime = record.getLapTime(latestTime);
         
-        $("#txtLapTime").text(strLap);
+        $("#txtLapTime").text(Hayate.Util.formatTime(laptime));
+
+        Hayate.LapsView.addLaptime(latestTime, laptime);
+        
     }
     function onClickReset() {
         $("#btnLap").button("disable");
@@ -99,7 +96,7 @@ Hayate.WatchView = function() {
     }
     function onClickLap() {
         var now = Date.now();
-        addLaptimeToList(now);
+        addLaptime(now);
 
         record.addLap(now);
     }
@@ -112,19 +109,24 @@ Hayate.WatchView = function() {
             onClickReset();
         }
     }
-
+    function localize() {
+        $("#btnStart").html(document.webL10n.get("start"));
+        $("#btnLap").html(document.webL10n.get("reset"));
+        $("#lblDistanceUnit").html(document.webL10n.get("distance-unit-metre"));
+        
+    }
     
     function initUI() {
         
-        $("#btnStart").html(document.webL10n.get("start"));
-        $("#btnLap").html(document.webL10n.get("reset"));
-
         $("#btnLap").button().button("disable");
-
-        $("#lblDistanceUnit").html(document.webL10n.get("distance-unit-metre"));
         
         $("#btnStart").on("click", onClickStartStop);
         $("#btnLap").on("click", onClickLapReset);
+        
+    }
+    function onPageShow() {
+        console.log("WatchView onPageShow");
+        config = Hayate.Config.get(["geolocation"]);
         
     }
     
@@ -141,14 +143,16 @@ Hayate.WatchView = function() {
             console.log("RunRecord undefined");
             return;
         }        
-        config = Hayate.Config.get(["geolocation"]);
         
         recorder = Hayate.Recorder;
         recorder.addListener(onNewRecord);
         
         record = Hayate.RunRecord;
+        record.init();
         
         initUI();
+        
+        $("#Stopwatch").on("pageshow", onPageShow);
         
     }
     var record;
@@ -161,9 +165,12 @@ Hayate.WatchView = function() {
     var config = null;
     
     var publicObj = {};
-    publicObj.start = function() {
+    publicObj.init = function() {
         init();
     };
+    publicObj.localize = function() {
+        localize();
+    }
     
     return publicObj;
 }();

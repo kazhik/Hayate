@@ -80,7 +80,7 @@ Hayate.Config = function() {
         };
         var dfd = new $.Deferred();
 
-        Hayate.Database.getObject("Config", "Hayate")
+        Hayate.Database.get("Config", "Hayate")
             .done(onSuccess)
             .fail(onError);
         
