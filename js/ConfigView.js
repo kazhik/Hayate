@@ -45,8 +45,8 @@ Hayate.ConfigView = function() {
     publicObj.init = function() {
         $("#flip-autolap").slider();
         $("#flip-debug").slider();
-        $("#open-settings").click(onOpen);
-        $("#close-settings").click(onClose);
+        $("#open-settings").on("tap", onOpen);
+        $("#close-settings").on("tap", onClose);
         
     };
     

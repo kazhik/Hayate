@@ -16,10 +16,10 @@ Hayate.WatchView = function() {
     }
     function updateLapAndSplit(timestamp) {
         var splitTime = record.getSplitTime(timestamp);
-        $("#txtSplitTime").text(Hayate.Util.formatTime(splitTime));
+        $("#txtSplitTime").text(Hayate.Util.formatElapsedTime(splitTime));
 
         var lapTime = record.getLapTime(timestamp);
-        $("#txtLapTime").text(Hayate.Util.formatTime(lapTime));
+        $("#txtLapTime").text(Hayate.Util.formatElapsedTime(lapTime));
     }
     function updateDistance() {
         // TODO: convert distance unit
@@ -37,7 +37,7 @@ Hayate.WatchView = function() {
         updateDistance();
         // TODO: Pace
     }
-    function onClickStart() {
+    function onTapStart() {
         record.init();
         recorder.start();
         $("#btnStart").text(document.webL10n.get("stop"));
@@ -52,7 +52,7 @@ Hayate.WatchView = function() {
             status.Lap = "disabled";
         }
     }
-    function onClickStop() {
+    function onTapStop() {
         recorder.stop();
         $("#btnStart").text(document.webL10n.get("start"));
         status.Start = "stopped";
@@ -61,27 +61,27 @@ Hayate.WatchView = function() {
         $("#btnLap").button("enable");
         status.Lap = "reset";
         
-        onClickLap();
+        onTapLap();
     }
 
-    function onClickStartStop() {
+    function onTapStartStop() {
         // stopped -> started
         if (status.Start === "stopped") {
-            onClickStart();
+            onTapStart();
         // started -> stopped
         } else {
-            onClickStop();
+            onTapStop();
         }
     }
     function addLaptime(latestTime) {
         var laptime = record.getLapTime(latestTime);
         
-        $("#txtLapTime").text(Hayate.Util.formatTime(laptime));
+        $("#txtLapTime").text(Hayate.Util.formatElapsedTime(laptime));
 
         Hayate.LapsView.addLaptime(latestTime, laptime);
         
     }
-    function onClickReset() {
+    function onTapReset() {
         $("#btnLap").button("disable");
         status.Lap = "disabled";
         
@@ -94,19 +94,19 @@ Hayate.WatchView = function() {
         $('#laptimeList').children().remove('li');
         
     }
-    function onClickLap() {
+    function onTapLap() {
         var now = Date.now();
         addLaptime(now);
 
         record.addLap(now);
     }
-    function onClickLapReset() {
+    function onTapLapReset() {
         // lap -> lap
         if (status.Lap === "lap") {
-            onClickLap();
+            onTapLap();
         // reset -> disabled
         } else {
-            onClickReset();
+            onTapReset();
         }
     }
     function localize() {
@@ -120,8 +120,8 @@ Hayate.WatchView = function() {
         
         $("#btnLap").button().button("disable");
         
-        $("#btnStart").on("click", onClickStartStop);
-        $("#btnLap").on("click", onClickLapReset);
+        $("#btnStart").on("tap", onTapStartStop);
+        $("#btnLap").on("tap", onTapLapReset);
         
     }
     function onPageShow() {
@@ -143,6 +143,7 @@ Hayate.WatchView = function() {
             console.log("RunRecord undefined");
             return;
         }        
+        config = Hayate.Config.get(["geolocation"]);
         
         recorder = Hayate.Recorder;
         recorder.addListener(onNewRecord);

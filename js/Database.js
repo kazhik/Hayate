@@ -181,7 +181,11 @@ Hayate.Database = function() {
             if (cursor) {
                 var result = {};
                 result[os.keyPath] = cursor.value[os.keyPath];
+
                 for (var i = 0; i < itemArray.length; i++) {
+                    if (typeof cursor.value[itemArray[i]] === "undefined") {
+                        continue;
+                    }
                     result[itemArray[i]] = cursor.value[itemArray[i]];
                 }
                 resultList.push(result);

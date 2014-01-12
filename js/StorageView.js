@@ -103,12 +103,7 @@ Hayate.StorageView = function() {
         reader.onloadend = onLoaded;
         
     }
-	function trackPoint(idx) {
-		
-		if (idx > 10) {
-			return;
-		}
-		console.log("trackPoint: " + idx);
+	function importTrackPoint(idx) {
 		
 		var gpxData = {
 			latitude: parseFloat($(this).attr("lat")),
@@ -116,7 +111,6 @@ Hayate.StorageView = function() {
 			elevation: parseInt($(this).find("ele").text(), 10),
 			trktime: Date.parse($(this).find("time").text())
 		};
-		
 		
 		Hayate.Recorder.importGpx(gpxData);
 	}
@@ -126,11 +120,11 @@ Hayate.StorageView = function() {
 			
 			$.mobile.back();
             
-            $xml.find("trkseg").children().each(trackPoint);
+            $xml.find("trkseg").children().each(importTrackPoint);
 			Hayate.Recorder.finishImport();
 
         }
-		
+		console.log("start import");
 		Hayate.Recorder.stop();
 		Hayate.Recorder.clear();
 		
@@ -140,7 +134,7 @@ Hayate.StorageView = function() {
         reader.onloadend = onLoaded;
 		
 	}
-	function onClickListItem() {
+	function onSelectListItem() {
 		importFromFile($(this).attr("data-filename"));
 		
 	
@@ -160,7 +154,7 @@ Hayate.StorageView = function() {
 		
         $("#Import").on("pageshow", onPageShow);
 		
-		$("#importSourceList").on("click", "li a", onClickListItem);
+		$("#importSourceList").on("tap", "li a", onSelectListItem);
 		
     };
    

@@ -12,12 +12,12 @@ Hayate.LapsView = function() {
         
     }
     function addLaptime(latestTime, laptime) {
-        var strTime = Hayate.Util.formatDateTime(latestTime);
+        var strTime = Hayate.Util.formatTime(latestTime);
         $("#datetimeList").append($("<li/>")
             .append(strTime))
             .listview("refresh");
 
-        var strLap = Hayate.Util.formatTime(laptime);
+        var strLap = Hayate.Util.formatElapsedTime(laptime);
         $("#laptimeList").append($("<li/>")
             .append(strLap))
             .listview("refresh");

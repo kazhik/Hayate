@@ -125,12 +125,20 @@ Hayate.Recorder = function() {
                 speed: null
             }
         };
-        storePosition(posJson);
+//        storePosition(posJson);
+        positionHistory.push(posJson);
         
     }
     function finishImport() {
         console.log("finishImport");
         callEventListeners(positionHistory);
+
+        var data = {
+            StartTime: positionHistory[0].timestamp,
+            Position: positionHistory
+        };
+        Hayate.Database.add(objStoreName, data);
+
     }
 
     var publicObj = {};

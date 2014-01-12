@@ -9,7 +9,7 @@ Hayate.LogView = function() {
             return;
         }
         $("#logList").listview().listview("refresh");
-        $("#delete-log").click(clearLog);
+        $("#delete-log").on("tap", clearLog);
 
         $("#panel-menu")
             .append($("<li/>")
@@ -31,9 +31,10 @@ Hayate.LogView = function() {
             };
             Hayate.Database.add("ConsoleLog", log);
 
+            var logmsg = Hayate.Util.formatTime(log.timestamp) + " " + message;
             $("#logList")
                 .append($("<li/>")
-                    .append(message))
+                    .append(logmsg))
                 .listview("refresh");            
             
             $("#message").text(message);

@@ -13,11 +13,11 @@ Hayate.Util = function() {
         $("#confirm-message").text(txtMessage);
         $("#confirm-yes").text(txtButton);
     
-        $("#confirm-yes").click(callback);
+        $("#confirm-yes").on("tap", callback);
 
         $("#confirm-dialog").popup("open");
     }
-    function formatTime(msec) {
+    function formatElapsedTime(msec) {
         var hour = ("0" + Math.floor(msec / (1000 * 60 * 60))).slice(-2);
         var min = ("0" + (Math.floor(msec / (1000 * 60)) - (hour * 60))).slice(-2);
         var sec = ("0" + Math.floor((msec % (1000 * 60)) / 1000)).slice(-2);
@@ -26,7 +26,10 @@ Hayate.Util = function() {
     }
     function formatDateTime(msec) {
         var datetime = new Date(msec);
-//        return datetime.toLocaleDateString() + " " + datetime.toLocaleTimeString(); 
+        return datetime.toLocaleString(); 
+    }
+    function formatTime(msec) {
+        var datetime = new Date(msec);
         return datetime.toLocaleTimeString(); 
     }
     
@@ -38,11 +41,14 @@ Hayate.Util = function() {
     publicObj.openConfirmDialog = function(txtTitle, txtMessage, txtButton, callback) {
         openConfirmDialog(txtTitle, txtMessage, txtButton, callback);
     };
-    publicObj.formatTime = function(msec) {
-        return formatTime(msec);
+    publicObj.formatElapsedTime = function(msec) {
+        return formatElapsedTime(msec);
     };
     publicObj.formatDateTime = function(msec) {
         return formatDateTime(msec);
+    };
+    publicObj.formatTime = function(msec) {
+        return formatTime(msec);
     };
     
     
