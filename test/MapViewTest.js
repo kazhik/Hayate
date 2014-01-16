@@ -5,6 +5,10 @@ if (typeof Hayate === "undefined") {
 }
 
 Hayate.MapViewTest = function() {
+    function onFileSelected() {
+        var f = this.files[0];
+        Hayate.Recorder.importGpxFile(f);
+    }
 
     if (typeof Hayate.Config === "undefined") {
         console.log("Hayate.Config undefined");
@@ -15,8 +19,9 @@ Hayate.MapViewTest = function() {
         return;
     }
 
-    Hayate.MapView.start();
     Hayate.Recorder.init();
+    Hayate.MapView.init();
+    $("#select-file").on("change", onFileSelected);
     
 };
 

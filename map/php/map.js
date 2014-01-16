@@ -10,22 +10,42 @@ Hayate.Map = function() {
             alert("Invalid positionList data: " + JSON.stringify(positionList));
             return;
         }
+        if (positionList.length === 0) {
+            alert("No positionList data: " + positionList.length);
+            return;
+        }
+        
         clearRoute();
+        mapMarker.setMap(null);
+        mapCircle.setMap(null);
         
         var latLngArray = [];
         var latLng;
-        for (var i = 0; i < positionList.length; i++) {
+        var bounds = new google.maps.LatLngBounds();        
+        var i;
+        for (i = 0; i < positionList.length; i++) {
             latLng = new google.maps.LatLng(
-                positionList[i].latitude,
-                positionList[i].longitude);
+                positionList[i].coords.latitude,
+                positionList[i].coords.longitude);
             latLngArray.push(latLng);
+            
+            bounds.extend(latLng);
         }
-        drawRoute(latLngArray);
 
-        map.setCenter(latLng);
-        mapMarker.setPosition(latLng);
-        mapCircle.setCenter(latLng);
+        /*
+        var mapOptions = {
+            center: bounds.getCenter(),
+            mapTypeId: google.maps.MapTypeId.ROADMAP
+        };
+        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+        */
         
+        drawRoute(latLngArray);
+        map.setCenter(bounds.getCenter());
+
+        map.fitBounds(bounds);
+//        map.panToBounds(bounds);
+
     }
     function clearRoute() {
         var newPath = new google.maps.Polyline({
@@ -73,7 +93,7 @@ Hayate.Map = function() {
           strokeWeight: 2
         });
       
-        newPath.setMap(mapMarker.getMap());        
+        newPath.setMap(map);        
     }
     function drawNewRoute(newPosition) {
         var newPathCoords = [
@@ -127,7 +147,6 @@ Hayate.Map = function() {
     }
     function receiveMessage(event) {
         var jsonObj = JSON.parse(event.data);
-        
         if (jsonObj.type === "init") {
             config = jsonObj;
             init();

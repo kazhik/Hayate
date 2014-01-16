@@ -35,7 +35,11 @@ Hayate.RecordsView = function() {
             .fail(onFail);
     }
     function onSelectRecord() {
-        var selectedStartTime = $(this).find("a").attr("id");
+        var selectedStartTime = parseInt($(this).find("a").attr("id"), 10);
+
+    	$.mobile.back();
+        
+        Hayate.Recorder.load(selectedStartTime);
     }
     function clearAll() {
         function onConfirm() {

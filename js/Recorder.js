@@ -112,23 +112,40 @@ Hayate.Recorder = function() {
         // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
         positionHistory.length = 0;
     }
-    function importGpx(gpxData) {
+	function importTrackPoint(idx) {
         var posJson = {
-            timestamp: gpxData.trktime,
+            timestamp: Date.parse($(this).find("time").text()),
             coords: {
-                latitude: gpxData.latitude,
-                longitude: gpxData.longitude,
-                altitude: gpxData.elevation,
+                latitude: parseFloat($(this).attr("lat")),
+                longitude: parseFloat($(this).attr("lon")),
+                altitude: parseInt($(this).find("ele").text(), 10),
                 accuracy: 1,
                 altitudeAccuracy: 1,
                 heading: null,
                 speed: null
             }
         };
-//        storePosition(posJson);
-        positionHistory.push(posJson);
+        positionHistory.push(posJson);		
+	}
+	function importGpxFile(file) {
+        function onLoaded() {
+            var $xml = $($.parseXML(reader.result));
+            
+            $xml.find("trkseg").children().each(importTrackPoint);
+			finishImport();
+
+        }
+		console.log("start import");
+		stop();
+		clear();
+		
+        var reader = new FileReader();
+        reader.readAsText(file);
         
-    }
+        reader.onloadend = onLoaded;
+		
+	}
+
     function finishImport() {
         console.log("finishImport");
         callEventListeners(positionHistory);
@@ -139,6 +156,22 @@ Hayate.Recorder = function() {
         };
         Hayate.Database.add(objStoreName, data);
 
+    }
+    function load(startTime) {
+        function onFail(err) {
+            console.log(err.name + "(" + err.message + ")" );
+        }
+        function onGet(result) {
+            if (typeof result === "undefined") {
+                return;
+            }
+            callEventListeners(result["Position"]);
+        }
+
+        Hayate.Database.get("GeoLocation", startTime)
+            .done(onGet)
+            .fail(onFail);
+        
     }
 
     var publicObj = {};
@@ -170,12 +203,11 @@ Hayate.Recorder = function() {
     publicObj.removeListener = function(listener) {
         delete listeners[listener.name];
     };
-    publicObj.importGpx = function(gpxData) {
-        importGpx(gpxData);
+    publicObj.importGpxFile = function(file) {
+        importGpxFile(file);
     };
-    publicObj.finishImport = function() {
-        finishImport();
-        
+    publicObj.load = function(startTime) {
+        load(startTime);  
     };
     
     return publicObj;

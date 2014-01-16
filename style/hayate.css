@@ -17,6 +17,11 @@
     text-align: center;
 }
 
+#logList li {
+    white-space:normal;
+}
+
+
 #map-iframe {
     border-width: 1px;
     border-color: #333;

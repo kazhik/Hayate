@@ -4,54 +4,7 @@ if (Hayate === undefined) {
     var Hayate = {};
 }
 Hayate.StorageView = function() {
-    /*
-    function exists() {
-        function onSuccess() {
-            var filename = req.result.name;
-            console.log("onSuccess: " + filename);
-            
-            if (filename.indexOf('/sdcard/') === 0) {
-                var parts = filename.replace('/sdcard/', '').split('/');
-                
-                console.log("parts.length: " + parts.length);
-            }
-        }
-        function onSuccess2() {
-            var filename = req2.result.name;
-            console.log("onSuccess2: " + filename);
-            
-            if (filename.indexOf('/sdcard/') === 0) {
-                var parts = filename.replace('/sdcard/', '').split('/');
-                
-                console.log("parts.length: " + parts.length);
-            }
-        }
-        function onError() {
-            console.log("DeviceStorage onError: " + req.error.name);
-        }
-        var req = storage.get("hello");
-        req.onsuccess = onSuccess;
-        req.onerror = onError;
-        var req2 = storage.get("PRIVATE");
-        req2.onsuccess = onSuccess2;
-        req2.onerror = onError;
-    }
-    
-    function createFolder(folderName) {
-        function onSuccess() {
-            console.log('File "' + req.result.name + '" successfully wrote on the sdcard storage area');
-        }
-        function onError() {
-            console.log('Unable to write the file: ' + req.error);
-        }        
-    	var blob = new Blob(['']);
-        var req = storage.addNamed(blob, "Apps/hayate/.empty");
-        req.onsuccess = onSuccess();
-        req.onerror = onError();
-    }
-    */
     var GPX_FOLDER = "Apps/hayate/gpx";
-    var files = {};
     function onPageShow() {
         function onSuccess() {
             var file = cursor.result;
@@ -103,45 +56,16 @@ Hayate.StorageView = function() {
         reader.onloadend = onLoaded;
         
     }
-	function importTrackPoint(idx) {
-		
-		var gpxData = {
-			latitude: parseFloat($(this).attr("lat")),
-			longitude: parseFloat($(this).attr("lon")),
-			elevation: parseInt($(this).find("ele").text(), 10),
-			trktime: Date.parse($(this).find("time").text())
-		};
-		
-		Hayate.Recorder.importGpx(gpxData);
-	}
-	function importFromFile(filename) {
-        function onLoaded() {
-            var $xml = $($.parseXML(reader.result));
-			
-			$.mobile.back();
-            
-            $xml.find("trkseg").children().each(importTrackPoint);
-			Hayate.Recorder.finishImport();
-
-        }
-		console.log("start import");
-		Hayate.Recorder.stop();
-		Hayate.Recorder.clear();
-		
-        var reader = new FileReader();
-        reader.readAsText(files[filename]);
-        
-        reader.onloadend = onLoaded;
-		
-	}
 	function onSelectListItem() {
-		importFromFile($(this).attr("data-filename"));
-		
-	
+		var file = files[$(this).attr("data-filename")];
+		Hayate.Recorder.importGpxFile(file);
+					
+		$.mobile.back();
 	}
     
     var publicObj = {};
 	var storage;
+    var files = {};
 	
 	if (navigator.getDeviceStorage) {
 	    storage = navigator.getDeviceStorage("sdcard");

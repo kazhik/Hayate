@@ -10,7 +10,7 @@ Hayate.MapView = function() {
             type: "positionlist",
             list: posArray
         }
-        console.log("send positionlist");
+        
         var mapIframe = document.getElementById("map-iframe");
         mapIframe.contentWindow.postMessage(JSON.stringify(positionlist), '*');            
     }

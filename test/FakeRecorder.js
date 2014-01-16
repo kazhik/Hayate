@@ -53,11 +53,43 @@ Hayate.Recorder = function() {
         callEventListeners(posJson3);
         
     }
+    function sendPositionList() {
+        var posJson = {
+            timestamp: Date.now(),
+            coords: {
+                latitude: 35.692332,
+                longitude: 139.815398,
+                altitude: 0,
+                accuracy: 100,
+                altitudeAccuracy: 1,
+                heading: null,
+                speed: null
+            }
+        };        
+        var posJson2 = JSON.parse(JSON.stringify(posJson));
+        posJson2.timestamp = Date.now();
+        posJson2.coords.latitude = 35.692472;
+        posJson2.coords.longitude = 139.820033;
+        
+        var posJson3 = JSON.parse(JSON.stringify(posJson));
+        posJson3.timestamp = Date.now();
+        posJson3.coords.latitude = 35.6851;
+        posJson3.coords.longitude = 139.820741;
+
+        var posJson4 = JSON.parse(JSON.stringify(posJson));
+        posJson4.timestamp = Date.now();
+        posJson4.coords.latitude = 35.685605;
+        posJson4.coords.longitude = 139.83353;
+        
+        var posList = [posJson, posJson2, posJson3, posJson4];
+        callEventListeners(posList);
+    }
 
     var publicObj = {};
     var intervalId = 0;
     publicObj.init = function() {
-        setTimeout(sendPosition, 1000);
+        setTimeout(sendPositionList, 1000);
+//        setTimeout(sendPosition, 1000);
     };
     publicObj.terminate = function() {
     };
