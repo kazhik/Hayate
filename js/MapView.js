@@ -61,6 +61,12 @@ Hayate.MapView = function() {
             console.log("onPageShow: " + getRealContentHeight());
             config = Hayate.Config.get(["map"]);
             $('#map-iframe').height(getRealContentHeight());
+
+                
+            var msg = {};
+            var mapIframe = document.getElementById("map-iframe");
+            msg.type = "view";
+            mapIframe.contentWindow.postMessage(JSON.stringify(msg), '*');
         
         }
         function onLoadMap() {

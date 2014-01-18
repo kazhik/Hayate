@@ -18,7 +18,7 @@ Hayate.MapViewTest = function() {
         console.log("Hayate.MapView undefined");
         return;
     }
-
+    
     Hayate.Recorder.init();
     Hayate.MapView.init();
     $("#select-file").on("change", onFileSelected);

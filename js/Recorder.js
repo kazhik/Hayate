@@ -46,15 +46,17 @@ Hayate.Recorder = function() {
     }
     function storePosition(posJson) {
         // store position
-        if (positionHistory.length === 0) {
-            var data = {
-                StartTime: posJson.timestamp,
-                Position: posJson
+        if (db !== null) {
+            if (positionHistory.length === 0) {
+                var data = {
+                    StartTime: posJson.timestamp,
+                    Position: posJson
+                }
+                Hayate.Database.add(objStoreName, data);
+            } else {
+                Hayate.Database.addItem(objStoreName,
+                    positionHistory[0].timestamp, "Position", posJson);
             }
-            Hayate.Database.add(objStoreName, data);
-        } else {
-            Hayate.Database.addItem(objStoreName,
-                positionHistory[0].timestamp, "Position", posJson);
         }
         positionHistory.push(posJson);
     }
@@ -149,11 +151,16 @@ Hayate.Recorder = function() {
     function finishImport() {
         console.log("finishImport");
         callEventListeners(positionHistory);
+        
+        if (db === null) {
+            return;
+        }
 
         var data = {
             StartTime: positionHistory[0].timestamp,
             Position: positionHistory
         };
+        
         Hayate.Database.add(objStoreName, data);
 
     }
@@ -167,6 +174,10 @@ Hayate.Recorder = function() {
             }
             callEventListeners(result["Position"]);
         }
+        
+        if (db === null) {
+            return;
+        }
 
         Hayate.Database.get("GeoLocation", startTime)
             .done(onGet)
@@ -176,10 +187,15 @@ Hayate.Recorder = function() {
 
     var publicObj = {};
     var config = null;
+    var db = null;
     var intervalId = 0;
     var objStoreName = "GeoLocation";
     publicObj.init = function() {
         config = Hayate.Config.get(["geolocation"]);
+        
+        if (typeof Hayate.Database !== "undefined") {
+            db = Hayate.Database;
+        }
         
         startWatchPosition();
     };
