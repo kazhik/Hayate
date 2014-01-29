@@ -36,10 +36,21 @@ Hayate.StorageView = function() {
     }
     function addToList(f) {
         function onLoaded() {
+			/* Too slow.
             var $xml = $($.parseXML(reader.result));
             
             var trackName = $xml.find("trk").find("name").text();
-            
+			*/
+			
+			var matchResult = reader.result.match(/<trk>\n<name>(.*)<\/name>/);
+			var matchCData = matchResult[1].match(/<!\[CDATA\[(.*)\]\]>/);
+			var trackName;
+			if (matchCData === null) {
+				trackName = matchResult[1];
+			} else {
+				trackName = matchCData[1];
+			}
+           
             $("#importSourceList")
                 .append($("<li/>")
                 .append($("<a/>", {

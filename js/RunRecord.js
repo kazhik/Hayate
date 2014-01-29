@@ -7,18 +7,6 @@ Hayate.RunRecord = function() {
     function toRad(x) {
         return x * Math.PI / 180;
     }
-    function autoLap(newTimestamp, latestRealMove) {
-        if (config["autoLap"]["on"] === false) {
-            return;
-        }
-        var lapDistance = config["autoLap"]["distance"];
-        
-        var oldDistance = realDistance;
-        var newDistance = realDistance + latestRealMove;
-        if (Math.floor(oldDistance / lapDistance) !== Math.floor(newDistance / lapDistance)) {
-            addLap(newTimestamp, realDistance + latestRealMove);
-        }
-    }
     function moved(newCoords) {
         if (newCoords.latitude !== prevCoords.latitude) {
             return true;
@@ -70,33 +58,55 @@ Hayate.RunRecord = function() {
         return latestRealMove;
         
     }
+    function autoLap(newTimestamp, latestRealMove) {
+        if (config["autoLap"]["on"] === "off") {
+            return;
+        }
+        var lapDistance = config["autoLap"]["distance"];
+        
+        var oldDistance = realDistance;
+        var newDistance = realDistance + latestRealMove;
+        if (Math.floor(oldDistance / lapDistance) !== Math.floor(newDistance / lapDistance)) {
+            addLap(newTimestamp, realDistance + latestRealMove);
+        }
+    }
+
     function addLap(timestamp, distance) {
         var lapInfo = {
             timestamp: timestamp,
             distance: distance
         };
+        
         laptimes.push(lapInfo);
-    }   
-    function onNewRecord(newRec) {
-        var currentCoords = newRec.coords;
-        if (laptimes.length === 0) {
-            addLap(newRec.timestamp, 0);
-        } else if (typeof currentCoords !== "undefined") {
-            var latestRealMove = calculateDistance(currentCoords);
+
+        if (laptimes.length > 1) {
+            return timestamp - laptimes[laptimes.length - 2].timestamp;
+        } else {
+            return 0;
+        }
+    }
+    function setCurrentTime(timestamp) {
+
+        if (timestamp > currentTime) {
+            currentTime = timestamp;
+        }
+    }
+    function setCurrentPosition(newRec) {
+        setCurrentTime(newRec.timestamp);
+        
+        var newCoords = newRec.coords;
+        if (typeof newCoords !== "undefined") {
+            var latestMove = calculateDistance(newCoords);
             
-            autoLap(newRec.timestamp, latestRealMove);
+            autoLap(newRec.timestamp, latestMove);
             
-            realDistance += latestRealMove;
+            realDistance += latestMove;
  
-            if (currentCoords.speed !== null) {
-                // converts metres/sec to min/km or min/miles
-            }
-            
-            prevCoords = currentCoords;
+            prevCoords = newCoords;
         }           
 
     }
-    function init() {
+    function init(timestamp) {
         if (typeof Hayate.Config === "undefined") {
             console.log("Config undefined");
             return;
@@ -107,7 +117,9 @@ Hayate.RunRecord = function() {
         prevCoords = undefined;
         laptimes.length = 0;
         realDistance = 0;
-        
+        currentTime = timestamp;
+        addLap(timestamp, 0);
+
     }
 
     var Constant = {
@@ -116,40 +128,55 @@ Hayate.RunRecord = function() {
     var laptimes = [];
     var realDistance = 0;
     var prevCoords;
-    
+    var currentTime;
     var config;
     
     var publicObj = {};
     
     
-    publicObj.init = function() {
-        init();
+    publicObj.init = function(timestamp) {
+        init(timestamp);
     };
-    publicObj.onNewRecord = function(newRec) {
-        onNewRecord(newRec);
+    publicObj.setCurrentPosition = function(newRec) {
+        setCurrentPosition(newRec);
+    };
+    publicObj.setCurrentTime = function(timestamp) {
+        setCurrentTime(timestamp);
     };
     
-    publicObj.getSplitTime = function(newTimestamp) {
+    publicObj.getSpeed = function() {
+        if (typeof prevCoords === "undefined") {
+            return 0;
+        }
+        return prevCoords.speed;
+    };
+    publicObj.getSplitTime = function() {
         if (laptimes.length === 0) {
             return 0;
         }
-        return newTimestamp - laptimes[0].timestamp;
-    }
-    publicObj.getLapTime = function(newTimestamp) {
+        return currentTime - laptimes[0].timestamp;
+    };
+    publicObj.getLapTime = function() {
         if (laptimes.length === 0) {
             return 0;
         }
         
-        return newTimestamp - laptimes[laptimes.length - 1].timestamp;
+        return currentTime - laptimes[laptimes.length - 1].timestamp;
 
+    };
+    publicObj.getStartTime = function() {
+        return laptimes[0].timestamp;
     }
+    publicObj.getLaps = function() {
+        return laptimes;  
+    };
     publicObj.getDistance = function() {
         return realDistance;
-    }
+    };
     
     publicObj.addLap = function(newTimestamp) {
-        addLap(newTimestamp, realDistance);
-    }
+        return addLap(newTimestamp, realDistance);
+    };
     return publicObj;
     
 }();

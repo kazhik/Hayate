@@ -4,8 +4,6 @@ if (Hayate === undefined) {
     var Hayate = {};
 }
 Hayate.Recorder = function() {
-
-    var positionHistory = [];
     
     function convertPositionToJSON(position) {
         var coords = position.coords;
@@ -41,59 +39,72 @@ Hayate.Recorder = function() {
         }
 
         var posJson = convertPositionToJSON(position);
-        
-        onPosition(posJson);
-    }
-    function storePosition(posJson) {
-        // store position
-        if (db !== null) {
-            if (positionHistory.length === 0) {
-                var data = {
-                    StartTime: posJson.timestamp,
-                    Position: posJson
-                }
-                Hayate.Database.add(objStoreName, data);
-            } else {
-                Hayate.Database.addItem(objStoreName,
-                    positionHistory[0].timestamp, "Position", posJson);
-            }
+
+        if (intervalId !== 0) {
+            positionHistory.push(posJson);
+            record.setCurrentPosition(posJson);
+            posJson.started = true;
+        } else {
+            posJson.started = false;
         }
-        positionHistory.push(posJson);
-    }
-    function onPosition(posJson) {
-        if (intervalId === 0) {
-            return;
-        }
-        storePosition(posJson);
         
         // call event listeners
-        callEventListeners(posJson);
+        callPositionListeners(posJson);
+    }
+    function storeRecord() {
+        if (db === null) {
+            return;
+        }
+        
+        var data = {
+            StartTime: record.getStartTime(),
+            Position: positionHistory,
+            LapTimes: record.getLaps()
+        };
+        Hayate.Database.add(objStoreName, data);
     }
 
     function onError(posErr) {
         console.log("code:" + posErr.code + "; error:" + posErr.message);
     }
-    function callEventListeners(newRec) {
-        var keys = Object.getOwnPropertyNames(listeners);
+
+    function callListeners(listeners, arg) {
+        var keys = Object.keys(listeners);
         
         for (var i = 0; i < keys.length; i++) {
-            listeners[keys[i]](newRec);
+            listeners[keys[i]](arg);
         }
+    }
+    function callPositionListeners(newPosition) {
+        callListeners(positionListeners, newPosition);
+    }
+    function callTimeListeners(newTimestamp) {
+        callListeners(timeListeners, newTimestamp);
+    }
+    function callLapListeners(newLap) {
+        callListeners(lapListeners, newLap);
     }
     function onTimeout() {
+        record.setCurrentTime(Date.now());
         var newRec = {
-            timestamp: Date.now()
-        };
-        if (positionHistory.length > 0) {
-            newRec.coords = positionHistory[positionHistory.length - 1].coords;
+            splitTime: record.getSplitTime(),
+            lapTime: record.getLapTime(),
+            speed: record.getSpeed(),
+            distance: record.getDistance()
         }
-
-        callEventListeners(newRec);
+        callTimeListeners(newRec);
     }
-    var watchId = 0;
-    var listeners = {};
-    var db = Hayate.Database;
-    
+    function lap() {
+        var now = Date.now();
+
+        var lapTime = record.addLap(now);
+        
+        var newLap = {
+            timestamp: now,
+            laptime: lapTime
+        };
+        callLapListeners(newLap);
+    }
     function startWatchPosition() {
         if (!("geolocation" in navigator)) {
             return;
@@ -129,6 +140,57 @@ Hayate.Recorder = function() {
         };
         positionHistory.push(posJson);		
 	}
+    
+    function makeCDATA(str) {
+        return "<![CDATA[" + str + "]]>";
+    }
+    function exportGpxFile(trackName, trackDesc, trackType) {
+        var gpxDoc = document.implementation.createDocument(null, "gpx", null);
+        
+        var trkElement = gpxDoc.createElement("trk");
+        
+        var trkName = gpxDoc.createElement("name");
+        var trkNameText = gpxDoc.createTextNode(makeCDATA(trackName));
+        trkName.appendChild(trkNameText);
+        trkElement.appendChild(trkName);
+
+        var trkDesc = gpxDoc.createElement("desc");
+        var trkDescText = gpxDoc.createTextNode(makeCDATA(trackDesc));
+        trkDesc.appendChild(trkDescText);
+        trkElement.appendChild(trkDesc);
+
+        var trkType = gpxDoc.createElement("type");
+        var trkTypeText = gpxDoc.createTextNode(makeCDATA(trackType));
+        trkType.appendChild(trkTypeText);
+        trkElement.appendChild(trkType);
+        
+        var trkSeg = gpxDoc.createElement("trkseg");
+        for (var i = 0; i < positionHistory.length; i++) {
+            var trkPt = gpxDoc.createElement("trkpt");
+            trkPt.setAttribute("lat", positionHistory[i].coords.latitude);
+            trkPt.setAttribute("lon", positionHistory[i].coords.longitude);
+            
+            var trkEle = gpxDoc.createElement("ele");
+            var trkEleText = gpxDoc.createTextNode(positionHistory[i].coords.altitude);
+            trkEle.appendChild(trkEleText);
+            trkPt.appendChild(trkEle);
+
+            var trkTime = gpxDoc.createElement("time");
+            var trkTimestamp = new Date(positionHistory[i].timestamp);
+            var trkTimeText = gpxDoc.createTextNode(trkTimestamp.toISOString());
+            trkTime.appendChild(trkTimeText);
+            trkPt.appendChild(trkTime);
+            
+            trkSeg.appendChild(trkPt);
+        }
+        trkElement.appendChild(trkSeg);
+        
+        gpxDoc.appendChild(trkElement);
+        
+        var gpxStr = new XMLSerializer().serializeToString(gpxDoc); 
+        
+        return new Blob([gpxStr], {type: "text/xml"});
+    }
 	function importGpxFile(file) {
         function onLoaded() {
             var $xml = $($.parseXML(reader.result));
@@ -137,7 +199,6 @@ Hayate.Recorder = function() {
 			finishImport();
 
         }
-		console.log("start import");
 		stop();
 		clear();
 		
@@ -149,8 +210,7 @@ Hayate.Recorder = function() {
 	}
 
     function finishImport() {
-        console.log("finishImport");
-        callEventListeners(positionHistory);
+        callPositionListeners(positionHistory);
         
         if (db === null) {
             return;
@@ -172,7 +232,7 @@ Hayate.Recorder = function() {
             if (typeof result === "undefined") {
                 return;
             }
-            callEventListeners(result["Position"]);
+            callPositionListeners(result["Position"]);
         }
         
         if (db === null) {
@@ -184,18 +244,27 @@ Hayate.Recorder = function() {
             .fail(onFail);
         
     }
+    var watchId = 0;
+    var positionListeners = {};
+    var timeListeners = {};
+    var lapListeners = {};
 
+    var positionHistory = [];
     var publicObj = {};
     var config = null;
     var db = null;
     var intervalId = 0;
+    var distance;
     var objStoreName = "GeoLocation";
+    var record;
+    
     publicObj.init = function() {
         config = Hayate.Config.get(["geolocation"]);
         
         if (typeof Hayate.Database !== "undefined") {
             db = Hayate.Database;
         }
+        record = Hayate.RunRecord;
         
         startWatchPosition();
     };
@@ -204,23 +273,48 @@ Hayate.Recorder = function() {
     };
     publicObj.start = function() {
         clear();
+        record.init(Date.now());
         intervalId = setInterval(onTimeout, 100);
     };
     publicObj.clear = function() {
         clear();
     }
     publicObj.stop = function() {
+        lap();
         clearInterval(intervalId);
         intervalId = 0;
+        
+        storeRecord();
+        
     };
-    publicObj.addListener = function(listener) {
-        listeners[listener.name] = listener;
+    publicObj.lap = function() {
+        lap();
     };
-    publicObj.removeListener = function(listener) {
-        delete listeners[listener.name];
+    
+    publicObj.addPositionListener = function(listener) {
+        positionListeners[listener.name] = listener;   
     };
+    publicObj.removePositionListener = function(listener) {
+        delete positionListeners[listener.name];
+    };
+    publicObj.addTimeListener = function(listener) {
+        timeListeners[listener.name] = listener;   
+    };
+    publicObj.removeTimeListener = function(listener) {
+        delete timeListeners[listener.name];
+    };
+    publicObj.addLapListener = function(listener) {
+        lapListeners[listener.name] = listener;   
+    };
+    publicObj.removeLapListener = function(listener) {
+        delete lapListeners[listener.name];
+    };
+    
     publicObj.importGpxFile = function(file) {
         importGpxFile(file);
+    };
+    publicObj.exportGpxFile = function(name, desc, type) {
+        return exportGpxFile(name, desc, type);  
     };
     publicObj.load = function(startTime) {
         load(startTime);  

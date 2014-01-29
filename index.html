@@ -23,18 +23,19 @@
     <script src="js/LapsView.js"></script>
     <script src="js/ConfigView.js"></script>
     <script src="js/RecordsView.js"></script>
-    <script src="js/Util.js"></script>
+    <script src="js/PanelView.js"></script>
+    <script src="js/ViewUtil.js"></script>
     <script src="js/hayate.js"></script>
   </head>
   <body>
-    <div data-role="page" id="Stopwatch" data-theme="b">
+    <div data-role="page" id="Stopwatch" data-theme="a">
       <div data-role="header">
         <a href="#LeftPanel" data-icon="bars" data-iconpos="notext">Panel</a>
-    
         <h1>Hayate</h1>
+        <a href="#Export" data-l10n-id="export" data-icon="star" data-iconpos="notext">Export</a>
       </div> 
 
-      <div data-role="content" data-theme="b">
+      <div data-role="content" data-theme="a">
         <fieldset class="ui-grid-a">
           <div class="ui-block-a">
             <div class="ui-input-btn ui-btn ui-corner-all" id="btnStart" data-l10n-id="start">
@@ -55,6 +56,7 @@
           <div class="ui-block-a">
             <ul id="lblWatch" data-role="listview" data-inset="true">
                 <li data-l10n-id="distance">Distance</li>
+                <li data-l10n-id="pace">PACE</li>
                 <li data-l10n-id="split">Split</li>
                 <li data-l10n-id="lap">Lap</li>
             </ul>          
@@ -62,8 +64,10 @@
           <div class="ui-block-b">
             <ul id="watch" data-role="listview" data-inset="true">
               <li>
-                <span id="txtDistance">0</span>
-                <span id="lblDistanceUnit" data-l10n-id="distance-unit-metre">m</span>
+                <span id="txtDistance">0</span><span id="lblDistanceUnit">m</span>
+              </li>
+              <li>
+                <span id="txtPace">00:00</span>/<span id="lblPaceUnit">m</span>
               </li>
               <li>
                 <span id="txtSplitTime">00:00:00</span>
@@ -77,7 +81,7 @@
         </fieldset>
     
       </div><!-- /content -->
-      <div data-role="footer" data-position="fixed" data-theme="b">
+      <div data-role="footer" data-position="fixed" data-theme="a">
           <div data-role="content" id="message">
             
           </div>
@@ -97,20 +101,14 @@
     
     
     <!-- Start of second page: #Map -->
-    <div data-role="page" id="Map" data-theme="b">
+    <div data-role="page" id="Map" data-theme="a">
     
-      <div data-role="content" id="map-content" data-theme="b">	
-        <iframe id="map-iframe"
-          src="http://kazhik.net/test/"
-          width="100%"
-          marginwidth="0"
-          marginheight="0"
-          frameborder="no"
-          scrolling="yes">
+      <div data-role="content" id="map-content" data-theme="a">	
+        <iframe id="map-iframe">
         </iframe>
           
       </div><!-- /content -->
-      <div data-role="footer" data-position="fixed" data-theme="b">
+      <div data-role="footer" data-position="fixed" data-theme="a">
         <div data-role="navbar">
           <ul>
             <li>
@@ -125,14 +123,14 @@
         
     </div><!-- /page Map -->
     
-    <div data-role="page" id="Laps" data-theme="b">
+    <div data-role="page" id="Laps" data-theme="a">
       <div data-role="header">
         <a href="#LeftPanel" data-icon="bars" data-iconpos="notext">Panel</a>
     
         <h1>Hayate</h1>
       </div> 
 
-      <div data-role="content" data-theme="b">
+      <div data-role="content" data-theme="a">
 
         <fieldset class="ui-grid-a">
           <div class="ui-block-a">
@@ -145,7 +143,7 @@
           </div>
         </fieldset>
       </div>
-      <div data-role="footer" data-position="fixed" data-theme="b">
+      <div data-role="footer" data-position="fixed" data-theme="a">
         <div data-role="navbar">
           <ul>
             <li>
@@ -160,21 +158,21 @@
         
     </div><!-- /page Laps -->
 
-    <div data-role="page" id="Records" data-theme="b">
+    <div data-role="page" id="Records" data-theme="a">
       <div data-role="header">
         <a href="#" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
         <h1>Hayate</h1>
         <a href="#" id="clear-allrecords" data-icon="delete" data-iconpos="notext">Back</a>
       </div> 
 
-      <div data-role="content" data-theme="b">
+      <div data-role="content" data-theme="a">
         <ul id="recordList" data-role="listview">
         </ul>          
       </div>
         
     </div><!-- /page Records -->
     
-    <div data-role="page" id="Log" data-theme="b">
+    <div data-role="page" id="Log" data-theme="a">
       <div data-role="header">
         <a href="#" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
     
@@ -183,99 +181,88 @@
         <a href="#" id="delete-log" data-icon="delete" data-iconpos="notext">Back</a>
       </div> 
 
-      <div data-role="content" data-theme="b">
+      <div data-role="content" data-theme="a">
         <ul id="logList" data-role="listview">
         </ul>    
       </div>
         
     </div><!-- /page Log -->
 
-    <div data-role="page" id="Import" data-theme="b">
+    <div data-role="page" id="Import" data-theme="a">
       <div data-role="header">
         <a href="#" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
     
         <h1>Hayate</h1>
       </div> 
 
-      <div data-role="content" data-theme="b">
+      <div data-role="content" data-theme="a">
         <ul id="importSourceList" data-role="listview">
         </ul>    
       </div>
         
     </div><!-- /page Import -->    
     
-    <div data-role="page" id="Settings" data-theme="b">
+    <div data-role="page" id="Settings" data-theme="a">
       <div data-role="header">
-        <a href="#" id="close-settings" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
+        <a href="#" id="close-settings"
+           data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
     
         <h1>Hayate</h1>
       </div>
       <ul data-role="listview" >
         <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
-          <h2>Geolocation</h2>
+          <h2 data-l10n-id="geolocation">Geolocation</h2>
           <form>
-            <label for="select-minAccurary">Latitude/Longitude accuracy</label>
-            <select name="select-minAccurary" id="select-minAccurary" data-mini="true">
-                <option value="10">10 metres</option>
-                <option value="50">50 metres</option>
-                <option value="100">100 metres</option>
-                <option value="200">200 metres</option>
+            <label for="select-min-accuracy"
+                   data-l10n-id="min-accuracy">Latitude/Longitude accuracy</label>
+            <select name="select-min-accuracy" id="select-min-accuracy" data-mini="true">
             </select>
   
-            <label for="select-minAltAccurary">Altitude accuracy</label>
-            <select name="select-minAltAccurary" id="select-minAltAccurary" data-mini="true">
-                <option value="10">10 metres</option>
-                <option value="50">50 metres</option>
-                <option value="100">100 metres</option>
-                <option value="200">200 metres</option>
+            <label for="select-min-alt-accuracy"
+                   data-l10n-id="min-alt-accuracy">Altitude accuracy</label>
+            <select name="select-min-alt-accuracy" id="select-min-alt-accuracy" data-mini="true">
             </select>
   
-            <label for="select-minTimeInterval">Recording time interval</label>
-            <select name="select-minTimeInterval" id="select-minTimeInterval" data-mini="true">
-                <option value="1">1 seconds</option>
-                <option value="10">10 seconds</option>
-                <option value="30">30 seconds</option>
-                <option value="60">60 seconds</option>
+            <label for="select-min-time-interval"
+                   data-l10n-id="min-time-interval">Recording time interval</label>
+            <select name="select-min-time-interval" id="select-min-time-interval" data-mini="true">
             </select>
   
-            <label for="select-minDistanceInterval">Recording distance interval</label>
-            <select name="select-minDistanceInterval" id="select-minDistanceInterval" data-mini="true">
-                <option value="10">10 metres</option>
-                <option value="50">50 metres</option>
-                <option value="100">100 metres</option>
-                <option value="200">200 metres</option>
+            <label for="select-min-distance-interval"
+                   data-l10n-id="min-distance-interval">Recording distance interval</label>
+            <select name="select-min-distance-interval"
+                    id="select-min-distance-interval" data-mini="true">
             </select>
             
-            <label for="flip-autolap">Auto lap</label>
+            <label for="flip-autolap"
+                   data-l10n-id="autolap">Auto lap</label>
             <select name="flip-autolap" id="flip-autolap" data-role="slider" data-mini="true">
-                <option value="true">On</option>
-                <option value="false">Off</option>
+                <option value="on">On</option>
+                <option value="off">Off</option>
             </select>
             
-            <label for="input-autolap-distance">Auto lap distance</label>
+            <label for="input-autolap-distance"
+                   data-l10n-id="autolap-distance">Auto lap distance</label>
             <input pattern="[0-9]*" id="input-autolap-distance" value="1000" type="number">
     
-            <label for="select-distance-unit">Distance units</label>
+            <label for="select-distance-unit"
+                   data-l10n-id="distance-unit">Distance units</label>
             <select name="select-distance-unit" id="select-distance-unit" data-mini="true">
-                <option value="metre">metre</option>
-                <option value="miles">miles</option>
             </select>
             
           </form>
         </li>
         <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
-          <h2>Map</h2>
+          <h2 data-l10n-id="map">Map</h2>
           <form>
-            <label for="select-zoom">Zoom</label>
+            <label data-l10n-id="zoom-level" for="select-zoom">Zoom</label>
             <select name="select-zoom" id="select-zoom" data-mini="true">
-                <option value="12">12</option>
-                <option value="16">16</option>
             </select>
             
           </form>
         </li>
         <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
-          <h2>Debug</h2>
+          <h2 data-l10n-id="debug">Debug</h2>
           <form>
             <label for="flip-debug">Debug</label>
             <select id="flip-debug" name="flip-debug" data-role="slider" data-mini="true">
@@ -289,11 +276,12 @@
 
         
     </div><!-- /page Settings -->
-
+    
+    
     <div data-role="popup"
          id="confirm-dialog"
-         data-overlay-theme="b"
-         data-theme="b"
+         data-overlay-theme="a"
+         data-theme="a"
          data-dismissible="false">
         <div data-role="header" data-theme="a">
         <h1 id="confirm-title">TITLE</h1>
@@ -309,13 +297,29 @@
         </div>
     </div>
 
-
-
-    <div data-role="panel" id="LeftPanel" data-position="left" data-display="reveal" data-theme="b">
+    <div data-role="popup"
+         id="about-dialog"
+         data-overlay-theme="a"
+         data-theme="a"
+         data-dismissible="false">
+        <div role="main" class="ui-content">
+            <H1 id="about-appname">Hayate</H1>
+            <H2 id="about-version">Version: 0.1</H2>
+            <div id="about-message">Copyright: 2014
+            <a href="https://github.com/kazhik" target="_blank">kazhik</a></div>
+            
+            <a href="#" id="about-ok"
+               class="ui-btn ui-corner-all ui-shadow"
+               data-rel="back">OK</a>
+        </div>
+    </div>
+    
+    <div data-role="panel" id="LeftPanel" data-position="left" data-display="reveal" data-theme="a">
       <ul id="panel-menu" data-role="listview">
-        <li><a id="open-records" href="#Records">Records</a></li>
-        <li><a href="#Import">Import</a></li>
-        <li data-icon="gear"><a id="open-settings" href="#Settings">Settings</a></li>
+        <li data-icon="bullets"><a data-l10n-id="records" href="#Records">RECORDS</a></li>
+        <li data-icon="cloud"><a data-l10n-id="import" href="#Import">IMPORT</a></li>
+        <li data-icon="gear"><a data-l10n-id="settings" href="#Settings">SETTINGS</a></li>
+        <li data-icon="info"><a data-l10n-id="about" id="open-about" href="#">ABOUT</a></li>
       </ul>
     </div><!-- /LeftPanel -->
     

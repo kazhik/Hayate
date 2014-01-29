@@ -8,6 +8,9 @@ asyncTest( "timestamp and distance", 16, function() {
     function timestampAndDistance() {
         ok(Hayate.Recorder !== 'undefined');
     
+        Hayate.Config.set(["geolocation", "autoLap", "on"], "on");
+        Hayate.Config.set(["geolocation", "autoLap", "distance"], 1000);
+        
         Hayate.RunRecord.init();
     
         var posObj = {
@@ -22,7 +25,7 @@ asyncTest( "timestamp and distance", 16, function() {
                 speed: null
             }
         };
-        Hayate.RunRecord.onNewRecord(posObj);
+        Hayate.RunRecord.onNewPosition(posObj);
         
         var distance;
         distance = Hayate.RunRecord.getDistance();
@@ -41,12 +44,12 @@ asyncTest( "timestamp and distance", 16, function() {
             }
         };    
     
-        Hayate.RunRecord.onNewRecord(posObj2);
+        Hayate.RunRecord.onNewPosition(posObj2);
         distance = Hayate.RunRecord.getDistance();
         strictEqual(Math.ceil(distance), 608, "calculated distance: " + distance);
         
-        strictEqual(Hayate.RunRecord.getSplitTime(posObj2.timestamp), 120 * 1000, "SplitTime");
-        strictEqual(Hayate.RunRecord.getLapTime(posObj2.timestamp), 120 * 1000, "LapTime");
+        strictEqual(Hayate.RunRecord.getSplitTime(), 120 * 1000, "1st SplitTime");
+        strictEqual(Hayate.RunRecord.getLapTime(), 120 * 1000, "1st LapTime");
     
         var posObj3 = {
             timestamp: posObj2.timestamp + (130 * 1000),
@@ -61,53 +64,47 @@ asyncTest( "timestamp and distance", 16, function() {
             }
         };      
         
-        Hayate.RunRecord.onNewRecord(posObj3);
+        Hayate.RunRecord.onNewPosition(posObj3);
     
         distance = Hayate.RunRecord.getDistance();
         strictEqual(Math.ceil(distance), 1216, "calculated distance: " + distance);
         
-        strictEqual(Hayate.RunRecord.getSplitTime(posObj3.timestamp), 250 * 1000, "SplitTime");
-        strictEqual(Hayate.RunRecord.getLapTime(posObj3.timestamp), 0 * 1000, "LapTime");
+        strictEqual(Hayate.RunRecord.getSplitTime(), 250 * 1000, "2nd SplitTime");
+        strictEqual(Hayate.RunRecord.getLapTime(), 0 * 1000, "2nd LapTime");
         
     }
     function timestampOnly() {
         ok(Hayate.Recorder !== 'undefined');
     
-        Hayate.Config.set(["geolocation", "autoLap", "on"], false);
+        Hayate.Config.set(["geolocation", "autoLap", "on"], "off");
     
         Hayate.RunRecord.init();
     
-        var posObj = {
-            timestamp: Date.now()
-        };
-        Hayate.RunRecord.onNewRecord(posObj);
+        var startTime = Date.now();
+        Hayate.RunRecord.onNewTime(startTime);
         
         var distance;
         distance = Hayate.RunRecord.getDistance();
         strictEqual(distance, 0, "Started just now");
     
-        var posObj2 = {
-            timestamp: posObj.timestamp + (120 * 1000)
-        };    
+        var secondTime = startTime + (120 * 1000);
     
-        Hayate.RunRecord.onNewRecord(posObj2);
+        Hayate.RunRecord.onNewTime(secondTime);
         distance = Hayate.RunRecord.getDistance();
         strictEqual(distance, 0, "No distance");
         
-        strictEqual(Hayate.RunRecord.getSplitTime(posObj2.timestamp), 120 * 1000, "1st SplitTime");
-        strictEqual(Hayate.RunRecord.getLapTime(posObj2.timestamp), 120 * 1000, "1st LapTime");
+        strictEqual(Hayate.RunRecord.getSplitTime(), 120 * 1000, "1st SplitTime");
+        strictEqual(Hayate.RunRecord.getLapTime(), 120 * 1000, "1st LapTime");
     
-        var posObj3 = {
-            timestamp: posObj2.timestamp + (130 * 1000)
-        };      
+        var thirdTime = secondTime + (130 * 1000);
         
-        Hayate.RunRecord.onNewRecord(posObj3);
+        Hayate.RunRecord.onNewTime(thirdTime);
     
         distance = Hayate.RunRecord.getDistance();
         strictEqual(distance, 0, "No distance");
         
-        strictEqual(Hayate.RunRecord.getSplitTime(posObj3.timestamp), 250 * 1000, "2nd SplitTime");
-        strictEqual(Hayate.RunRecord.getLapTime(posObj3.timestamp), 250 * 1000, "2nd LapTime");
+        strictEqual(Hayate.RunRecord.getSplitTime(), 250 * 1000, "2nd SplitTime");
+        strictEqual(Hayate.RunRecord.getLapTime(), 250 * 1000, "2nd LapTime");
         QUnit.start();
         
     }

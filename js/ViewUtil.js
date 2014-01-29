@@ -3,19 +3,28 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.Util = function() {
+Hayate.ViewUtil = function() {
 
     function init() {
         $("#confirm-dialog").popup();
+        $("#about-dialog").popup();
+
+        $("#open-about").on("tap", openAboutDialog);
     }
+
     function openConfirmDialog(txtTitle, txtMessage, txtButton, callback) {
+        
         $("#confirm-title").text(txtTitle);
         $("#confirm-message").text(txtMessage);
         $("#confirm-yes").text(txtButton);
+        $("#confirm-no").text(document.webL10n.get("no"));
     
         $("#confirm-yes").on("tap", callback);
 
         $("#confirm-dialog").popup("open");
+    }
+    function openAboutDialog() {
+        $("#about-dialog").popup("open");
     }
     function formatElapsedTime(msec) {
         var hour = ("0" + Math.floor(msec / (1000 * 60 * 60))).slice(-2);
@@ -37,6 +46,9 @@ Hayate.Util = function() {
     
     publicObj.init = function() {
         init();
+    };
+    publicObj.openAboutDialog = function() {
+        openAboutDialog();  
     };
     publicObj.openConfirmDialog = function(txtTitle, txtMessage, txtButton, callback) {
         openConfirmDialog(txtTitle, txtMessage, txtButton, callback);

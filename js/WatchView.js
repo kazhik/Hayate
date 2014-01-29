@@ -5,45 +5,69 @@ if (Hayate === undefined) {
 }
 Hayate.WatchView = function() {
 
-    function loadData(recArray) {
-        record.init();
-        for (var i = 0; i < recArray.length; i++) {
-            record.onNewRecord(recArray[i]);
-        }
-        updateLapAndSplit(recArray[recArray.length - 1].timestamp);
-        updateDistance();
-        
-    }
-    function updateLapAndSplit(timestamp) {
-        var splitTime = record.getSplitTime(timestamp);
-        $("#txtSplitTime").text(Hayate.Util.formatElapsedTime(splitTime));
-
-        var lapTime = record.getLapTime(timestamp);
-        $("#txtLapTime").text(Hayate.Util.formatElapsedTime(lapTime));
-    }
-    function updateDistance() {
-        // TODO: convert distance unit
-        var distance = record.getDistance();
-        $("#txtDistance").text(Math.ceil(distance));
-    }
-    function onNewRecord(newRec) {
-        if (Array.isArray(newRec)) {
-            loadData(newRec);
+    function updatePace(speed) {
+        if (speed === 0) {
             return;
         }
-        record.onNewRecord(newRec);
         
-        updateLapAndSplit(newRec.timestamp);
-        updateDistance();
-        // TODO: Pace
+        var ms; // milliseconds per km/mi
+        if (config["distanceUnit"] === "metre") {
+            // 5 metre / sec
+            ms = (1 / speed) * 1000 * 1000;
+        } else {
+            ms = (1 / speed) * 1609.344 * 1000;
+        }
+        $("#txtPace").text(Hayate.ViewUtil.formatElapsedTime(ms));
+    }
+    
+    function updateDistance(distance) {
+        var distanceStr = convertDistance(distance);
+        $("#txtDistance").text(distanceStr);
+    }
+    // convert metre to kilometre or mile
+    function convertDistance(distance) {
+        if (config["distanceUnit"] === "metre") {
+            return (distance / 1000).toFixed(2);
+        } else {
+            return (distance / 1609.344).toFixed(2);
+        }
+    }
+    function updateDistanceUnit() {
+        var distanceUnitStr;
+        if (config["distanceUnit"] === "metre") {
+            distanceUnitStr = document.webL10n.get("distance-unit-kilometre");
+        } else {
+            distanceUnitStr = document.webL10n.get("distance-unit-mile");
+        }
+        if (distanceUnitStr !== $("#lblDistanceUnit").text()) {
+            updateDistance(distance);
+            $("#txtPace").text("00:00");
+        }
+        $("#lblDistanceUnit").text(distanceUnitStr);
+        $("#lblPaceUnit").text(distanceUnitStr);
+        
+    }
+    function updateSplitTime(splitTime) {
+        $("#txtSplitTime").text(Hayate.ViewUtil.formatElapsedTime(splitTime));
+    }
+    function updateLapTime(lapTime) {
+        $("#txtLapTime").text(Hayate.ViewUtil.formatElapsedTime(lapTime));
+    }
+
+    function onNewRecord(newRec) {
+        updateSplitTime(newRec.splitTime);
+        updateLapTime(newRec.lapTime);
+        updateDistance(newRec.distance);
+        updatePace(newRec.speed);
+        
+        distance = newRec.distance;
     }
     function onTapStart() {
-        record.init();
         recorder.start();
         $("#btnStart").text(document.webL10n.get("stop"));
         status.Start = "started";
         
-        if (config["autoLap"]["on"] === false) {
+        if (config["autoLap"]["on"] === "off") {
             $("#btnLap").text(document.webL10n.get("lap"));
             $("#btnLap").button("enable");
             status.Lap = "lap";
@@ -73,32 +97,23 @@ Hayate.WatchView = function() {
             onTapStop();
         }
     }
-    function addLaptime(latestTime) {
-        var laptime = record.getLapTime(latestTime);
-        
-        $("#txtLapTime").text(Hayate.Util.formatElapsedTime(laptime));
-
-        Hayate.LapsView.addLaptime(latestTime, laptime);
-        
-    }
     function onTapReset() {
         $("#btnLap").button("disable");
         status.Lap = "disabled";
         
-        record.init();
         $("#txtSplitTime").text("00:00:00");
         $("#txtLapTime").text("00:00:00");
         $("#txtDistance").text("0");
+        $("#txtPace").text("00:00");
 
         $('#datetimeList').children().remove('li');
         $('#laptimeList').children().remove('li');
         
     }
-    function onTapLap() {
-        var now = Date.now();
-        addLaptime(now);
 
-        record.addLap(now);
+    function onTapLap() {
+        recorder.lap();
+//        $("#txtLapTime").text(Hayate.ViewUtil.formatElapsedTime(laptime));
     }
     function onTapLapReset() {
         // lap -> lap
@@ -110,10 +125,10 @@ Hayate.WatchView = function() {
         }
     }
     function localize() {
-        $("#btnStart").html(document.webL10n.get("start"));
-        $("#btnLap").html(document.webL10n.get("reset"));
-        $("#lblDistanceUnit").html(document.webL10n.get("distance-unit-metre"));
+        $("#btnStart").text(document.webL10n.get("start"));
+        $("#btnLap").text(document.webL10n.get("reset"));
         
+        updateDistanceUnit();
     }
     
     function initUI() {
@@ -128,6 +143,7 @@ Hayate.WatchView = function() {
         console.log("WatchView onPageShow");
         config = Hayate.Config.get(["geolocation"]);
         
+        updateDistanceUnit();
     }
     
     function init() {
@@ -146,17 +162,15 @@ Hayate.WatchView = function() {
         config = Hayate.Config.get(["geolocation"]);
         
         recorder = Hayate.Recorder;
-        recorder.addListener(onNewRecord);
-        
-        record = Hayate.RunRecord;
-        record.init();
+        recorder.addTimeListener(onNewRecord);
         
         initUI();
+        localize();
         
         $("#Stopwatch").on("pageshow", onPageShow);
         
     }
-    var record;
+    var distance = 0;
     var recorder;
 
     var status = {
@@ -169,9 +183,7 @@ Hayate.WatchView = function() {
     publicObj.init = function() {
         init();
     };
-    publicObj.localize = function() {
-        localize();
-    }
+
     
     return publicObj;
 }();

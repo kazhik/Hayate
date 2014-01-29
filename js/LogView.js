@@ -11,15 +11,6 @@ Hayate.LogView = function() {
         $("#logList").listview().listview("refresh");
         $("#delete-log").on("tap", clearLog);
 
-        $("#panel-menu")
-            .append($("<li/>")
-            .append($("<a/>", {
-                "href": "#Log",
-                "id": "open-log",
-                "text": "Log"
-                })))
-            .listview("refresh");
-
         initLog();
     }
     function initLog() {
@@ -31,7 +22,7 @@ Hayate.LogView = function() {
             };
             Hayate.Database.add("ConsoleLog", log);
 
-            var logmsg = Hayate.Util.formatTime(log.timestamp) + " " + message;
+            var logmsg = Hayate.ViewUtil.formatTime(log.timestamp) + " " + message;
             $("#logList")
                 .append($("<li/>")
                     .append(logmsg))
@@ -48,7 +39,13 @@ Hayate.LogView = function() {
             Hayate.Database.clear("ConsoleLog");
             $('#logList').children().remove('li');
         }
-        Hayate.Util.openConfirmDialog("Clear log", "Are you sure to clear log?", "Clear", onConfirm);
+
+        Hayate.ViewUtil.openConfirmDialog(
+            document.webL10n.get("clear-log-title"),
+            document.webL10n.get("clear-log-message"),
+            document.webL10n.get("clear"),
+            onConfirm);
+
 
     }
     

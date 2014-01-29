@@ -56,6 +56,7 @@ Hayate.Map = function() {
             map.fitBounds(bounds);
             google.maps.event.addListenerOnce(map, "idle", onIdle);
         }
+
     }
     function clearRoute() {
         var newPath = new google.maps.Polyline({
@@ -85,7 +86,10 @@ Hayate.Map = function() {
             mapMarker.setPosition(newPosition);
             mapCircle.setCenter(newPosition);
             mapCircle.setRadius(currentCoords.accuracy);
-            drawNewRoute(newPosition);
+            
+            if (newPosition.started) {
+                drawNewRoute(newPosition);
+            }
         }
         
         prevPosition = newPosition;
@@ -141,7 +145,6 @@ Hayate.Map = function() {
     }
     
     function init() {
-
         if (typeof prevPosition !== "undefined") {
             return;
         }
@@ -178,8 +181,7 @@ Hayate.Map = function() {
     var prevPosition;
     var bounds = null;
     var config;
-
-    window.addEventListener('message', receiveMessage, false);
+    window.addEventListener("message", receiveMessage, false);
 
     return publicObj;
 }();

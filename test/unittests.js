@@ -262,7 +262,7 @@ asyncTest( "database: config", 3, function() {
                 "distanceInterval": 10
             },
             "autoLap": {
-                "on": true,
+                "on": "on",
                 "distance": 1000
             },
             "distanceUnit": "metre"
@@ -272,7 +272,7 @@ asyncTest( "database: config", 3, function() {
             "longitude": 139.851058,
             "zoom": 16
         },
-        "debug": true
+        "debug": "on"
     };
     var config2 = {
         "appname": "Hayate",

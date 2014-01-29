@@ -167,7 +167,7 @@ Hayate.Database = function() {
         return dfd.promise();
 
     };
-    publicObj.getSummary = function (osname, itemArray) {
+    publicObj.getItemList = function (osname, itemArray) {
         var resultList = [];
         
         var onTranError = function() {
@@ -239,29 +239,41 @@ Hayate.Database = function() {
         return dfd.promise();
 
     };
-    publicObj.addItem = function(osname, keyValue, itemName, itemValue) {
-        var onError = function(err) {
-            dfd.reject(err);
-        };
-        var onGetSuccess = function (result) {
-            var onPutSuccess = function() {
-                dfd.resolve();    
-            };
-            result[itemName].push(itemValue);
-            publicObj.put(osname, result)
-                .done(onPutSuccess)
-                .fail(onError);
-        };
-        
-        var dfd = new $.Deferred();
- 
-        publicObj.get(osname, keyValue)
-            .done(onGetSuccess)
-            .fail(onError);
-        
-        return dfd.promise();        
-    };
 
+    publicObj.addItem = function(osname, keyValue, itemName, itemValue) {
+        var onComplete = function() {
+            dfd.resolve();    
+        };
+        var onTranError = function() {
+            dfd.reject(tran.error);
+        };
+        var onError = function() {
+            dfd.reject(request.error);
+        };
+        var onGetSuccess = function () {
+            var getResult = request.result;            
+            getResult[itemName].push(itemValue);
+            
+            request = os.put(getResult);
+            request.onsuccess = onPutSuccess;
+        };
+        var onPutSuccess = function () {
+        };
+        var dfd = new $.Deferred();
+        
+        var tran = db.transaction([osname], "readwrite");
+        tran.oncomplete = onComplete;
+        tran.onerror = onTranError;
+
+        var os = tran.objectStore(osname);
+        var request = os.get(keyValue);
+        
+        request.onsuccess = onGetSuccess;
+        request.onerror = onError;
+        return dfd.promise();
+
+    };
+    
     
     return publicObj;
 }();

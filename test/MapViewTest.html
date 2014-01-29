@@ -14,6 +14,14 @@
     <script src="../js/MapView.js"></script>
     <script src="../js/Recorder.js"></script>
     <script src="MapViewTest.js"></script>
+    <style type="text/css">
+      #map-iframe {
+          border-width: 0px;
+          margin: 0px;
+          background: #555;
+          width: 100%;
+      }      
+    </style>
   </head>
   <body>
     
@@ -22,13 +30,7 @@
     <input type="file" id="select-file"> 
 
       <div data-role="content" id="map-content" data-theme="b">	
-        <iframe id="map-iframe"
-          src="http://kazhik.net/test/"
-          width="100%"
-          marginwidth="0"
-          marginheight="0"
-          frameborder="no"
-          scrolling="yes">
+        <iframe id="map-iframe">
         </iframe>
           
       </div><!-- /content -->

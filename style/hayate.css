@@ -21,10 +21,12 @@
     white-space:normal;
 }
 
-
+#map-content {
+    padding: 0px;
+}
 #map-iframe {
-    border-width: 1px;
-    border-color: #333;
-    background: #FFF;
-    border-style: solid;    
+    border-width: 0px;
+    margin: 0px;
+    background: #555;
+    width: 100%;
 }

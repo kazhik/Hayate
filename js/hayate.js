@@ -6,22 +6,20 @@ if (typeof Hayate === "undefined") {
 
 Hayate.start = function() {
     function initUI() {
+        Hayate.ViewUtil.init();        
         
         // Panel
-        $("#LeftPanel").panel();
-        $("#panel-menu").listview().listview("refresh");
-        
         Hayate.LogView.init();
         Hayate.StorageView.init();
         Hayate.ConfigView.init();
         Hayate.RecordsView.init();
+        Hayate.PanelView.init();
 
         // Main Tabs
         Hayate.WatchView.init();
         Hayate.MapView.init();
         Hayate.LapsView.init();
 
-        Hayate.Util.init();        
         
     }
     function startApp() {
@@ -35,9 +33,7 @@ Hayate.start = function() {
     function onFail(e) {
         console.log(e);
     }
-    function onLocalized() {
-        Hayate.WatchView.localize();
-    }
+
     
     function preventAppQuit() {
         if (window.navigator) {
@@ -46,6 +42,19 @@ Hayate.start = function() {
                 window.navigator.requestWakeLock("cpu");
             }
         }        
+    }
+    function localize() {
+        function onLocalized() {
+            dfd.resolve();    
+            
+        }
+        var dfd = new $.Deferred();
+    
+        // https://bugzilla.mozilla.org/show_bug.cgi?id=882592
+        window.addEventListener("localized", onLocalized, false);
+            
+        return dfd.promise();
+        
     }
     
     if (typeof Hayate.Config === "undefined") {
@@ -88,15 +97,21 @@ Hayate.start = function() {
         console.log("Hayate.LapsView undefined");
         return;
     }
+    if (typeof Hayate.PanelView === "undefined") {
+        console.log("Hayate.PanelView undefined");
+        return;
+    }
+    if (typeof Hayate.ViewUtil === "undefined") {
+        console.log("Hayate.ViewUtil undefined");
+        return;
+    }
     
     preventAppQuit();
 
-    // https://bugzilla.mozilla.org/show_bug.cgi?id=882592
-    window.addEventListener("localized", onLocalized, false);
     
     var dbInfo = {
         name: "Hayate",
-        version: 12,
+        version: 14,
         objStore: [
             {
                 name: "Config",
@@ -114,12 +129,12 @@ Hayate.start = function() {
     };
     
     Hayate.Database.open(dbInfo)
+        .then(localize)
         .then(Hayate.Config.load)
         .done(startApp)
         .fail(onFail);
 
     
 };
-
 $(document).on("pagecreate", "#Stopwatch", Hayate.start);
 

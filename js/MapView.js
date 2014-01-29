@@ -58,13 +58,13 @@ Hayate.MapView = function() {
             return content_height;
         }
         function onPageShow(e, data) {
-            console.log("onPageShow: " + getRealContentHeight());
-            config = Hayate.Config.get(["map"]);
+//            config = Hayate.Config.get(["map"]);
+            console.log("MapView onPageShow: " + getRealContentHeight());
             $('#map-iframe').height(getRealContentHeight());
 
+            var mapIframe = document.getElementById("map-iframe");
                 
             var msg = {};
-            var mapIframe = document.getElementById("map-iframe");
             msg.type = "view";
             mapIframe.contentWindow.postMessage(JSON.stringify(msg), '*');
         
@@ -72,7 +72,7 @@ Hayate.MapView = function() {
         function onLoadMap() {
             var mapIframe = document.getElementById("map-iframe");
             config.type = "init";
-            
+            console.log("MapView onLoadMap: " + mapIframe.src);
             mapIframe.contentWindow.postMessage(JSON.stringify(config), '*');
             
         }
@@ -87,7 +87,9 @@ Hayate.MapView = function() {
         }
         config = Hayate.Config.get(["map"]);
         
-        Hayate.Recorder.addListener(onPosition);
+        Hayate.Recorder.addPositionListener(onPosition);
+
+        $("#map-iframe").attr("src", config["url"]);
         
         $("#Map").on("pageshow", onPageShow);
         $("#map-iframe").on("load", onLoadMap);

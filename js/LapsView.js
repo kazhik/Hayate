@@ -6,18 +6,18 @@ if (Hayate === undefined) {
 Hayate.LapsView = function() {
 
     function init() {
-        
         $("#datetimeList").listview().listview("refresh");
         $("#laptimeList").listview().listview("refresh");
         
+        Hayate.Recorder.addLapListener(onNewLap);
     }
-    function addLaptime(latestTime, laptime) {
-        var strTime = Hayate.Util.formatTime(latestTime);
+    function onNewLap(newLap) {
+        var strTime = Hayate.ViewUtil.formatTime(newLap.timestamp);
         $("#datetimeList").append($("<li/>")
             .append(strTime))
             .listview("refresh");
 
-        var strLap = Hayate.Util.formatElapsedTime(laptime);
+        var strLap = Hayate.ViewUtil.formatElapsedTime(newLap.laptime);
         $("#laptimeList").append($("<li/>")
             .append(strLap))
             .listview("refresh");
@@ -28,8 +28,6 @@ Hayate.LapsView = function() {
     publicObj.init = function() {
         init();
     };
-    publicObj.addLaptime = function(latestTime, laptime) {
-        addLaptime(latestTime, laptime);
-    }
+
     return publicObj;
 }();

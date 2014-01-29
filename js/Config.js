@@ -14,17 +14,19 @@ Hayate.Config = function() {
                 "distanceInterval": 10
             },
             "autoLap": {
-                "on": true,
+                "on": "on",
                 "distance": 1000
             },
-            "distanceUnit": "metre"
+            "distanceUnit": "mile"
         },
         "map": {
+//            "url": "http://map-kazhik.rhcloud.com/gmap.html",
+            "url": "http://kazhik.net/test/gmap.html",
             "latitude": 35.693134,
             "longitude": 139.851058,
             "zoom": 16
         },
-        "debug": true
+        "debug": "on"
     };
     
     var publicObj = {};
@@ -45,11 +47,12 @@ Hayate.Config = function() {
             return;
         }
         var conf = config;
-        for (var i = 0; i < keys.length; i++) {
+        for (var i = 0; i < keys.length - 1; i++) {
             conf = conf[keys[i]];
         }
         conf[keys[keys.length - 1]] = value;
     };
+
     publicObj.save = function(newConfig) {
         var onSuccess = function () {
             dfd.resolve();
@@ -83,7 +86,8 @@ Hayate.Config = function() {
         Hayate.Database.get("Config", "Hayate")
             .done(onSuccess)
             .fail(onError);
-        
+
+        return dfd.promise();        
     };
     
     return publicObj;
