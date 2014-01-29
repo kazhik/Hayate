@@ -140,6 +140,12 @@ Hayate.WatchView = function() {
         
     }
     function onPageShow() {
+        if (Hayate.Config.get(["debug"]) === "on") {
+            $("#message").show();
+        } else {
+            $("#message").hide();
+        }
+
         console.log("WatchView onPageShow");
         config = Hayate.Config.get(["geolocation"]);
         

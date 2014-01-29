@@ -21,8 +21,6 @@ Hayate.start = function() {
 
         if (Hayate.Config.get(["debug"]) === "on") {
             Hayate.LogView.init();
-        } else {
-            $("#message").hide();
         }
         
     }
