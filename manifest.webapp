@@ -14,12 +14,6 @@
           "developer": {
             "url": "https://github.com/kazhik"
           }
-        },
-        "es": {
-            "description": "For runners",
-            "developer": {
-              "url": "https://github.com/kazhik"
-            }
         }
     },
     "type": "privileged",    
