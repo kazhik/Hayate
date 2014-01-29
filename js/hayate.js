@@ -9,7 +9,6 @@ Hayate.start = function() {
         Hayate.ViewUtil.init();        
         
         // Panel
-        Hayate.LogView.init();
         Hayate.StorageView.init();
         Hayate.ConfigView.init();
         Hayate.RecordsView.init();
@@ -20,6 +19,11 @@ Hayate.start = function() {
         Hayate.MapView.init();
         Hayate.LapsView.init();
 
+        if (Hayate.Config.get(["debug"]) === "on") {
+            Hayate.LogView.init();
+        } else {
+            $("#message").hide();
+        }
         
     }
     function startApp() {
@@ -27,7 +31,7 @@ Hayate.start = function() {
 
         initUI();
         
-        $("#message").text("Hayate started");
+        console.log("Hayate started");
         
     }
     function onFail(e) {

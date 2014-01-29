@@ -5,9 +5,6 @@ if (Hayate === undefined) {
 }
 Hayate.LogView = function() {
     function init() {
-        if (Hayate.Config.get(["debug"]) === false) {
-            return;
-        }
         $("#logList").listview().listview("refresh");
         $("#delete-log").on("tap", clearLog);
 
