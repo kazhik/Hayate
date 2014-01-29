@@ -28,17 +28,25 @@ Hayate.ConfigView = function() {
     }
     function onOpen() {
         var config = Hayate.Config.get([]);
-        $("#select-min-accurary").val(config["geolocation"]["min"]["accuracy"].toString());
-        $("#select-min-alt-accuracy").val(config["geolocation"]["min"]["altAccuracy"].toString());
-        $("#select-min-time-interval").val(config["geolocation"]["min"]["timeInterval"].toString());
-        $("#select-min-distance-interval").val(config["geolocation"]["min"]["distanceInterval"].toString());
-        $("#flip-autolap").val(config["geolocation"]["autoLap"]["on"]).slider("refresh");
+        $("#select-min-accurary").val(config["geolocation"]["min"]["accuracy"].toString())
+            .selectmenu( "refresh" );
+        $("#select-min-alt-accuracy").val(config["geolocation"]["min"]["altAccuracy"].toString())
+            .selectmenu( "refresh" );
+        $("#select-min-time-interval").val(config["geolocation"]["min"]["timeInterval"].toString())
+            .selectmenu( "refresh" );
+        $("#select-min-distance-interval").val(config["geolocation"]["min"]["distanceInterval"].toString())
+            .selectmenu("refresh");
+        $("#flip-autolap").val(config["geolocation"]["autoLap"]["on"])
+            .slider("refresh");
         $("#input-autolap-distance").val(config["geolocation"]["autoLap"]["distance"].toString());
-        $("#select-distance-unit").val(config["geolocation"]["distanceUnit"]);
+        $("#select-distance-unit").val(config["geolocation"]["distanceUnit"])
+            .selectmenu( "refresh" );
 
-        $("#select-zoom").val(config["map"]["zoom"].toString());
+        $("#select-zoom").val(config["map"]["zoom"].toString())
+            .selectmenu( "refresh" );
 
-        $("#flip-debug").val(config["debug"]).slider("refresh");
+        $("#flip-debug").val(config["debug"])
+            .slider("refresh");
     }
     function init() {
         $("#flip-autolap").slider();
