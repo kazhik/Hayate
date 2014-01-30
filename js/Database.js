@@ -4,6 +4,43 @@ if (Hayate === undefined) {
     var Hayate = {};
 }
 Hayate.Database = function() {
+    function executeCommand(osname, command, args) {
+        var osCommand = {
+            "add": function() {
+                return os.add(args[0]);
+            },
+            "put": function() {
+                return os.put(args[0]);
+            },
+            "clear": function() {
+                return os.clear();
+            }
+        };
+
+        var onTranError = function() {
+            dfd.reject(tran.error);
+        };
+        var onComplete = function() {
+            dfd.resolve();
+        };
+        var onError = function() {
+            dfd.reject(request.error);
+        };
+
+        var dfd = new $.Deferred();
+        
+        var tran = db.transaction([osname], "readwrite");
+        tran.oncomplete = onComplete;
+        tran.onerror = onTranError;
+        
+        var os = tran.objectStore(osname);
+        var request = osCommand[command](args);
+        
+        request.onerror = onError;
+        return dfd.promise();
+        
+    }
+
     var db;
     var publicObj = {};
 
@@ -19,7 +56,7 @@ Hayate.Database = function() {
         request.onsuccess = onSuccess;
         request.onerror = onError;
         return dfd.promise();
-    }
+    };
     publicObj.open = function (dbInfo) {
         var onSuccess = function () {
             db = request.result;
@@ -69,50 +106,13 @@ Hayate.Database = function() {
 
     };
     
-    function executeCommand(osname, command, args) {
-        var osCommand = {
-            "add": function() {
-                return os.add(args[0]);
-            },
-            "put": function() {
-                return os.put(args[0]);
-            },
-            "clear": function() {
-                return os.clear();
-            }
-        };
-
-        var onTranError = function() {
-            dfd.reject(tran.error);
-        };
-        var onComplete = function() {
-            dfd.resolve();
-        };
-        var onError = function() {
-            dfd.reject(request.error);
-        };
-
-        var dfd = new $.Deferred();
-        
-        var tran = db.transaction([osname], "readwrite");
-        tran.oncomplete = onComplete;
-        tran.onerror = onTranError;
-        
-        var os = tran.objectStore(osname);
-        var request = osCommand[command](args);
-        
-        request.onerror = onError;
-        return dfd.promise();
-        
-    }
-
     publicObj.add = function (osname, data) {
         return executeCommand(osname, "add", [data]);
-    }
+    };
 
     publicObj.put = function (osname, data) {
         return executeCommand(osname, "put", [data]);
-    }
+    };
     
     publicObj.clear = function (osname) {
         return executeCommand(osname, "clear");
