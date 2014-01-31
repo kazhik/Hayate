@@ -1,8 +1,8 @@
 
 asyncTest( "Recorder", 3, function() {
     function initialized() {
-        test1();
-//        test2();
+//        test1();
+        test2();
 
     }
     function test1() {

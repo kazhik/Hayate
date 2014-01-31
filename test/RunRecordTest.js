@@ -11,7 +11,7 @@ asyncTest( "timestamp and distance", 16, function() {
         Hayate.Config.set(["geolocation", "autoLap", "on"], "on");
         Hayate.Config.set(["geolocation", "autoLap", "distance"], 1000);
         
-        Hayate.RunRecord.init();
+        Hayate.RunRecord.init(Date.now());
     
         var posObj = {
             timestamp: Date.now(),
@@ -25,7 +25,7 @@ asyncTest( "timestamp and distance", 16, function() {
                 speed: null
             }
         };
-        Hayate.RunRecord.onNewPosition(posObj);
+        Hayate.RunRecord.setCurrentPosition(posObj);
         
         var distance;
         distance = Hayate.RunRecord.getDistance();
@@ -44,7 +44,7 @@ asyncTest( "timestamp and distance", 16, function() {
             }
         };    
     
-        Hayate.RunRecord.onNewPosition(posObj2);
+        Hayate.RunRecord.setCurrentPosition(posObj2);
         distance = Hayate.RunRecord.getDistance();
         strictEqual(Math.ceil(distance), 608, "calculated distance: " + distance);
         
@@ -64,7 +64,7 @@ asyncTest( "timestamp and distance", 16, function() {
             }
         };      
         
-        Hayate.RunRecord.onNewPosition(posObj3);
+        Hayate.RunRecord.setCurrentPosition(posObj3);
     
         distance = Hayate.RunRecord.getDistance();
         strictEqual(Math.ceil(distance), 1216, "calculated distance: " + distance);
@@ -78,10 +78,10 @@ asyncTest( "timestamp and distance", 16, function() {
     
         Hayate.Config.set(["geolocation", "autoLap", "on"], "off");
     
-        Hayate.RunRecord.init();
+        Hayate.RunRecord.init(Date.now());
     
         var startTime = Date.now();
-        Hayate.RunRecord.onNewTime(startTime);
+        Hayate.RunRecord.setCurrentTime(startTime);
         
         var distance;
         distance = Hayate.RunRecord.getDistance();
@@ -89,7 +89,7 @@ asyncTest( "timestamp and distance", 16, function() {
     
         var secondTime = startTime + (120 * 1000);
     
-        Hayate.RunRecord.onNewTime(secondTime);
+        Hayate.RunRecord.setCurrentTime(secondTime);
         distance = Hayate.RunRecord.getDistance();
         strictEqual(distance, 0, "No distance");
         
@@ -98,7 +98,7 @@ asyncTest( "timestamp and distance", 16, function() {
     
         var thirdTime = secondTime + (130 * 1000);
         
-        Hayate.RunRecord.onNewTime(thirdTime);
+        Hayate.RunRecord.setCurrentTime(thirdTime);
     
         distance = Hayate.RunRecord.getDistance();
         strictEqual(distance, 0, "No distance");

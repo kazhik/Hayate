@@ -72,10 +72,9 @@ Hayate.Config = function() {
     }
     publicObj.load = function() {
         var onSuccess = function (result) {
-            if (typeof result === "undefined") {
-                return;
+            if (typeof result !== "undefined") {
+                config = result;
             }
-            config = result;
             dfd.resolve();
         };
         var onError = function(err) {

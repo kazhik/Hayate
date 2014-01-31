@@ -78,8 +78,8 @@ Hayate.Recorder = function() {
     function callPositionListeners(newPosition) {
         callListeners(positionListeners, newPosition);
     }
-    function callTimeListeners(newTimestamp) {
-        callListeners(timeListeners, newTimestamp);
+    function callTimeListeners(newRec) {
+        callListeners(timeListeners, newRec);
     }
     function callLapListeners(newLap) {
         callListeners(lapListeners, newLap);
@@ -91,16 +91,14 @@ Hayate.Recorder = function() {
             lapTime: record.getLapTime(),
             speed: record.getSpeed(),
             distance: record.getDistance()
-        }
+        };
         callTimeListeners(newRec);
     }
-    function lap() {
-        var now = Date.now();
-
-        var lapTime = record.addLap(now);
+    function lap(timestamp) {
+        var lapTime = record.addLap(timestamp);
         
         var newLap = {
-            timestamp: now,
+            timestamp: timestamp,
             laptime: lapTime
         };
         callLapListeners(newLap);
@@ -224,6 +222,28 @@ Hayate.Recorder = function() {
         Hayate.Database.add(objStoreName, data);
 
     }
+    function loadRecord(rec) {
+        if (rec["Position"].length > 0) {
+            callPositionListeners(result["Position"]);
+            var positions = rec["Position"];
+            for (var i = 0; i < positions.length; i++) {
+                record.setCurrentPosition(positions[i]);
+            }
+        }
+        
+        var laptimes = rec["LapTimes"];
+        for (var i = 0; i < laptimes.length; i++) {
+            lap(laptimes[i]);
+        }
+        
+        var timeRec = {
+            splitTime: record.getSplitTime(),
+            lapTime: record.getLapTime(),
+            speed: 0,
+            distance: record.getDistance()
+        };
+        callTimeListeners(timeRec);
+    }
     function load(startTime) {
         function onFail(err) {
             console.log(err.name + "(" + err.message + ")" );
@@ -232,7 +252,8 @@ Hayate.Recorder = function() {
             if (typeof result === "undefined") {
                 return;
             }
-            callPositionListeners(result["Position"]);
+            loadRecord(result);
+
         }
         
         if (db === null) {
@@ -280,7 +301,7 @@ Hayate.Recorder = function() {
         clear();
     }
     publicObj.stop = function() {
-        lap();
+        lap(Date.now());
         clearInterval(intervalId);
         intervalId = 0;
         
@@ -288,7 +309,7 @@ Hayate.Recorder = function() {
         
     };
     publicObj.lap = function() {
-        lap();
+        lap(Date.now());
     };
     
     publicObj.addPositionListener = function(listener) {

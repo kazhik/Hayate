@@ -168,7 +168,11 @@ Hayate.RunRecord = function() {
         return laptimes[0].timestamp;
     }
     publicObj.getLaps = function() {
-        return laptimes;  
+        var times = [];
+        for (var i = 0; i < laptimes.length; i++) {
+            times.push(laptimes[i].timestamp);
+        }
+        return times;  
     };
     publicObj.getDistance = function() {
         return realDistance;
