@@ -8,6 +8,9 @@ Hayate.StorageView = function() {
     function onPageShow() {
         function onSuccess() {
             var file = cursor.result;
+            if (file === null) {
+                return;
+            }
             
             if (file.name.match(/\.gpx$/) !== null &&
                 typeof files[file.name] === "undefined") {
@@ -20,11 +23,7 @@ Hayate.StorageView = function() {
             }
         }
         function onError() {
-            if (cursor.error.name === "NotFoundError") {
-                alert("No files found in " + GPX_FOLDER);
-                return;
-            }
-            console.log("onError: " + cursor.error.name);
+            console.log("DeviceStorage enumerate: " + cursor.error.name);
         }
 	    files = {};
         $("#importSourceList").children().remove("li");
