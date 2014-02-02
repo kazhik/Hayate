@@ -124,28 +124,7 @@ Hayate.WatchView = function() {
             onTapReset();
         }
     }
-    function onTapExport() {
-        function onWriteComplete(err) {
-            if (err) {
-                console.log("Failed to write " + filename + ":" + err.name);
-            }
-            
-        }
-        // Open Confirm dialog
-        // enter name, desc, type and filename
-        
-        // make Gpx file
-        var recInfo = {
-            name: "track name",
-            desc: "track description",
-            type: "track type"
-        };
-        var file = recorder.makeGpxFileObject(recInfo);
-        
-        // write file
-        var filename = "abc.gpx";
-        Hayate.Storage.writeFile(file, filename, onWriteComplete);
-    }
+
     
     function localize() {
         $("#btnStart").text(document.webL10n.get("start"));
@@ -161,7 +140,6 @@ Hayate.WatchView = function() {
         $("#btnStart").on("tap", onTapStartStop);
         $("#btnLap").on("tap", onTapLapReset);
         
-        $("#Export").on("tap", onTapExport);
     }
     function onPageShow() {
         if (Hayate.Config.get(["debug"]) === "on") {

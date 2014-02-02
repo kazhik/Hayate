@@ -5,16 +5,13 @@ if (Hayate === undefined) {
 }
 Hayate.GeopositionConverter = function() {
     function makeGpxFileObject(positions, trackName, trackDesc, trackType) {
-		function makeCDATA(str) {
-			return "<![CDATA[" + str + "]]>";
-		}
-		function createTextElement(name, text) {
+		function createCDATAElement(name, text) {
 			var element = gpxDoc.createElement(name);
-			var textNode = gpxDoc.createTextNode(makeCDATA(text));
+			var textNode = gpxDoc.createCDATASection(text);
 			element.appendChild(textNode);
 			return element;
 		}
-		function createValueElement(name, text) {
+		function createTextElement(name, text) {
 			var element = gpxDoc.createElement(name);
 			var textNode = gpxDoc.createTextNode(text);
 			element.appendChild(textNode);
@@ -24,9 +21,9 @@ Hayate.GeopositionConverter = function() {
         var gpxDoc = document.implementation.createDocument(null, "gpx", null);
         
         var trkElement = gpxDoc.createElement("trk");
-        trkElement.appendChild(createTextElement("name", trackName));
-        trkElement.appendChild(createTextElement("desc", trackDesc));
-        trkElement.appendChild(createTextElement("type", trackType));
+        trkElement.appendChild(createCDATAElement("name", trackName));
+        trkElement.appendChild(createCDATAElement("desc", trackDesc));
+        trkElement.appendChild(createCDATAElement("type", trackType));
         
         var trkSeg = gpxDoc.createElement("trkseg");
         for (var i = 0; i < positions.length; i++) {
@@ -34,9 +31,9 @@ Hayate.GeopositionConverter = function() {
             trkPt.setAttribute("lat", positions[i].coords.latitude);
             trkPt.setAttribute("lon", positions[i].coords.longitude);
             
-			trkPt.appendChild(createValueElement("ele",
+			trkPt.appendChild(createTextElement("ele",
 				positions[i].coords.altitude));
-			trkPt.appendChild(createValueElement("time",
+			trkPt.appendChild(createTextElement("time",
 				new Date(positions[i].timestamp).toISOString()));
             
             trkSeg.appendChild(trkPt);

@@ -56,7 +56,7 @@ Hayate.Storage = function() {
         
     }
 
-    function exists(filename, onDone) {
+    function checkIfFileExists(filename, onDone) {
         function onSuccess() {
             onDone(null);
         }
@@ -106,7 +106,10 @@ Hayate.Storage = function() {
     };
     publicObj.writeFile = function(file, filename, onDone) {
         writeFile(file, filename, onDone);
-    }
+    };
+    publicObj.checkIfFileExists = function(filename, onDone) {
+        checkIfFileExists(filename, onDone);  
+    };
 
    
     return publicObj;

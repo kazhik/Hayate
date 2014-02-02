@@ -123,10 +123,6 @@ Hayate.Recorder = function() {
         // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
         positionHistory.length = 0;
     }
-    function makeGpxFileObject(recInfo) {
-        return Hayate.GeopositionConverter.makeGpxFileObject(positionHistory, recInfo);
-        
-    }
 	function importGpxFile(file) {
         function onFinished(recInfo, positions) {
             if (positions.length === 0) {
@@ -182,25 +178,41 @@ Hayate.Recorder = function() {
         };
         callTimeListeners(timeRec);
     }
-    function load(startTime) {
+    function loadData(startTime, onLoad) {
         function onFail(err) {
             console.log(err.name + "(" + err.message + ")" );
         }
         function onGet(result) {
-            if (typeof result === "undefined") {
-                return;
-            }
-            loadRecord(result);
-
+            onLoad(result);
         }
         
         if (db === null) {
+            console.log("Invalid state: db is null");
             return;
         }
 
         Hayate.Database.get("GeoLocation", startTime)
             .done(onGet)
             .fail(onFail);
+        
+    }
+    function makeGpxFileObject(startTime, recInfo, onDone) {
+        
+        function onLoad(result) {
+            var file = Hayate.GeopositionConverter.makeGpxFileObject(result["Position"], recInfo);
+            onDone(file);
+        }
+        loadData(startTime, onLoad);
+    }
+
+    function load(startTime) {
+        function onLoad(result) {
+            if (typeof result === "undefined") {
+                return;
+            }
+            loadRecord(result);
+        }
+        loadData(startTime, onLoad);
         
     }
     var watchId = 0;
@@ -272,8 +284,8 @@ Hayate.Recorder = function() {
     publicObj.importGpxFile = function(file) {
         importGpxFile(file);
     };
-    publicObj.makeGpxFileObject = function(recInfo) {
-        return makeGpxFileObject(recInfo);  
+    publicObj.makeGpxFileObject = function(startTime, recInfo, onDone) {
+        makeGpxFileObject(startTime, recInfo, onDone);  
     };
     publicObj.load = function(startTime) {
         load(startTime);  

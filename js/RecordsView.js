@@ -42,6 +42,44 @@ Hayate.RecordsView = function() {
         Hayate.Recorder.load(selectedStartTime);
     }
     function onTapholdRecord() {
+        var selectedStartTime = parseInt($(this).find("a").attr("id"), 10);
+        
+        exportRecord(selectedStartTime);
+
+    }
+    function exportRecord(startTime) {
+        function onWriteComplete(err) {
+            if (err) {
+                console.log("Failed to write " + filename + ": " + err.name);
+            }
+        }
+        function onGpxFile(file) {
+            Hayate.Storage.writeFile(file, filename, onWriteComplete);
+            
+        }
+        function makeFilename(startTime) {
+            var datetime = new Date(startTime);
+            
+            return datetime.toISOString().replace(/\D/g, "") + ".gpx";
+        }
+        function onCheckResult(result) {
+            if (result === null || result.name !== "NotFoundError") {
+                console.log("File check error(" + filename + "): "  + result.name);
+                return;
+            }
+            // TODO: User should be able to modify metadata
+            var metadata = {
+                name: Hayate.ViewUtil.formatDateTime(startTime),
+                desc: "",
+                type: ""
+            };
+            Hayate.Recorder.makeGpxFileObject(startTime, metadata, onGpxFile);
+            
+        }
+        
+        var filename = makeFilename(startTime);
+        Hayate.Storage.checkIfFileExists(filename, onCheckResult);
+        
     }
     function clearAll() {
         function onConfirm() {
