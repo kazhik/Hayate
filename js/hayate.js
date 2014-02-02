@@ -26,6 +26,7 @@ Hayate.start = function() {
     }
     function startApp() {
         Hayate.Recorder.init();
+        Hayate.Storage.init();
 
         initUI();
         

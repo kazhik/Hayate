@@ -123,117 +123,55 @@ Hayate.Recorder = function() {
         // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
         positionHistory.length = 0;
     }
-	function importTrackPoint(idx) {
-        var posJson = {
-            timestamp: Date.parse($(this).find("time").text()),
-            coords: {
-                latitude: parseFloat($(this).attr("lat")),
-                longitude: parseFloat($(this).attr("lon")),
-                altitude: parseInt($(this).find("ele").text(), 10),
-                accuracy: 1,
-                altitudeAccuracy: 1,
-                heading: null,
-                speed: null
-            }
-        };
-        positionHistory.push(posJson);		
-	}
-    
-    function makeCDATA(str) {
-        return "<![CDATA[" + str + "]]>";
-    }
-    function exportGpxFile(trackName, trackDesc, trackType) {
-        var gpxDoc = document.implementation.createDocument(null, "gpx", null);
+    function makeGpxFileObject(recInfo) {
+        return Hayate.GeopositionConverter.makeGpxFileObject(positionHistory, recInfo);
         
-        var trkElement = gpxDoc.createElement("trk");
-        
-        var trkName = gpxDoc.createElement("name");
-        var trkNameText = gpxDoc.createTextNode(makeCDATA(trackName));
-        trkName.appendChild(trkNameText);
-        trkElement.appendChild(trkName);
-
-        var trkDesc = gpxDoc.createElement("desc");
-        var trkDescText = gpxDoc.createTextNode(makeCDATA(trackDesc));
-        trkDesc.appendChild(trkDescText);
-        trkElement.appendChild(trkDesc);
-
-        var trkType = gpxDoc.createElement("type");
-        var trkTypeText = gpxDoc.createTextNode(makeCDATA(trackType));
-        trkType.appendChild(trkTypeText);
-        trkElement.appendChild(trkType);
-        
-        var trkSeg = gpxDoc.createElement("trkseg");
-        for (var i = 0; i < positionHistory.length; i++) {
-            var trkPt = gpxDoc.createElement("trkpt");
-            trkPt.setAttribute("lat", positionHistory[i].coords.latitude);
-            trkPt.setAttribute("lon", positionHistory[i].coords.longitude);
-            
-            var trkEle = gpxDoc.createElement("ele");
-            var trkEleText = gpxDoc.createTextNode(positionHistory[i].coords.altitude);
-            trkEle.appendChild(trkEleText);
-            trkPt.appendChild(trkEle);
-
-            var trkTime = gpxDoc.createElement("time");
-            var trkTimestamp = new Date(positionHistory[i].timestamp);
-            var trkTimeText = gpxDoc.createTextNode(trkTimestamp.toISOString());
-            trkTime.appendChild(trkTimeText);
-            trkPt.appendChild(trkTime);
-            
-            trkSeg.appendChild(trkPt);
-        }
-        trkElement.appendChild(trkSeg);
-        
-        gpxDoc.appendChild(trkElement);
-        
-        var gpxStr = new XMLSerializer().serializeToString(gpxDoc); 
-        
-        return new Blob([gpxStr], {type: "text/xml"});
     }
 	function importGpxFile(file) {
-        function onLoaded() {
-            var $xml = $($.parseXML(reader.result));
+        function onFinished(recInfo, positions) {
+            if (positions.length === 0) {
+                return;
+            }
+            positionHistory = positions;
+            callPositionListeners(positions);
             
-            $xml.find("trkseg").children().each(importTrackPoint);
-			finishImport();
+            if (db === null) {
+                return;
+            }
+   
+            var data = {
+                StartTime: positions[0].timestamp,
+                Position: positions,
+                LapTimes: [positions[0].timestamp, positions[positions.length - 1].timestamp]
+            };
+
+            if (typeof recInfo["Name"] !== "undefined") {
+                data.Name = recInfo["Name"];
+            }
+            
+            Hayate.Database.add(objStoreName, data);
 
         }
 		stop();
 		clear();
-		
-        var reader = new FileReader();
-        reader.readAsText(file);
-        
-        reader.onloadend = onLoaded;
+        Hayate.GeopositionConverter.importGpxFile(file, onFinished);
 		
 	}
 
-    function finishImport() {
-        callPositionListeners(positionHistory);
-        
-        if (db === null) {
-            return;
-        }
-
-        var data = {
-            StartTime: positionHistory[0].timestamp,
-            Position: positionHistory
-        };
-        
-        Hayate.Database.add(objStoreName, data);
-
-    }
     function loadRecord(rec) {
-        if (rec["Position"].length > 0) {
-            callPositionListeners(result["Position"]);
-            var positions = rec["Position"];
-            for (var i = 0; i < positions.length; i++) {
-                record.setCurrentPosition(positions[i]);
-            }
-        }
-        
         var laptimes = rec["LapTimes"];
+        record.init(laptimes[0]);
         for (var i = 0; i < laptimes.length; i++) {
             lap(laptimes[i]);
+        }
+        
+        
+        if (rec["Position"].length > 0) {
+            positionHistory = rec["Position"];
+            callPositionListeners(positionHistory);
+            for (var i = 0; i < positionHistory.length; i++) {
+                record.setCurrentPosition(positionHistory[i]);
+            }
         }
         
         var timeRec = {
@@ -299,7 +237,7 @@ Hayate.Recorder = function() {
     };
     publicObj.clear = function() {
         clear();
-    }
+    };
     publicObj.stop = function() {
         lap(Date.now());
         clearInterval(intervalId);
@@ -334,8 +272,8 @@ Hayate.Recorder = function() {
     publicObj.importGpxFile = function(file) {
         importGpxFile(file);
     };
-    publicObj.exportGpxFile = function(name, desc, type) {
-        return exportGpxFile(name, desc, type);  
+    publicObj.makeGpxFileObject = function(recInfo) {
+        return makeGpxFileObject(recInfo);  
     };
     publicObj.load = function(startTime) {
         load(startTime);  

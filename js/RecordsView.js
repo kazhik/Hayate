@@ -10,7 +10,7 @@ Hayate.RecordsView = function() {
         for (var i = 0; i < result.length && i < result.length < 4; i++) {
             var startTime = result[i]["StartTime"];
             var startTimeStr = Hayate.ViewUtil.formatDateTime(startTime);
-            var recordName = result["Name"];
+            var recordName = result[i]["Name"];
             if (typeof recordName === "undefined") {
                 recordName = startTimeStr;
             }
@@ -34,12 +34,14 @@ Hayate.RecordsView = function() {
             .done(onGetItemList)
             .fail(onFail);
     }
-    function onSelectRecord() {
+    function onTapRecord() {
         var selectedStartTime = parseInt($(this).find("a").attr("id"), 10);
 
     	$.mobile.back();
         
         Hayate.Recorder.load(selectedStartTime);
+    }
+    function onTapholdRecord() {
     }
     function clearAll() {
         function onConfirm() {
@@ -58,7 +60,8 @@ Hayate.RecordsView = function() {
     function init() {
         $("#recordList").listview().listview("refresh");
 
-        $("#recordList").on("tap", "li", onSelectRecord)
+        $("#recordList").on("tap", "li", onTapRecord);
+        $("#recordList").on("taphold", "li", onTapholdRecord);
 
         $("#clear-allrecords").on("tap", clearAll);
         

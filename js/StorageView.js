@@ -4,92 +4,47 @@ if (Hayate === undefined) {
     var Hayate = {};
 }
 Hayate.StorageView = function() {
-    var GPX_FOLDER = "Apps/hayate/gpx";
-    function onPageShow() {
-        function onSuccess() {
-            var file = cursor.result;
-            if (file === null) {
-                return;
-            }
-            
-            if (file.name.match(/\.gpx$/) !== null &&
-                typeof files[file.name] === "undefined") {
 
-                addToList(file);
-            }
-            
-            if (!cursor.done) {
-                cursor.continue();
-            }
-        }
-        function onError() {
-            console.log("DeviceStorage enumerate: " + cursor.error.name);
-        }
-	    files = {};
-        $("#importSourceList").children().remove("li");
-        
-        var cursor = storage.enumerate(GPX_FOLDER);
-        cursor.onsuccess = onSuccess;
-        cursor.onerror = onError;
-        
-    }
-    function addToList(f) {
-        function onLoaded() {
-			/* Too slow.
-            var $xml = $($.parseXML(reader.result));
-            
-            var trackName = $xml.find("trk").find("name").text();
-			*/
-			
-			var matchResult = reader.result.match(/<trk>\n<name>(.*)<\/name>/);
-			var matchCData = matchResult[1].match(/<!\[CDATA\[(.*)\]\]>/);
-			var trackName;
-			if (matchCData === null) {
-				trackName = matchResult[1];
-			} else {
-				trackName = matchCData[1];
-			}
-           
+    function onFileList(gpxFiles) {
+        function getTrackNameCallback(filename, trackname) {
+
             $("#importSourceList")
                 .append($("<li/>")
                 .append($("<a/>", {
-					"href": "#",
-					"data-filename": f.name,
-					"text": trackName
-					})))
-                .listview("refresh");
-            files[f.name] = f;
+                    "href": "#",
+                    "data-filename": filename,
+                    "text": trackname
+                    })));
+            $("#importSourceList").listview("refresh");
+            
         }
-        var reader = new FileReader();
-        reader.readAsText(f);
-        
-        reader.onloadend = onLoaded;
+        files = gpxFiles;
+        var keys = Object.keys(gpxFiles);
+        for (var i = 0; i < keys.length; i++) {
+            
+            Hayate.Storage.getTrackName(gpxFiles[keys[i]], getTrackNameCallback);
+            
+        }
+    }
+    function onPageShow() {
+        $("#importSourceList").children().remove("li");
+        Hayate.Storage.getGpxFiles(onFileList);
         
     }
+
 	function onSelectListItem() {
-		var file = files[$(this).attr("data-filename")];
-		Hayate.Recorder.importGpxFile(file);
+		var selectedFile = files[$(this).attr("data-filename")];
+		Hayate.Recorder.importGpxFile(selectedFile);
 					
 		$.mobile.back();
 	}
     
     var publicObj = {};
-	var storage;
     var files = {};
-	
-	if (navigator.getDeviceStorage) {
-	    storage = navigator.getDeviceStorage("sdcard");
-	}
     
     publicObj.init = function() {
-		if (!navigator.getDeviceStorage) {
-			return;
-		}
-		
         $("#Import").on("pageshow", onPageShow);
-		
-		$("#importSourceList").on("tap", "li a", onSelectListItem);
-		
+        $("#importSourceList").on("tap", "li a", onSelectListItem);		
     };
    
     return publicObj;
