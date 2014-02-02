@@ -20,8 +20,7 @@ Hayate.Config = function() {
             "distanceUnit": "mile"
         },
         "map": {
-//            "url": "http://map-kazhik.rhcloud.com/gmap.html",
-            "url": "http://kazhik.net/test/gmap.html",
+            "url": "http://kazhik.github.io/Hayate/map/gmap.html",
             "latitude": 35.693134,
             "longitude": 139.851058,
             "zoom": 16
