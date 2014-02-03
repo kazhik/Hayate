@@ -40,11 +40,7 @@ Hayate.Database = function() {
         return dfd.promise();
         
     }
-
-    var db;
-    var publicObj = {};
-
-    publicObj.deleteDatabase = function (dbname) {
+    function deleteDatabase(dbname) {
         var onSuccess = function () {
             dfd.resolve();
         };
@@ -56,8 +52,8 @@ Hayate.Database = function() {
         request.onsuccess = onSuccess;
         request.onerror = onError;
         return dfd.promise();
-    };
-    publicObj.open = function (dbInfo) {
+    }
+    function open(dbInfo) {
         var onSuccess = function () {
             db = request.result;
             dfd.resolve();
@@ -103,22 +99,8 @@ Hayate.Database = function() {
         request.onupgradeneeded = onUpgradeNeeded;
         request.onerror = onError;
         return dfd.promise();
-
-    };
-    
-    publicObj.add = function (osname, data) {
-        return executeCommand(osname, "add", [data]);
-    };
-
-    publicObj.put = function (osname, data) {
-        return executeCommand(osname, "put", [data]);
-    };
-    
-    publicObj.clear = function (osname) {
-        return executeCommand(osname, "clear");
-    };
-
-    publicObj.remove = function (osname, keyValue) {
+    }
+    function remove(osname, keyValue) {
         
         var onTranError = function() {
             dfd.reject(tran.error);
@@ -141,8 +123,8 @@ Hayate.Database = function() {
         request.onerror = onError;
         return dfd.promise();
 
-    };
-    publicObj.get = function (osname, keyValue) {
+    }
+    function get(osname, keyValue) {
         var results = [];
         
         var onTranError = function() {
@@ -166,8 +148,8 @@ Hayate.Database = function() {
         request.onerror = onError;
         return dfd.promise();
 
-    };
-    publicObj.getItemList = function (osname, itemArray) {
+    }
+    function getItemList(osname, itemArray) {
         var resultList = [];
         
         var onTranError = function() {
@@ -205,10 +187,10 @@ Hayate.Database = function() {
         request.onsuccess = onSuccess;
         request.onerror = onError;
         return dfd.promise();
+        
+    }
 
-    };
-
-    publicObj.getKeyList = function (osname) {
+    function getKeyList(osname) {
         var resultList = [];
         
         var onTranError = function() {
@@ -237,10 +219,9 @@ Hayate.Database = function() {
         request.onsuccess = onSuccess;
         request.onerror = onError;
         return dfd.promise();
+    }
 
-    };
-
-    publicObj.addItem = function(osname, keyValue, itemName, itemValue) {
+    function addItem(osname, keyValue, itemName, itemValue) {
         var onComplete = function() {
             dfd.resolve();    
         };
@@ -271,9 +252,41 @@ Hayate.Database = function() {
         request.onsuccess = onGetSuccess;
         request.onerror = onError;
         return dfd.promise();
+    }
 
+    var db;
+    var publicObj = {};
+
+    publicObj.deleteDatabase = function (dbname) {
+        return deleteDatabase(dbname);
     };
-    
+    publicObj.open = function (dbInfo) {
+        return open(dbInfo);
+    };
+    publicObj.add = function (osname, data) {
+        return executeCommand(osname, "add", [data]);
+    };
+    publicObj.put = function (osname, data) {
+        return executeCommand(osname, "put", [data]);
+    };
+    publicObj.clear = function (osname) {
+        return executeCommand(osname, "clear");
+    };
+    publicObj.remove = function (osname, keyValue) {
+        return remove(osname, keyValue);
+    };
+    publicObj.get = function (osname, keyValue) {
+        return get(osname, keyValue);
+    };
+    publicObj.getItemList = function (osname, itemArray) {
+        return getItemList(osname, itemArray);
+    };
+    publicObj.getKeyList = function (osname) {
+        return getKeyList(osname);
+    };
+    publicObj.addItem = function(osname, keyValue, itemName, itemValue) {
+        return addItem(osname, keyValue, itemName, itemValue);
+    };
     
     return publicObj;
 }();
