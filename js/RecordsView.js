@@ -44,6 +44,7 @@ Hayate.RecordsView = function() {
     function onTapholdRecord() {
         var selectedStartTime = parseInt($(this).find("a").attr("id"), 10);
         
+        // TODO: open context menu, edit/delete/export
         exportRecord(selectedStartTime);
 
     }

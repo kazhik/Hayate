@@ -37,7 +37,7 @@ Hayate.Storage = function() {
             
             var trackName = $xml.find("trk").find("name").text();
 			*/
-			var matchResult = reader.result.match(/<trk>\n<name>(.*)<\/name>/);
+			var matchResult = reader.result.match(/<trk>\n*<name>(.*)<\/name>/);
 			var matchCData = matchResult[1].match(/<!\[CDATA\[(.*)\]\]>/);
 			var trackName;
 			if (matchCData === null) {

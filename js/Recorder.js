@@ -123,14 +123,17 @@ Hayate.Recorder = function() {
         // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
         positionHistory.length = 0;
     }
-	function importGpxFile(file) {
+    function importGpxFile(file) {
         function onFinished(recInfo, positions) {
+            function onDone() {
+                loadRecord(data);
+            }
+            function onFail(err) {
+                console.log(err);
+            }
             if (positions.length === 0) {
                 return;
             }
-            positionHistory = positions;
-            callPositionListeners(positions);
-            
             if (db === null) {
                 return;
             }
@@ -140,27 +143,30 @@ Hayate.Recorder = function() {
                 Position: positions,
                 LapTimes: [positions[0].timestamp, positions[positions.length - 1].timestamp]
             };
-
             if (typeof recInfo["Name"] !== "undefined") {
                 data.Name = recInfo["Name"];
             }
-            
-            Hayate.Database.add(objStoreName, data);
+            Hayate.Database.add(objStoreName, data)
+                .done(onDone)
+                .fail(onFail);
 
         }
-		stop();
-		clear();
+        stop();
+        clear();
         Hayate.GeopositionConverter.importGpxFile(file, onFinished);
-		
-	}
+        
+    }
 
     function loadRecord(rec) {
+        var confAutoLap = Hayate.Config.get(["geolocation", "autoLap", "on"]);
+
+        Hayate.Config.set(["geolocation", "autoLap", "on"], "off");
+        
         var laptimes = rec["LapTimes"];
-        record.init(laptimes[0]);
+        record.init();
         for (var i = 0; i < laptimes.length; i++) {
             lap(laptimes[i]);
         }
-        
         
         if (rec["Position"].length > 0) {
             positionHistory = rec["Position"];
@@ -177,8 +183,10 @@ Hayate.Recorder = function() {
             distance: record.getDistance()
         };
         callTimeListeners(timeRec);
+        
+        Hayate.Config.set(["geolocation", "autoLap", "on"], confAutoLap);
     }
-    function loadData(startTime, onLoad) {
+    function loadFromDB(startTime, onLoad) {
         function onFail(err) {
             console.log(err.name + "(" + err.message + ")" );
         }
@@ -202,7 +210,7 @@ Hayate.Recorder = function() {
             var file = Hayate.GeopositionConverter.makeGpxFileObject(result["Position"], recInfo);
             onDone(file);
         }
-        loadData(startTime, onLoad);
+        loadFromDB(startTime, onLoad);
     }
 
     function load(startTime) {
@@ -212,7 +220,7 @@ Hayate.Recorder = function() {
             }
             loadRecord(result);
         }
-        loadData(startTime, onLoad);
+        loadFromDB(startTime, onLoad);
         
     }
     var watchId = 0;
@@ -244,7 +252,8 @@ Hayate.Recorder = function() {
     };
     publicObj.start = function() {
         clear();
-        record.init(Date.now());
+        record.init();
+        record.addLap(Date.now());
         intervalId = setInterval(onTimeout, 100);
     };
     publicObj.clear = function() {

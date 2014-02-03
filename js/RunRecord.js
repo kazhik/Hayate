@@ -106,7 +106,7 @@ Hayate.RunRecord = function() {
         }           
 
     }
-    function init(timestamp) {
+    function init() {
         if (typeof Hayate.Config === "undefined") {
             console.log("Config undefined");
             return;
@@ -117,8 +117,7 @@ Hayate.RunRecord = function() {
         prevCoords = undefined;
         laptimes.length = 0;
         realDistance = 0;
-        currentTime = timestamp;
-        addLap(timestamp, 0);
+        currentTime = 0;
 
     }
 
@@ -134,8 +133,8 @@ Hayate.RunRecord = function() {
     var publicObj = {};
     
     
-    publicObj.init = function(timestamp) {
-        init(timestamp);
+    publicObj.init = function() {
+        init();
     };
     publicObj.setCurrentPosition = function(newRec) {
         setCurrentPosition(newRec);
