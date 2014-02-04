@@ -13,18 +13,25 @@ Hayate.ViewUtil = function() {
     }
 
     function openConfirmDialog(txtTitle, txtMessage, txtButton, callback) {
-        
-        $("#confirm-title").text(txtTitle);
-        $("#confirm-message").text(txtMessage);
-        $("#confirm-yes").text(txtButton);
-        $("#confirm-no").text(document.webL10n.get("no"));
-    
-        $("#confirm-yes").on("tap", callback);
+        function onLoad() {
 
-        $("#confirm-dialog").popup("open");
+            $("#confirm-title").text(txtTitle);
+            $("#confirm-message").text(txtMessage);
+            $("#confirm-yes").text(txtButton);
+            $("#confirm-no").text(document.webL10n.get("no"));
+        
+            $("#confirm-yes").on("tap", callback);
+
+            $("#confirm-dialog").popup().popup("open");
+        }
+        $("#popup").load("confirm-dialog.html", onLoad);
     }
     function openAboutDialog() {
-        $("#about-dialog").popup("open");
+        function onLoad() {
+            $("#about-dialog").popup().popup("open");
+        }
+        
+        $("#popup").load("about-dialog.html", onLoad);
     }
     function formatElapsedTime(msec) {
         var hour = ("0" + Math.floor(msec / (1000 * 60 * 60))).slice(-2);

@@ -37,7 +37,7 @@ Hayate.RecordsView = function() {
     function onTapRecord() {
         var selectedStartTime = parseInt($(this).find("a").attr("id"), 10);
 
-    	$.mobile.back();
+        $.mobile.back();
         
         Hayate.Recorder.load(selectedStartTime);
     }
