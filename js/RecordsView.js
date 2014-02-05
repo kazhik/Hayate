@@ -30,6 +30,8 @@ Hayate.RecordsView = function() {
     }
     function onPageShow() {
         console.log("RecordsView onPageShow");
+        disableToolbarButtons();   
+
         Hayate.Database.getItemList("GeoLocation", ["Name"])
             .done(onGetItemList)
             .fail(onFail);
@@ -42,26 +44,38 @@ Hayate.RecordsView = function() {
         Hayate.Recorder.load(selectedStartTime);
     }
     function onTapholdRecord() {
-        var selectedStartTime = parseInt($(this).find("a").attr("id"), 10);
+        selected = parseInt($(this).find("a").attr("id"), 10);
         
-        // TODO: open context menu, edit/delete/export
-        exportRecord(selectedStartTime);
+        enableToolbarButtons();
 
     }
-    function exportRecord(startTime) {
+    function onTapEditRecord() {
+        console.log("Not implemented yet");
+        
+    }
+    function onTapDeleteRecord() {
+        function onConfirm() {
+            Hayate.Database.remove("GeoLocation", selected);
+            
+        }
+        Hayate.ViewUtil.openConfirmDialog(
+            document.webL10n.get("delete-record-title"),
+            document.webL10n.get("delete-record-message"),
+            document.webL10n.get("delete"),
+            onConfirm);
+        
+    }
+    function onTapExportRecord() {
         function onWriteComplete(err) {
             if (err) {
                 console.log("Failed to write " + filename + ": " + err.name);
+                return;
             }
+            Hayate.ViewUtil.toast("Exported to sdcard");
         }
         function onGpxFile(file) {
             Hayate.Storage.writeFile(file, filename, onWriteComplete);
             
-        }
-        function makeFilename(startTime) {
-            var datetime = new Date(startTime);
-            
-            return datetime.toISOString().replace(/\D/g, "") + ".gpx";
         }
         function onCheckResult(result) {
             if (result === null || result.name !== "NotFoundError") {
@@ -70,16 +84,35 @@ Hayate.RecordsView = function() {
             }
             // TODO: User should be able to modify metadata
             var metadata = {
-                name: Hayate.ViewUtil.formatDateTime(startTime),
+                name: Hayate.ViewUtil.formatDateTime(selectedStartTime),
                 desc: "",
                 type: ""
             };
-            Hayate.Recorder.makeGpxFileObject(startTime, metadata, onGpxFile);
+            Hayate.Recorder.makeGpxFileObject(selectedStartTime, metadata, onGpxFile);
             
         }
+        function makeFilename(startTime) {
+            var datetime = new Date(startTime);
+            
+            return datetime.toISOString().replace(/\D/g, "") + ".gpx";
+        }
         
-        var filename = makeFilename(startTime);
+        var selectedStartTime = selected;
+        
+        var filename = makeFilename(selectedStartTime);
         Hayate.Storage.checkIfFileExists(filename, onCheckResult);
+        
+    }
+    // http://stackoverflow.com/questions/6438659/how-to-disable-a-link-button-in-jquery-mobile
+    function enableToolbarButtons() {
+        $("#edit-record").removeClass("ui-disabled");
+        $("#delete-record").removeClass("ui-disabled");
+        $("#export-record").removeClass("ui-disabled");
+    }
+    function disableToolbarButtons() {
+        $("#edit-record").addClass("ui-disabled");
+        $("#delete-record").addClass("ui-disabled");
+        $("#export-record").addClass("ui-disabled");
         
     }
     function clearAll() {
@@ -102,10 +135,16 @@ Hayate.RecordsView = function() {
         $("#recordList").on("tap", "li", onTapRecord);
         $("#recordList").on("taphold", "li", onTapholdRecord);
 
+        $("#edit-record").on("tap", onTapEditRecord);
+        $("#delete-record").on("tap", onTapDeleteRecord);
+        $("#export-record").on("tap", onTapExportRecord);
+        
         $("#clear-allrecords").on("tap", clearAll);
         
         $("#Records").on("pageshow", onPageShow);
+     
     }
+    var selected;
     
     var publicObj = {};
     

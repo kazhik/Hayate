@@ -69,7 +69,11 @@ Hayate.ViewUtil = function() {
     publicObj.formatTime = function(msec) {
         return formatTime(msec);
     };
-    
+    publicObj.toast = function(message) {
+        // http://stackoverflow.com/questions/17723164/is-it-possible-to-create-an-android-style-toast-notification-using-html-css-ja
+        $(".message").text(message);
+        $(".message").fadeIn(500).delay(1000).fadeOut(1500);             
+    };
     
     return publicObj;
 }();

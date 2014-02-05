@@ -24,7 +24,9 @@ Hayate.start = function() {
         }
         
     }
-    function startApp() {
+   function startApp() {
+        $.event.special.tap.emitTapOnTaphold = false;
+        
         Hayate.Recorder.init();
         Hayate.Storage.init();
 

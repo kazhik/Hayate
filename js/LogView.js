@@ -24,8 +24,7 @@ Hayate.LogView = function() {
                 .append($("<li/>")
                     .append(logmsg))
                 .listview("refresh");            
-            
-            $("#message").text(message);
+
             consolelog.apply(console, arguments);
         };
         

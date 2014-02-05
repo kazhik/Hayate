@@ -83,8 +83,7 @@
     
       </div><!-- /content -->
       <div data-role="footer" data-position="fixed" data-theme="a">
-          <div data-role="content" id="message">
-            
+          <div data-role="content" class="message">
           </div>
           <div data-role="navbar">
             <ul>
@@ -164,13 +163,22 @@
         <a href="#" data-rel="back" data-icon="arrow-l" data-iconpos="notext">Back</a>
         <h1>Hayate</h1>
         <a href="#" id="clear-allrecords" data-icon="delete" data-iconpos="notext">Back</a>
+        <div data-role="navbar">
+            <ul>
+                <li><a href="#" id="edit-record" data-l10n-id="edit">EDIT</a></li>
+                <li><a href="#" id="delete-record" data-l10n-id="delete">DELETE</a></li>
+                <li><a href="#" id="export-record" data-l10n-id="export">EXPORT</a></li>
+            </ul>
+        </div>
       </div> 
 
       <div data-role="content" data-theme="a">
         <ul id="recordList" data-role="listview">
         </ul>          
       </div>
-        
+      <div data-role="footer" data-position="fixed" data-theme="a">
+          <div data-role="content" class="message"></div>
+      </div>
     </div>    
 
     <div data-role="page" id="Log" data-theme="a">
