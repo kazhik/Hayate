@@ -55,8 +55,11 @@ Hayate.RecordsView = function() {
     }
     function onTapDeleteRecord() {
         function onConfirm() {
-            Hayate.Database.remove("GeoLocation", selected);
-            
+            Hayate.Database.remove("GeoLocation", selected)
+                .then(Hayate.Database.getItemList.bind(null, "GeoLocation", ["Name"]))
+                .done(onGetItemList)
+                .fail(onFail);
+
         }
         Hayate.ViewUtil.openConfirmDialog(
             document.webL10n.get("delete-record-title"),

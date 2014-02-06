@@ -123,6 +123,10 @@ Hayate.Recorder = function() {
         // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
         positionHistory.length = 0;
     }
+    function stop() {
+        clearInterval(intervalId);
+        intervalId = 0;
+    }
     function importGpxFile(file) {
         function onFinished(recInfo, positions) {
             function onDone() {
@@ -198,7 +202,6 @@ Hayate.Recorder = function() {
             console.log("Invalid state: db is null");
             return;
         }
-
         Hayate.Database.get("GeoLocation", startTime)
             .done(onGet)
             .fail(onFail);
@@ -220,6 +223,8 @@ Hayate.Recorder = function() {
             }
             loadRecord(result);
         }
+        stop();
+        clear();
         loadFromDB(startTime, onLoad);
         
     }
@@ -261,8 +266,7 @@ Hayate.Recorder = function() {
     };
     publicObj.stop = function() {
         lap(Date.now());
-        clearInterval(intervalId);
-        intervalId = 0;
+        stop();
         
         storeRecord();
         
