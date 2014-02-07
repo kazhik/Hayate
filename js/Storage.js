@@ -32,19 +32,19 @@ Hayate.Storage = function() {
     }
     function getTrackName(f, callback) {
         function onLoaded() {
-			/* Too slow.
+            /* Too slow.
             var $xml = $($.parseXML(reader.result));
             
             var trackName = $xml.find("trk").find("name").text();
-			*/
-			var matchResult = reader.result.match(/<trk>\n*<name>(.*)<\/name>/);
-			var matchCData = matchResult[1].match(/<!\[CDATA\[(.*)\]\]>/);
-			var trackName;
-			if (matchCData === null) {
-				trackName = matchResult[1];
-			} else {
-				trackName = matchCData[1];
-			}
+            */
+            var matchResult = reader.result.match(/<trk>\n*<name>(.*)<\/name>/);
+            var matchCData = matchResult[1].match(/<!\[CDATA\[(.*)\]\]>/);
+            var trackName;
+            if (matchCData === null) {
+                trackName = matchResult[1];
+            } else {
+                trackName = matchCData[1];
+            }
             
             callback(f.name, trackName);
 
@@ -83,22 +83,22 @@ Hayate.Storage = function() {
     }
     
     var publicObj = {};
-	var storage;
+    var storage;
     var files = {};
-	
+    
     publicObj.init = function() {
-		if (!navigator.getDeviceStorage) {
-			return;
-		}
+        if (!navigator.getDeviceStorage) {
+            return;
+        }
         storage = navigator.getDeviceStorage("sdcard");
-		
+        
     };
     publicObj.getGpxFiles = function(onDone) {
         files = {};
-		if (!navigator.getDeviceStorage) {
+        if (!navigator.getDeviceStorage) {
             onDone(files);
-			return;
-		}
+            return;
+        }
         getGpxFiles(onDone);
     };
     publicObj.getTrackName = function(file, onDone) {
@@ -109,6 +109,26 @@ Hayate.Storage = function() {
     };
     publicObj.checkIfFileExists = function(filename, onDone) {
         checkIfFileExists(filename, onDone);  
+    };
+    
+    publicObj.checkIfAvailable = function() {
+        function onSuccess() {
+            if (request.result === "available") {
+                dfd.resolve();
+            } else {
+                dfd.reject(request.result);
+            }
+        }
+        function onError() {
+            dfd.reject(request.error);
+        }
+        var dfd = new $.Deferred();
+
+        var request = storage.available();
+        request.onsuccess = onSuccess;
+        request.onerror = onError;
+
+        return dfd.promise();
     };
 
    

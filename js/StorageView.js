@@ -27,24 +27,32 @@ Hayate.StorageView = function() {
         }
     }
     function onPageShow() {
+        function onUnavailable(err) {
+            console.warn("sdcard unavailable: " + err);
+            $.mobile.back();
+            Hayate.ViewUtil.toast("sdcard unavailable: " + err);
+        }
         $("#importSourceList").children().remove("li");
-        Hayate.Storage.getGpxFiles(onFileList);
         
+        console.log("StorageView onPageShow");
+        Hayate.Storage.checkIfAvailable()
+            .done(Hayate.Storage.getGpxFiles.bind(null, onFileList))
+            .fail(onUnavailable);
     }
 
-	function onSelectListItem() {
-		var selectedFile = files[$(this).attr("data-filename")];
-		Hayate.Recorder.importGpxFile(selectedFile);
-					
-		$.mobile.back();
-	}
+    function onSelectListItem() {
+        var selectedFile = files[$(this).attr("data-filename")];
+        Hayate.Recorder.importGpxFile(selectedFile);
+                    
+        $.mobile.back();
+    }
     
     var publicObj = {};
     var files = {};
     
     publicObj.init = function() {
         $("#Import").on("pageshow", onPageShow);
-        $("#importSourceList").on("tap", "li a", onSelectListItem);		
+        $("#importSourceList").on("tap", "li a", onSelectListItem);     
     };
    
     return publicObj;
