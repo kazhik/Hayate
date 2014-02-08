@@ -133,18 +133,19 @@ Hayate.Database = function() {
         var onError = function() {
             dfd.reject(request.error);
         };
-        var onSuccess = function () {
-            dfd.resolve(request.result);    
+        var onComplete = function() {
+            dfd.resolve(request.result);
         };
+        
         var dfd = new $.Deferred();
         
         var tran = db.transaction([osname], "readonly");
+        tran.oncomplete = onComplete;
         tran.onerror = onTranError;
 
         var os = tran.objectStore(osname);
         var request = os.get(keyValue);
         
-        request.onsuccess = onSuccess;
         request.onerror = onError;
         return dfd.promise();
 
@@ -160,25 +161,29 @@ Hayate.Database = function() {
         };
         var onSuccess = function (event) {
             var cursor = event.target.result;
-            if (cursor) {
-                var result = {};
-                result[os.keyPath] = cursor.value[os.keyPath];
-
-                for (var i = 0; i < itemArray.length; i++) {
-                    if (typeof cursor.value[itemArray[i]] === "undefined") {
-                        continue;
-                    }
-                    result[itemArray[i]] = cursor.value[itemArray[i]];
-                }
-                resultList.push(result);
-                cursor.continue();
-            } else {
-                dfd.resolve(resultList);    
+            if (!cursor) {
+                return;
             }
+            var result = {};
+            result[os.keyPath] = cursor.value[os.keyPath];
+
+            for (var i = 0; i < itemArray.length; i++) {
+                if (typeof cursor.value[itemArray[i]] === "undefined") {
+                    continue;
+                }
+                result[itemArray[i]] = cursor.value[itemArray[i]];
+            }
+            resultList.push(result);
+            cursor.continue();
         };
+        var onComplete = function() {
+            dfd.resolve(resultList);
+        };
+
         var dfd = new $.Deferred();
         
         var tran = db.transaction([osname], "readonly");
+        tran.oncomplete = onComplete;
         tran.onerror = onTranError;
 
         var os = tran.objectStore(osname);
@@ -204,13 +209,15 @@ Hayate.Database = function() {
             if (cursor) {
                 resultList.push(cursor.value[os.keyPath]);
                 cursor.continue();
-            } else {
-                dfd.resolve(resultList);    
             }
+        };
+        var onComplete = function() {
+            dfd.resolve(resultList);
         };
         var dfd = new $.Deferred();
         
         var tran = db.transaction([osname], "readonly");
+        tran.oncomplete = onComplete;
         tran.onerror = onTranError;
 
         var os = tran.objectStore(osname);
@@ -220,8 +227,18 @@ Hayate.Database = function() {
         request.onerror = onError;
         return dfd.promise();
     }
-
-    function addItem(osname, keyValue, itemName, itemValue) {
+    
+    function executeUpdateCommand(osname, command, keyValue, itemName, itemValue) {
+        var updateItemObj = {
+            "add": function(currentObj) {
+                currentObj[itemName].push(itemValue);
+                return currentObj;
+            },
+            "set": function(currentObj) {
+                currentObj[itemName] = itemValue;
+                return currentObj;
+            }
+        };
         var onComplete = function() {
             dfd.resolve();    
         };
@@ -232,10 +249,9 @@ Hayate.Database = function() {
             dfd.reject(request.error);
         };
         var onGetSuccess = function () {
-            var getResult = request.result;            
-            getResult[itemName].push(itemValue);
+            var newObj = updateItemObj[command](request.result);
             
-            request = os.put(getResult);
+            request = os.put(newObj);
             request.onsuccess = onPutSuccess;
         };
         var onPutSuccess = function () {
@@ -285,7 +301,10 @@ Hayate.Database = function() {
         return getKeyList(osname);
     };
     publicObj.addItem = function(osname, keyValue, itemName, itemValue) {
-        return addItem(osname, keyValue, itemName, itemValue);
+        return executeUpdateCommand(osname, "add", keyValue, itemName, itemValue);
+    };
+    publicObj.setItem = function(osname, keyValue, itemName, itemValue) {
+        return executeUpdateCommand(osname, "set", keyValue, itemName, itemValue);
     };
     
     return publicObj;

@@ -1,0 +1,24 @@
+
+<div data-role="popup"
+     id="edit-dialog"
+     data-overlay-theme="a"
+     data-theme="a"
+     data-dismissible="false">
+    <div data-role="header" data-theme="a">
+    <h1 data-l10n-id="edit-record-title">TITLE</h1>
+    </div>
+    <div role="main" class="ui-content">
+        <form>
+            <div class="ui-field-contain">
+                 <label for="record-name">RECORD NAME:</label>
+                 <input name="record-name" id="record-name" value="" type="text">
+            </div>
+        </form>
+        <a href="#" data-l10n-id="cancel"
+           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b"
+           data-rel="back">NO</a>
+        <a href="#" id="save" data-l10n-id="save"
+           class="ui-btn ui-corner-all ui-shadow ui-btn-inline ui-btn-b"
+           data-rel="back" data-transition="flow">YES</a>
+    </div>
+</div>

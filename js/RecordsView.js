@@ -50,8 +50,33 @@ Hayate.RecordsView = function() {
 
     }
     function onTapEditRecord() {
-        console.log("Not implemented yet");
+        function saveRecord() {
+            var recordName = $("#record-name").val();
+            
+            Hayate.Database.setItem("GeoLocation", selected, "Name", recordName);
+            
+        }
+        function onLoad(data) {
+            var recordName = data["Name"];
+            if (typeof recordName === "undefined") {
+                recordName = Hayate.ViewUtil.formatDateTime(selected)
+            }
+            $("#record-name").val(recordName);
         
+            $("#save").on("tap", saveRecord);
+
+            $("#edit-dialog").popup().popup("open");
+        }
+        function onGet(data) {
+            $("#popup").load("edit-dialog.html", onLoad.bind(null, data));
+            
+        }
+        function onFail(err) {
+            console.log("Failed to get record: " + err.name);
+        }
+        Hayate.Database.get("GeoLocation", selected)
+            .done(onGet)
+            .fail(onFail);
     }
     function onTapDeleteRecord() {
         function onConfirm() {
