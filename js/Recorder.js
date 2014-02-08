@@ -149,6 +149,8 @@ Hayate.Recorder = function() {
             };
             if (typeof recInfo["Name"] !== "undefined") {
                 data.Name = recInfo["Name"];
+                data.Type = recInfo["Type"];
+                data.Desc = recInfo["Desc"];
             }
             Hayate.Database.add(objStoreName, data)
                 .done(onDone)
@@ -190,30 +192,47 @@ Hayate.Recorder = function() {
         
         Hayate.Config.set(["geolocation", "autoLap", "on"], confAutoLap);
     }
-    function loadFromDB(startTime, onLoad) {
+    function loadFromDB(startTime) {
         function onFail(err) {
-            console.log(err.name + "(" + err.message + ")" );
+            dfd.reject(err.name + "(" + err.message + ")" );
         }
         function onGet(result) {
-            onLoad(result);
+            dfd.resolve(result);
         }
+        var dfd = new $.Deferred();
         
-        if (db === null) {
-            console.log("Invalid state: db is null");
-            return;
-        }
         Hayate.Database.get("GeoLocation", startTime)
             .done(onGet)
             .fail(onFail);
         
+        return dfd.promise();
     }
-    function makeGpxFileObject(startTime, recInfo, onDone) {
+    function makeGpxFileObject(startTime) {
         
         function onLoad(result) {
+            var recInfo = {};
+            if (typeof result["Name"] !== "undefined") {
+                recInfo.Name = result["Name"];
+                recInfo.Type = result["Type"];
+                recInfo.Desc = result["Desc"];
+            } else {
+                recInfo.Name = Hayate.ViewUtil.formatDateTime(startTime);
+                recInfo.Type = "";
+                recInfo.Desc = "";
+            }
             var file = Hayate.GeopositionConverter.makeGpxFileObject(result["Position"], recInfo);
-            onDone(file);
+            dfd.resolve(file);
         }
-        loadFromDB(startTime, onLoad);
+        function onError(err) {
+            dfd.reject("Failed to load record from DB: " + err);
+        }
+        var dfd = new $.Deferred();
+
+        loadFromDB(startTime)
+            .done(onLoad)
+            .fail(onError);
+
+        return dfd.promise();
     }
 
     function load(startTime) {
@@ -223,9 +242,14 @@ Hayate.Recorder = function() {
             }
             loadRecord(result);
         }
+        function onError(err) {
+            console.log(err);
+        }
         stop();
         clear();
-        loadFromDB(startTime, onLoad);
+        loadFromDB(startTime)
+            .done(onLoad)
+            .fail(onError);
         
     }
     var watchId = 0;
@@ -297,8 +321,8 @@ Hayate.Recorder = function() {
     publicObj.importGpxFile = function(file) {
         importGpxFile(file);
     };
-    publicObj.makeGpxFileObject = function(startTime, recInfo, onDone) {
-        makeGpxFileObject(startTime, recInfo, onDone);  
+    publicObj.makeGpxFileObject = function(startTime) {
+        return makeGpxFileObject(startTime);  
     };
     publicObj.load = function(startTime) {
         load(startTime);  

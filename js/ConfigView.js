@@ -79,14 +79,14 @@ Hayate.ConfigView = function() {
                 text: values[i] + " " + distanceUnitStr
             }));        
         }
-        values = [1, 10, 30, 60];
+        values = [1, 5, 10, 30, 60];
         for (i = 0; i < values.length; i++) {
             $('#select-min-time-interval').append($('<option>', {
                 value: values[i],
                 text: values[i] + " " + document.webL10n.get("seconds")
             }));        
         }
-        values = [1, 50, 100, 200];
+        values = [1, 5, 10, 50, 100];
         for (i = 0; i < values.length; i++) {
             $('#select-min-distance-interval').append($('<option>', {
                 value: values[i],

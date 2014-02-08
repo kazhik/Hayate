@@ -69,41 +69,27 @@ Hayate.RecordsView = function() {
         
     }
     function onTapExportRecord() {
-        function onWriteComplete(err) {
-            if (err) {
-                console.log("Failed to write " + filename + ": " + err.name);
-                return;
-            }
+        function onError(err) {
+            console.log(err);
+            Hayate.ViewUtil.toast(err);
+        }
+        function onWriteComplete() {
             Hayate.ViewUtil.toast("Exported to sdcard");
-        }
-        function onGpxFile(file) {
-            Hayate.Storage.writeFile(file, filename, onWriteComplete);
-            
-        }
-        function onCheckResult(result) {
-            if (result === null || result.name !== "NotFoundError") {
-                console.log("File check error(" + filename + "): "  + result.name);
-                return;
-            }
-            // TODO: User should be able to modify metadata
-            var metadata = {
-                name: Hayate.ViewUtil.formatDateTime(selectedStartTime),
-                desc: "",
-                type: ""
-            };
-            Hayate.Recorder.makeGpxFileObject(selectedStartTime, metadata, onGpxFile);
-            
         }
         function makeFilename(startTime) {
             var datetime = new Date(startTime);
             
             return datetime.toISOString().replace(/\D/g, "") + ".gpx";
         }
-        
         var selectedStartTime = selected;
         
         var filename = makeFilename(selectedStartTime);
-        Hayate.Storage.checkIfFileExists(filename, onCheckResult);
+        Hayate.Storage.fileNotFound(filename)
+            .then(Hayate.Storage.checkIfAvailable)
+            .then(Hayate.Recorder.makeGpxFileObject.bind(null, selectedStartTime))
+            .then(Hayate.Storage.writeFile.bind(null, filename))
+            .done(onWriteComplete)
+            .fail(onError);
         
     }
     // http://stackoverflow.com/questions/6438659/how-to-disable-a-link-button-in-jquery-mobile

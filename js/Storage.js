@@ -56,30 +56,41 @@ Hayate.Storage = function() {
         
     }
 
-    function checkIfFileExists(filename, onDone) {
+    function fileNotFound(filename) {
         function onSuccess() {
-            onDone(null);
+            dfd.reject("File Found");
         }
         function onError() {
-            onDone(request.error);
+            if (request.error.name === "NotFoundError") {
+                dfd.resolve();
+            } else {
+                dfd.reject("Failed to check if file exists: " + request.error.name);
+            }
         }
+        var dfd = new $.Deferred();
+
         var request = storage.get(filename);
         request.onsuccess = onSuccess;
         request.onerror = onError;
+
+        return dfd.promise();
+
     }
     
-    function writeFile(file, filename, onDone) {
+    function writeFile(file, filename) {
         function onSuccess() {
-            onDone(null);
+            dfd.resolve();
         }
         function onError() {
-            onDone(request.error);
+            dfd.reject("Failed to write " + filename + ": " + request.error.name);
         }
+        var dfd = new $.Deferred();
         
         var request = storage.addNamed(file, GPX_FOLDER + "/" + filename);
-        
         request.onsuccess = onSuccess;
         request.onerror = onError;
+
+        return dfd.promise();
     }
     
     var publicObj = {};
@@ -104,11 +115,11 @@ Hayate.Storage = function() {
     publicObj.getTrackName = function(file, onDone) {
         getTrackName(file, onDone);  
     };
-    publicObj.writeFile = function(file, filename, onDone) {
-        writeFile(file, filename, onDone);
+    publicObj.writeFile = function(filename, file) {
+        return writeFile(file, filename);
     };
-    publicObj.checkIfFileExists = function(filename, onDone) {
-        checkIfFileExists(filename, onDone);  
+    publicObj.fileNotFound = function(filename) {
+        return fileNotFound(filename);  
     };
     
     publicObj.checkIfAvailable = function() {
@@ -116,7 +127,7 @@ Hayate.Storage = function() {
             if (request.result === "available") {
                 dfd.resolve();
             } else {
-                dfd.reject(request.result);
+                dfd.reject("sdcard unavailable: " + request.result);
             }
         }
         function onError() {

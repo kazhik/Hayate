@@ -95,7 +95,7 @@ Hayate.GeopositionConverter = function() {
         importGpxFile(file, onFinished);
     };
     publicObj.makeGpxFileObject = function(positions, recInfo) {
-        return makeGpxFileObject(positions, recInfo.name, recInfo.desc, recInfo.type);  
+        return makeGpxFileObject(positions, recInfo.Name, recInfo.Desc, recInfo.Type);  
     };
 
     return publicObj;
