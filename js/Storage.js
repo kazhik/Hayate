@@ -5,12 +5,12 @@ if (Hayate === undefined) {
 }
 Hayate.Storage = function() {
     var GPX_FOLDER = "Apps/hayate/gpx";
-    function getGpxFiles(onDone) {
+    function getGpxFiles() {
         function onSuccess() {
             var file = cursor.result;
             if (!file) {
-                onDone(files);
-                return;
+                // https://bugzilla.mozilla.org/show_bug.cgi?id=902565
+                dfd.resolve(files);
             }
             
             if (file.name.match(/\.gpx$/i) !== null &&
@@ -22,13 +22,21 @@ Hayate.Storage = function() {
             cursor.continue();
         }
         function onError() {
-            console.log("DeviceStorage enumerate: " + cursor.error.name);
+            dfd.reject("DeviceStorage enumerate: " + cursor.error.name)
+        }
+        
+        var dfd = new $.Deferred();
+
+        if (!navigator.getDeviceStorage) {
+            dfd.reject("DeviceStorage API unavailable");
         }
 
+        files = {};
         var cursor = storage.enumerate(GPX_FOLDER);
         cursor.onsuccess = onSuccess;
         cursor.onerror = onError;
         
+        return dfd.promise();
     }
     function getTrackName(f, callback) {
         function onLoaded() {
@@ -104,13 +112,8 @@ Hayate.Storage = function() {
         storage = navigator.getDeviceStorage("sdcard");
         
     };
-    publicObj.getGpxFiles = function(onDone) {
-        files = {};
-        if (!navigator.getDeviceStorage) {
-            onDone(files);
-            return;
-        }
-        getGpxFiles(onDone);
+    publicObj.getGpxFiles = function() {
+        return getGpxFiles();
     };
     publicObj.getTrackName = function(file, onDone) {
         getTrackName(file, onDone);  

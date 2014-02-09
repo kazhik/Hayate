@@ -18,8 +18,14 @@ Hayate.StorageView = function() {
             $("#importSourceList").listview("refresh");
             
         }
+       
         files = gpxFiles;
         var keys = Object.keys(gpxFiles);
+        if (keys.length === 0) {
+            $.mobile.back();
+            Hayate.ViewUtil.toast("No file");
+            return;
+        }
         for (var i = 0; i < keys.length; i++) {
             
             Hayate.Storage.getTrackName(gpxFiles[keys[i]], getTrackNameCallback);
@@ -36,7 +42,8 @@ Hayate.StorageView = function() {
         
         console.log("StorageView onPageShow");
         Hayate.Storage.checkIfAvailable()
-            .done(Hayate.Storage.getGpxFiles.bind(null, onFileList))
+            .then(Hayate.Storage.getGpxFiles)
+            .done(onFileList)
             .fail(onUnavailable);
     }
 
