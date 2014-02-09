@@ -30,6 +30,9 @@ Hayate.RecordsView = function() {
     }
     function onPageShow() {
         console.log("RecordsView onPageShow");
+        initList();
+    }
+    function initList() {
         disableToolbarButtons();   
 
         Hayate.Database.getItemList("GeoLocation", ["Name"])
@@ -53,19 +56,35 @@ Hayate.RecordsView = function() {
         function saveRecord() {
             var recordName = $("#record-name").val();
             
-            Hayate.Database.setItem("GeoLocation", selected, "Name", recordName);
+            Hayate.Database.setItem("GeoLocation", selected, "Name", recordName)
+                .done(initList)
+                .fail(onFail);
             
         }
         function onLoad(data) {
+            function ignoreEnter(e) {
+                if ( e.which == 13 ) {
+                    e.preventDefault();
+                }
+            }
             var recordName = data["Name"];
             if (typeof recordName === "undefined") {
                 recordName = Hayate.ViewUtil.formatDateTime(selected)
             }
+            
+            $("#edit-record-title").text(document.webL10n.get("edit-record-title"));
+            $("#label-record-name").text(document.webL10n.get("record-name"));
+            $("#cancel").text(document.webL10n.get("cancel"));
+            $("#save").text(document.webL10n.get("save"));
+            
+            $("#record-name").textinput();
             $("#record-name").val(recordName);
         
             $("#save").on("tap", saveRecord);
 
             $("#edit-dialog").popup().popup("open");
+
+            $("#record-name").keypress(ignoreEnter);
         }
         function onGet(data) {
             $("#popup").load("edit-dialog.html", onLoad.bind(null, data));
