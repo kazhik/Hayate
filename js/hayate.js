@@ -33,7 +33,7 @@ Hayate.start = function() {
         initUI();
         
         console.log("Hayate started");
-        
+    
     }
     function onFail(e) {
         console.log(e);
@@ -41,12 +41,17 @@ Hayate.start = function() {
 
     
     function preventAppQuit() {
-        if (window.navigator) {
-            var ua = navigator.userAgent;
-            if (ua.match(/Mobile/) !== null && ua.match(/Mobile; rv/) === null) {
-                window.navigator.requestWakeLock("cpu");
-            }
-        }        
+        if (!window.navigator) {
+            return;
+        }
+        var ua = navigator.userAgent;
+        if (ua.match(/Mobile/) === null) {
+            return;
+        }
+        
+        // TODO: This API consumes CPU too much
+        // should be replaced if background service API is implemented
+        window.navigator.requestWakeLock("cpu");
     }
     function localize() {
         function onLocalized() {
@@ -112,8 +117,7 @@ Hayate.start = function() {
     }
     
     preventAppQuit();
-
-    
+        
     var dbInfo = {
         name: "Hayate",
         version: 14,
