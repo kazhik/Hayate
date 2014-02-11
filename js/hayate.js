@@ -39,20 +39,6 @@ Hayate.start = function() {
         console.log(e);
     }
 
-    
-    function preventAppQuit() {
-        if (!window.navigator) {
-            return;
-        }
-        var ua = navigator.userAgent;
-        if (ua.match(/Mobile/) === null) {
-            return;
-        }
-        
-        // TODO: This API consumes CPU too much
-        // should be replaced if background service API is implemented
-        window.navigator.requestWakeLock("cpu");
-    }
     function localize() {
         function onLocalized() {
             dfd.resolve();    
@@ -116,8 +102,6 @@ Hayate.start = function() {
         return;
     }
     
-    preventAppQuit();
-        
     var dbInfo = {
         name: "Hayate",
         version: 14,

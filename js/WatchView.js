@@ -63,6 +63,7 @@ Hayate.WatchView = function() {
         distance = newRec.distance;
     }
     function onTapStart() {
+        obtainCpuLock();
         recorder.start();
         $("#btnStart").text(document.webL10n.get("stop"));
         status.Start = "started";
@@ -77,6 +78,7 @@ Hayate.WatchView = function() {
         }
     }
     function onTapStop() {
+        releaseCpuLock();
         recorder.stop();
         $("#btnStart").text(document.webL10n.get("start"));
         status.Start = "stopped";
@@ -124,7 +126,25 @@ Hayate.WatchView = function() {
             onTapReset();
         }
     }
-
+    
+    // Prevents the system to quit this app
+    function obtainCpuLock() {
+        if (!window.navigator) {
+            return;
+        }
+        var ua = navigator.userAgent;
+        if (ua.match(/Mobile/) === null) {
+            return;
+        }
+        
+        // TODO: This API consumes CPU too much
+        // should be replaced with other way
+        lock = window.navigator.requestWakeLock("cpu");
+        
+    }
+    function releaseCpuLock() {
+        lock.unlock();
+    }
     
     function localize() {
         $("#btnStart").text(document.webL10n.get("start"));
@@ -172,6 +192,7 @@ Hayate.WatchView = function() {
         $("#Stopwatch").on("pageshow", onPageShow);
         
     }
+    var lock;
     var distance = 0;
     var recorder;
 
