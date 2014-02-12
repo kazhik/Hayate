@@ -138,9 +138,6 @@ Hayate.Recorder = function() {
             if (positions.length === 0) {
                 return;
             }
-            if (db === null) {
-                return;
-            }
    
             var data = {
                 StartTime: positions[0].timestamp,
@@ -151,6 +148,10 @@ Hayate.Recorder = function() {
                 data.Name = recInfo["Name"];
                 data.Type = recInfo["Type"];
                 data.Desc = recInfo["Desc"];
+            }
+            if (db === null) {
+                loadRecord(data);
+                return;
             }
             Hayate.Database.add(objStoreName, data)
                 .done(onDone)
