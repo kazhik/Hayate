@@ -87,7 +87,6 @@ Hayate.WatchView = function() {
         $("#btnLap").button("enable");
         status.Lap = "reset";
         
-        onTapLap();
     }
 
     function onTapStartStop() {
