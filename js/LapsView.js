@@ -10,6 +10,12 @@ Hayate.LapsView = function() {
         $("#laptimeList").listview().listview("refresh");
         
         Hayate.Recorder.addLapListener(onNewLap);
+
+        $("#Laps").on("pageshow", onPageShow);
+    }
+    function onPageShow() {
+        $('#datetimeList').height(Hayate.ViewUtil.getContentHeight());
+        $('#laptimeList').height(Hayate.ViewUtil.getContentHeight());
     }
     function onNewLap(newLap) {
         var strTime = Hayate.ViewUtil.formatTime(newLap.timestamp);

@@ -40,6 +40,7 @@ Hayate.StorageView = function() {
         }
         $("#importSourceList").children().remove("li");
         
+        $('#importSourceList').height(Hayate.ViewUtil.getContentHeight());
         console.log("StorageView onPageShow");
         Hayate.Storage.checkIfAvailable()
             .then(Hayate.Storage.getGpxFiles)

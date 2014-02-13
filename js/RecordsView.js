@@ -4,6 +4,7 @@ if (Hayate === undefined) {
     var Hayate = {};
 }
 Hayate.RecordsView = function() {
+
     function onGetItemList(result) {
         $('#recordList').children().remove('li');
 
@@ -23,6 +24,7 @@ Hayate.RecordsView = function() {
                     })))
                 .listview("refresh");
         }
+        $('#recordList').height(Hayate.ViewUtil.getContentHeight());
         
     }
     function onFail(err) {

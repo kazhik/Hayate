@@ -8,7 +8,11 @@ Hayate.LogView = function() {
         $("#logList").listview().listview("refresh");
         $("#delete-log").on("tap", clearLog);
 
+        $("#Log").on("pageshow", onPageShow);
         initLog();
+    }
+    function onPageShow() {
+        $('#logList').height(Hayate.ViewUtil.getContentHeight());
     }
     function initLog() {
         var consolelog = console.log;

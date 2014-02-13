@@ -33,6 +33,7 @@ Hayate.MapView = function() {
             newCoords.longitude === prevCoords.longitude) {
             return;
         }
+        console.log("new position: " + JSON.stringify(newPosition));
         newPosition.type = "position";
 
         var mapIframe = document.getElementById("map-iframe");
@@ -45,22 +46,8 @@ Hayate.MapView = function() {
         
     }
     function init() {
-        function getRealContentHeight() {
-            var header = $.mobile.activePage.find("div[data-role='header']:visible");
-            var footer = $.mobile.activePage.find("div[data-role='footer']:visible");
-            var content = $.mobile.activePage.find("div[data-role='content']:visible:visible");
-            var viewport_height = $(window).height();
-        
-            var content_height = viewport_height - header.outerHeight() - footer.outerHeight();
-            if((content.outerHeight() - header.outerHeight() - footer.outerHeight()) <= viewport_height) {
-                content_height -= (content.outerHeight() - content.height());
-            } 
-            return content_height;
-        }
         function onPageShow(e, data) {
-//            config = Hayate.Config.get(["map"]);
-            console.log("MapView onPageShow: " + getRealContentHeight());
-            $('#map-iframe').height(getRealContentHeight());
+            $('#map-iframe').height(Hayate.ViewUtil.getContentHeight());
 
             var mapIframe = document.getElementById("map-iframe");
                 

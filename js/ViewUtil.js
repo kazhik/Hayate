@@ -48,6 +48,44 @@ Hayate.ViewUtil = function() {
         var datetime = new Date(msec);
         return datetime.toLocaleTimeString(); 
     }
+    function getRealContentHeight() {
+        var header = $.mobile.activePage.find("div[data-role='header']:visible");
+        var headerFooterHeight = 0;
+        if (header.length > 0) {
+            headerFooterHeight += header.outerHeight();
+        }
+
+        var footer = $.mobile.activePage.find("div[data-role='footer']:visible");
+        if (footer.length > 0) {
+            headerFooterHeight += footer.outerHeight()
+        }
+
+        var viewportHeight = $(window).height();
+        var contentHeight = viewportHeight - headerFooterHeight;
+        
+        var content = $.mobile.activePage.find("div[data-role='content']:visible:visible");
+        if((content.outerHeight() - headerFooterHeight) <= viewportHeight) {
+            contentHeight -= (content.outerHeight() - content.height());
+        } 
+        return contentHeight;
+    }
+    function getContentHeight() {
+        var header = $.mobile.activePage.find("div[data-role='header']:visible");
+        var headerFooterHeight = 0;
+        if (header.length > 0) {
+            headerFooterHeight += header.outerHeight();
+        }
+
+        var footer = $.mobile.activePage.find("div[data-role='footer']:visible");
+        if (footer.length > 0) {
+            headerFooterHeight += footer.outerHeight()
+        }
+
+        var viewportHeight = $(window).height();
+        var contentHeight = viewportHeight - headerFooterHeight;
+        
+        return contentHeight;
+    }
     
     var publicObj = {};
     
@@ -73,6 +111,12 @@ Hayate.ViewUtil = function() {
         // http://stackoverflow.com/questions/17723164/is-it-possible-to-create-an-android-style-toast-notification-using-html-css-ja
         $(".message").text(message);
         $(".message").fadeIn(500).delay(1000).fadeOut(1500);             
+    };
+    publicObj.getRealContentHeight = function() {
+        return getRealContentHeight();    
+    };
+    publicObj.getContentHeight = function() {
+        return getContentHeight();    
     };
     
     return publicObj;
