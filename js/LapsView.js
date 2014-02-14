@@ -17,16 +17,28 @@ Hayate.LapsView = function() {
         $('#datetimeList').height(Hayate.ViewUtil.getContentHeight());
         $('#laptimeList').height(Hayate.ViewUtil.getContentHeight());
     }
-    function onNewLap(newLap) {
-        var strTime = Hayate.ViewUtil.formatTime(newLap.timestamp);
+
+    function addListviewItem(lapInfo) {
+        var strTime = Hayate.ViewUtil.formatTime(lapInfo.timestamp);
         $("#datetimeList").append($("<li/>")
             .append(strTime))
             .listview("refresh");
 
-        var strLap = Hayate.ViewUtil.formatElapsedTime(newLap.laptime);
+        var strLap = Hayate.ViewUtil.formatElapsedTime(lapInfo.laptime);
         $("#laptimeList").append($("<li/>")
             .append(strLap))
             .listview("refresh");
+    }
+    function onNewLap(newLap) {
+        if (Array.isArray(newLap)) {
+            $('#datetimeList').children().remove('li');
+            $('#laptimeList').children().remove('li');
+            for (var i = 0; i < newLap.length; i++) {
+                addListviewItem(newLap[i]);
+            }
+        } else {
+            addListviewItem(newLap);
+        }
         
     }    
     var publicObj = {};

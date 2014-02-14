@@ -171,9 +171,17 @@ Hayate.Recorder = function() {
         
         var laptimes = rec["LapTimes"];
         record.init();
+        var laps = [];
         for (var i = 0; i < laptimes.length; i++) {
-            lap(laptimes[i]);
+            var lapTime = record.addLap(laptimes[i]);
+            var newLap = {
+                timestamp: laptimes[i],
+                laptime: lapTime
+            };
+            laps.push(newLap);
         }
+        record.setCurrentTime(laptimes[laptimes.length - 1]);
+        callLapListeners(laps);
         
         if (rec["Position"].length > 0) {
             positionHistory = rec["Position"];
