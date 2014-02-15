@@ -94,16 +94,15 @@ Hayate.RunRecord = function() {
     function setCurrentPosition(newRec) {
         setCurrentTime(newRec.timestamp);
         
-        var newCoords = newRec.coords;
-        if (typeof newCoords !== "undefined") {
-            var latestMove = calculateDistance(newCoords);
-            
-            autoLap(newRec.timestamp, latestMove);
-            
-            realDistance += latestMove;
- 
-            prevCoords = newCoords;
-        }           
+        positionHistory.push(newRec);
+        
+        var latestMove = calculateDistance(newRec.coords);
+        
+        autoLap(newRec.timestamp, latestMove);
+        
+        realDistance += latestMove;
+
+        prevCoords = newRec.coords;
 
     }
     function init() {
@@ -113,9 +112,12 @@ Hayate.RunRecord = function() {
         }
 
         config = Hayate.Config.get(["geolocation"]);
+
+        // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
+        positionHistory.length = 0;
+        laptimes.length = 0;
         
         prevCoords = undefined;
-        laptimes.length = 0;
         realDistance = 0;
         currentTime = 0;
 
@@ -124,6 +126,7 @@ Hayate.RunRecord = function() {
     var Constant = {
         earthRadius: 6371009
     };    
+    var positionHistory = [];
     var laptimes = [];
     var realDistance = 0;
     var prevCoords;
@@ -172,6 +175,15 @@ Hayate.RunRecord = function() {
             times.push(laptimes[i].timestamp);
         }
         return times;  
+    };
+    publicObj.getPrevPositionTimestamp = function() {
+        if (positionHistory.length === 0) {
+            return 0;
+        }
+        return positionHistory[positionHistory.length - 1].timestamp;        
+    };
+    publicObj.getPositions = function() {
+        return positionHistory;
     };
     publicObj.getDistance = function() {
         return realDistance;

@@ -11,7 +11,8 @@ asyncTest( "timestamp and distance", 16, function() {
         Hayate.Config.set(["geolocation", "autoLap", "on"], "on");
         Hayate.Config.set(["geolocation", "autoLap", "distance"], 1000);
         
-        Hayate.RunRecord.init(Date.now());
+        Hayate.RunRecord.init();
+        Hayate.RunRecord.addLap(Date.now());
     
         var posObj = {
             timestamp: Date.now(),
@@ -78,9 +79,10 @@ asyncTest( "timestamp and distance", 16, function() {
     
         Hayate.Config.set(["geolocation", "autoLap", "on"], "off");
     
-        Hayate.RunRecord.init(Date.now());
+        Hayate.RunRecord.init();
     
         var startTime = Date.now();
+        Hayate.RunRecord.addLap(startTime);
         Hayate.RunRecord.setCurrentTime(startTime);
         
         var distance;

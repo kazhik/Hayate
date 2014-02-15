@@ -1,11 +1,10 @@
 
-asyncTest( "Recorder", 3, function() {
+asyncTest( "Recorder TimeListener", 3, function() {
     function initialized() {
-//        test1();
-        test2();
+        testTimeListener();
 
     }
-    function test1() {
+    function testTimeListener() {
         var counter = 0;
         function onNewTime(newTime) {
             counter++;
@@ -30,7 +29,40 @@ asyncTest( "Recorder", 3, function() {
         Hayate.Recorder.start();
         
     }
-    function test2() {
+    function onFail() {
+        console.log("Failed to initialize");
+    }
+    var dbInfo = {
+        name: "Hayate",
+        version: 12,
+        objStore: [
+            {
+                name: "Config",
+                keyPath: "appname"
+            },
+            {
+                name: "ConsoleLog",
+                keyPath: null
+            },
+            {
+                name: "GeoLocation",
+                keyPath: "StartTime"
+            }
+        ]
+    };
+    Hayate.Database.open(dbInfo)
+        .then(Hayate.Config.load)
+        .done(initialized)
+        .fail(onFail);    
+     
+});
+
+asyncTest( "Recorder LapListener", 3, function() {
+    function initialized() {
+        testLapListener();
+
+    }
+    function testLapListener() {
         var counter = 0;
         function onNewTime(newTime) {
             counter++;
@@ -42,6 +74,7 @@ asyncTest( "Recorder", 3, function() {
         }
         function onNewLap(newLap) {
             if (counter === 30) {
+                console.log(JSON.stringify(newLap));
                 ok(newLap.laptime > 2900 && newLap.laptime < 3100, "laptime: 3sec: " + newLap.laptime);
             } else if (counter === 70) {
                 ok(newLap.laptime > 3900 && newLap.laptime < 4100, "laptime: 7sec: " + newLap.laptime);
@@ -87,5 +120,4 @@ asyncTest( "Recorder", 3, function() {
         .fail(onFail);    
      
 });
-
 

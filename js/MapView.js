@@ -33,7 +33,6 @@ Hayate.MapView = function() {
             newCoords.longitude === prevCoords.longitude) {
             return;
         }
-        console.log("new position: " + JSON.stringify(newPosition));
         newPosition.type = "position";
 
         var mapIframe = document.getElementById("map-iframe");

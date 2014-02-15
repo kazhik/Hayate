@@ -24,9 +24,9 @@ Hayate.Recorder = function() {
 
     function onNewPosition(position) {
         // store position in configured interval
-        if (positionHistory.length !== 0) {
-            var prevRecTimestamp = positionHistory[positionHistory.length - 1].timestamp;
-            if (position.timestamp - prevRecTimestamp < config["min"]["timeInterval"]) {
+        var prevTimestamp = record.getPrevPositionTimestamp();
+        if (prevTimestamp !== 0) {
+            if (position.timestamp - prevTimestamp < config["min"]["timeInterval"]) {
                 return;
             }
         }
@@ -41,7 +41,6 @@ Hayate.Recorder = function() {
         var posJson = convertPositionToJSON(position);
 
         if (intervalId !== 0) {
-            positionHistory.push(posJson);
             record.setCurrentPosition(posJson);
             posJson.started = true;
         } else {
@@ -58,7 +57,7 @@ Hayate.Recorder = function() {
         
         var data = {
             StartTime: record.getStartTime(),
-            Position: positionHistory,
+            Position: record.getPositions(),
             LapTimes: record.getLaps()
         };
         Hayate.Database.add(objStoreName, data);
@@ -120,8 +119,8 @@ Hayate.Recorder = function() {
         navigator.geolocation.clearWatch(watchId);
     }
     function clear() {
-        // http://stackoverflow.com/questions/1232040/how-to-empty-an-array-in-javascript
-        positionHistory.length = 0;
+        record.init();
+
     }
     function stop() {
         clearInterval(intervalId);
@@ -170,7 +169,6 @@ Hayate.Recorder = function() {
         Hayate.Config.set(["geolocation", "autoLap", "on"], "off");
         
         var laptimes = rec["LapTimes"];
-        record.init();
         var laps = [];
         for (var i = 0; i < laptimes.length; i++) {
             var lapTime = record.addLap(laptimes[i]);
@@ -184,10 +182,10 @@ Hayate.Recorder = function() {
         callLapListeners(laps);
         
         if (rec["Position"].length > 0) {
-            positionHistory = rec["Position"];
-            callPositionListeners(positionHistory);
-            for (var i = 0; i < positionHistory.length; i++) {
-                record.setCurrentPosition(positionHistory[i]);
+            var positions = rec["Position"];
+            callPositionListeners(positions);
+            for (var i = 0; i < positions.length; i++) {
+                record.setCurrentPosition(positions[i]);
             }
         }
         
@@ -266,12 +264,10 @@ Hayate.Recorder = function() {
     var timeListeners = {};
     var lapListeners = {};
 
-    var positionHistory = [];
     var publicObj = {};
     var config = null;
     var db = null;
     var intervalId = 0;
-    var distance;
     var objStoreName = "GeoLocation";
     var record;
     
@@ -290,8 +286,7 @@ Hayate.Recorder = function() {
     };
     publicObj.start = function() {
         clear();
-        record.init();
-        record.addLap(Date.now());
+        lap(Date.now());
         intervalId = setInterval(onTimeout, 100);
     };
     publicObj.clear = function() {
