@@ -19,12 +19,12 @@ Hayate.LapsView = function() {
     }
 
     function addListviewItem(lapInfo) {
-        var strTime = Hayate.ViewUtil.formatTime(lapInfo.timestamp);
+        var strTime = Hayate.StringUtil.formatTime(lapInfo.timestamp);
         $("#datetimeList").append($("<li/>")
             .append(strTime))
             .listview("refresh");
 
-        var strLap = Hayate.ViewUtil.formatElapsedTime(lapInfo.laptime);
+        var strLap = Hayate.StringUtil.formatElapsedTime(lapInfo.laptime);
         $("#laptimeList").append($("<li/>")
             .append(strLap))
             .listview("refresh");

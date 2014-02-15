@@ -10,7 +10,7 @@ Hayate.RecordsView = function() {
 
         for (var i = 0; i < result.length && i < result.length < 4; i++) {
             var startTime = result[i]["StartTime"];
-            var startTimeStr = Hayate.ViewUtil.formatDateTime(startTime);
+            var startTimeStr = Hayate.StringUtil.formatDateTime(startTime);
             var recordName = result[i]["Name"];
             if (typeof recordName === "undefined") {
                 recordName = startTimeStr;
@@ -64,29 +64,11 @@ Hayate.RecordsView = function() {
             
         }
         function onLoad(data) {
-            function ignoreEnter(e) {
-                if ( e.which == 13 ) {
-                    e.preventDefault();
-                }
-            }
             var recordName = data["Name"];
             if (typeof recordName === "undefined") {
-                recordName = Hayate.ViewUtil.formatDateTime(selected)
+                recordName = Hayate.StringUtil.formatDateTime(selected)
             }
-            
-            $("#edit-record-title").text(document.webL10n.get("edit-record-title"));
-            $("#label-record-name").text(document.webL10n.get("record-name"));
-            $("#cancel").text(document.webL10n.get("cancel"));
-            $("#save").text(document.webL10n.get("save"));
-            
-            $("#record-name").textinput();
-            $("#record-name").val(recordName);
-        
-            $("#save").on("tap", saveRecord);
-
-            $("#edit-dialog").popup().popup("open");
-
-            $("#record-name").keypress(ignoreEnter);
+            Hayate.PopupView.openEditRecordDialog(recordName, saveRecord);
         }
         function onGet(data) {
             $("#popup").load("edit-dialog.html", onLoad.bind(null, data));
@@ -107,7 +89,7 @@ Hayate.RecordsView = function() {
                 .fail(onFail);
 
         }
-        Hayate.ViewUtil.openConfirmDialog(
+        Hayate.PopupView.openConfirmDialog(
             document.webL10n.get("delete-record-title"),
             document.webL10n.get("delete-record-message"),
             document.webL10n.get("delete"),
@@ -117,10 +99,10 @@ Hayate.RecordsView = function() {
     function onTapExportRecord() {
         function onError(err) {
             console.log(err);
-            Hayate.ViewUtil.toast(err);
+            Hayate.PopupView.toast(err);
         }
         function onWriteComplete() {
-            Hayate.ViewUtil.toast("Exported to sdcard");
+            Hayate.PopupView.toast("Exported to sdcard");
         }
         function makeFilename(startTime) {
             var datetime = new Date(startTime);
@@ -156,7 +138,7 @@ Hayate.RecordsView = function() {
             $('#recordList').children().remove('li');
         }
         
-        Hayate.ViewUtil.openConfirmDialog(
+        Hayate.PopupView.openConfirmDialog(
             document.webL10n.get("clear-records-title"),
             document.webL10n.get("clear-records-message"),
             document.webL10n.get("clear"),

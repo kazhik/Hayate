@@ -6,7 +6,7 @@ if (typeof Hayate === "undefined") {
 
 Hayate.start = function() {
     function initUI() {
-        Hayate.ViewUtil.init();        
+        Hayate.PopupView.init();        
         
         // Panel
         Hayate.StorageView.init();

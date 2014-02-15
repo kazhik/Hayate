@@ -225,7 +225,7 @@ Hayate.Recorder = function() {
                 recInfo.Type = result["Type"];
                 recInfo.Desc = result["Desc"];
             } else {
-                recInfo.Name = Hayate.ViewUtil.formatDateTime(startTime);
+                recInfo.Name = Hayate.StringUtil.formatDateTime(startTime);
                 recInfo.Type = "";
                 recInfo.Desc = "";
             }

@@ -17,7 +17,7 @@ Hayate.WatchView = function() {
         } else {
             ms = (1 / speed) * 1609.344 * 1000;
         }
-        $("#txtPace").text(Hayate.ViewUtil.formatElapsedTime(ms));
+        $("#txtPace").text(Hayate.StringUtil.formatElapsedTime(ms));
     }
     
     function updateDistance(distance) {
@@ -48,10 +48,10 @@ Hayate.WatchView = function() {
         
     }
     function updateSplitTime(splitTime) {
-        $("#txtSplitTime").text(Hayate.ViewUtil.formatElapsedTime(splitTime));
+        $("#txtSplitTime").text(Hayate.StringUtil.formatElapsedTime(splitTime));
     }
     function updateLapTime(lapTime) {
-        $("#txtLapTime").text(Hayate.ViewUtil.formatElapsedTime(lapTime));
+        $("#txtLapTime").text(Hayate.StringUtil.formatElapsedTime(lapTime));
     }
 
     function onNewRecord(newRec) {
@@ -114,7 +114,7 @@ Hayate.WatchView = function() {
 
     function onTapLap() {
         recorder.lap();
-//        $("#txtLapTime").text(Hayate.ViewUtil.formatElapsedTime(laptime));
+//        $("#txtLapTime").text(Hayate.StringUtil.formatElapsedTime(laptime));
     }
     function onTapLapReset() {
         // lap -> lap

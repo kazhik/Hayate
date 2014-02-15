@@ -23,7 +23,7 @@ Hayate.LogView = function() {
             };
             Hayate.Database.add("ConsoleLog", log);
 
-            var logmsg = Hayate.ViewUtil.formatTime(log.timestamp) + " " + message;
+            var logmsg = Hayate.StringUtil.formatTime(log.timestamp) + " " + message;
             $("#logList")
                 .append($("<li/>")
                     .append(logmsg))
@@ -40,7 +40,7 @@ Hayate.LogView = function() {
             $('#logList').children().remove('li');
         }
 
-        Hayate.ViewUtil.openConfirmDialog(
+        Hayate.PopupView.openConfirmDialog(
             document.webL10n.get("clear-log-title"),
             document.webL10n.get("clear-log-message"),
             document.webL10n.get("clear"),

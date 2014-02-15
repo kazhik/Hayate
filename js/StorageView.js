@@ -23,7 +23,7 @@ Hayate.StorageView = function() {
         var keys = Object.keys(gpxFiles);
         if (keys.length === 0) {
             $.mobile.back();
-            Hayate.ViewUtil.toast("No file");
+            Hayate.PopupView.toast("No file");
             return;
         }
         for (var i = 0; i < keys.length; i++) {
@@ -36,7 +36,7 @@ Hayate.StorageView = function() {
         function onUnavailable(err) {
             console.warn("sdcard unavailable: " + err);
             $.mobile.back();
-            Hayate.ViewUtil.toast("sdcard unavailable: " + err);
+            Hayate.PopupView.toast("sdcard unavailable: " + err);
         }
         $("#importSourceList").children().remove("li");
         
