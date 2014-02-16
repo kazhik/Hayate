@@ -18,7 +18,10 @@ Hayate.StorageView = function() {
             $("#importSourceList").listview("refresh");
             
         }
-       
+        function onError(err) {
+            $.mobile.back();
+            Hayate.PopupView.toast("Failed to get track name: " + err);
+        }       
         files = gpxFiles;
         var keys = Object.keys(gpxFiles);
         if (keys.length === 0) {
@@ -28,7 +31,9 @@ Hayate.StorageView = function() {
         }
         for (var i = 0; i < keys.length; i++) {
             
-            Hayate.Storage.getTrackName(gpxFiles[keys[i]], getTrackNameCallback);
+            Hayate.Storage.getTrackName(gpxFiles[keys[i]])
+                .done(getTrackNameCallback)
+                .fail(onError);
             
         }
     }

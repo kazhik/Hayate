@@ -54,14 +54,21 @@ Hayate.Storage = function() {
                 trackName = matchCData[1];
             }
             
-            callback(f.name, trackName);
+            dfd.resolve(f.name, trackName);
 
         }
+        function onError() {
+            dfd.reject(reader.error.name);
+        }
+        var dfd = new $.Deferred();
+        
         var reader = new FileReader();
         reader.readAsText(f);
         
         reader.onloadend = onLoaded;
-        
+        request.onerror = onError;
+
+        return dfd.promise();
     }
 
     function fileNotFound(filename) {
@@ -115,8 +122,8 @@ Hayate.Storage = function() {
     publicObj.getGpxFiles = function() {
         return getGpxFiles();
     };
-    publicObj.getTrackName = function(file, onDone) {
-        getTrackName(file, onDone);  
+    publicObj.getTrackName = function(file) {
+        return getTrackName(file);  
     };
     publicObj.writeFile = function(filename, file) {
         return writeFile(file, filename);
