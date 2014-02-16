@@ -60,7 +60,7 @@ Hayate.Recorder = function() {
             Position: record.getPositions(),
             LapTimes: record.getLaps()
         };
-        Hayate.Database.add(objStoreName, data);
+        db.add(objStoreName, data);
     }
 
     function onError(posErr) {
@@ -127,13 +127,14 @@ Hayate.Recorder = function() {
         intervalId = 0;
     }
     function importGpxFile(file) {
-        function onFinished(recInfo, positions) {
+        function onFail(err) {
+            console.log(err);
+        }
+        function onRead(recInfo, positions) {
             function onDone() {
-                loadRecord(data);
+                Hayate.PopupView.toast("Import complete");
             }
-            function onFail(err) {
-                console.log(err);
-            }
+
             if (positions.length === 0) {
                 return;
             }
@@ -148,18 +149,21 @@ Hayate.Recorder = function() {
                 data.Type = recInfo["Type"];
                 data.Desc = recInfo["Desc"];
             }
+            loadRecord(data);
+            
             if (db === null) {
-                loadRecord(data);
                 return;
             }
-            Hayate.Database.add(objStoreName, data)
+            db.add(objStoreName, data)
                 .done(onDone)
                 .fail(onFail);
 
         }
         stop();
         clear();
-        Hayate.GeopositionConverter.importGpxFile(file, onFinished);
+        Hayate.GeopositionConverter.readGpxFile(file)
+            .done(onRead)
+            .fail(onFail);
         
     }
 
@@ -208,7 +212,7 @@ Hayate.Recorder = function() {
         }
         var dfd = new $.Deferred();
         
-        Hayate.Database.get("GeoLocation", startTime)
+        db.get("GeoLocation", startTime)
             .done(onGet)
             .fail(onFail);
         
@@ -259,16 +263,21 @@ Hayate.Recorder = function() {
             .fail(onError);
         
     }
-    var watchId = 0;
+
     var positionListeners = {};
     var timeListeners = {};
     var lapListeners = {};
 
     var publicObj = {};
+
     var config = null;
+
     var db = null;
-    var intervalId = 0;
     var objStoreName = "GeoLocation";
+
+    var watchId = 0;
+    var intervalId = 0;
+
     var record;
     
     publicObj.init = function() {

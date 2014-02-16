@@ -47,8 +47,8 @@ Hayate.GeopositionConverter = function() {
         return new Blob([gpxStr], {type: "text/xml"});
     }
     
-	function importGpxFile(file, onFinished) {
-		function importTrackPoint(idx) {
+	function readGpxFile(file) {
+		function readTrackPoint(idx) {
 			var posJson = {
 				timestamp: Date.parse($(this).find("time").text()),
 				coords: {
@@ -66,22 +66,29 @@ Hayate.GeopositionConverter = function() {
         function onLoaded() {
             var $xml = $($.parseXML(reader.result));
             
-            $xml.find("trkseg").children().each(importTrackPoint);
+            $xml.find("trkseg").children().each(readTrackPoint);
 			
 			var trackInfo = {
 				Name: $xml.find("trk").children("name").text(),
 				Desc: $xml.find("trk").children("desc").text(),
 				Type: $xml.find("trk").children("type").text()
 			};
-			onFinished(trackInfo, positions);
+			dfd.resolve(trackInfo, positions);
         }
+		function onError() {
+			dfd.reject(reader.error.name);
+		}
+        var dfd = new $.Deferred();
+
 		positions.length = 0;
 		
         var reader = new FileReader();
         reader.readAsText(file);
         
         reader.onloadend = onLoaded;
-		
+        reader.onerror = onError;
+
+        return dfd.promise();
 	}
 
     var positions = [];
@@ -91,8 +98,8 @@ Hayate.GeopositionConverter = function() {
 		positions.length = 0;
     };
     
-    publicObj.importGpxFile = function(file, onFinished) {
-        importGpxFile(file, onFinished);
+    publicObj.readGpxFile = function(file) {
+        return readGpxFile(file);
     };
     publicObj.makeGpxFileObject = function(positions, recInfo) {
         return makeGpxFileObject(positions, recInfo.Name, recInfo.Desc, recInfo.Type);  

@@ -7,6 +7,9 @@ asyncTest( "GeopositionConverter", 5, function() {
         ok(trackinfo.Type === "track type", "trackinfo.Type:" + trackinfo.Type);
         start();
     }
+    function onFail(err) {
+        console.log(err);
+    }
     var startTime = Date.now();
     var posJson = {
         timestamp: startTime,
@@ -39,7 +42,9 @@ asyncTest( "GeopositionConverter", 5, function() {
     var f = Hayate.GeopositionConverter.makeGpxFileObject(positions, trackInfo);
     ok(f !== undefined);
     
-    Hayate.GeopositionConverter.importGpxFile(f, onImportComplete);
+    Hayate.GeopositionConverter.readGpxFile(f)
+        .done(onImportComplete)
+        .fail(onFail);
      
 });
 
