@@ -31,8 +31,7 @@ Hayate.LapsView = function() {
     }
     function onNewLap(newLap) {
         if (Array.isArray(newLap)) {
-            $('#datetimeList').children().remove('li');
-            $('#laptimeList').children().remove('li');
+            clear();
             for (var i = 0; i < newLap.length; i++) {
                 addListviewItem(newLap[i]);
             }
@@ -40,11 +39,18 @@ Hayate.LapsView = function() {
             addListviewItem(newLap);
         }
         
-    }    
+    }
+    function clear() {
+        $('#datetimeList').children().remove('li');
+        $('#laptimeList').children().remove('li');
+    }
     var publicObj = {};
     
     publicObj.init = function() {
         init();
+    };
+    publicObj.clear = function() {
+        clear();
     };
 
     return publicObj;

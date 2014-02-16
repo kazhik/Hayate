@@ -64,6 +64,9 @@ Hayate.WatchView = function() {
     }
     function onTapStart() {
         obtainCpuLock();
+
+        Hayate.LapsView.clear();
+
         recorder.start();
         $("#btnStart").text(document.webL10n.get("stop"));
         status.Start = "started";
@@ -106,10 +109,9 @@ Hayate.WatchView = function() {
         $("#txtLapTime").text("00:00:00");
         $("#txtDistance").text("0");
         $("#txtPace").text("00:00");
-
-        $('#datetimeList').children().remove('li');
-        $('#laptimeList').children().remove('li');
         
+        Hayate.LapsView.clear();
+
     }
 
     function onTapLap() {
