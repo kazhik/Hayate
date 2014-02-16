@@ -31,6 +31,18 @@ Hayate.PopupView = function() {
         
         $("#popup").load("about-dialog.html", onLoad);
     }
+    function toast(message) {
+        function onFadeOut() {
+            $("#toast").popup("close");
+        }
+        function onLoad() {
+            $("#toast").text(message);
+            $("#toast").popup({ positionTo: "window" }).popup("open");
+            $("#toast").fadeOut(4000, onFadeOut);
+        }
+        console.log(message);
+        $("#popup").load("toast.html", onLoad);
+    }
     function openEditRecordDialog(recordName, callback) {
         function onLoad() {
             function ignoreEnter(e) {
@@ -72,9 +84,7 @@ Hayate.PopupView = function() {
         openEditRecordDialog(recordName, callback);
     };
     publicObj.toast = function(message) {
-        // http://stackoverflow.com/questions/17723164/is-it-possible-to-create-an-android-style-toast-notification-using-html-css-ja
-        $(".message").text(message);
-        $(".message").fadeIn(500).delay(1000).fadeOut(1500);             
+        toast(message);
     };
     
     return publicObj;

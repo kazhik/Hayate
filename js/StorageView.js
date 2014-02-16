@@ -34,7 +34,6 @@ Hayate.StorageView = function() {
     }
     function onPageShow() {
         function onUnavailable(err) {
-            console.warn("sdcard unavailable: " + err);
             $.mobile.back();
             Hayate.PopupView.toast("sdcard unavailable: " + err);
         }

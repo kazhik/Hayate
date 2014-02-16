@@ -130,7 +130,7 @@ Hayate.Storage = function() {
             if (request.result === "available") {
                 dfd.resolve();
             } else {
-                dfd.reject("sdcard unavailable: " + request.result);
+                dfd.reject(request.result);
             }
         }
         function onError() {

@@ -98,7 +98,6 @@ Hayate.RecordsView = function() {
     }
     function onTapExportRecord() {
         function onError(err) {
-            console.log(err);
             Hayate.PopupView.toast(err);
         }
         function onWriteComplete() {
