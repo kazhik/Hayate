@@ -197,10 +197,10 @@ Hayate.Recorder = function() {
             splitTime: record.getSplitTime(),
             lapTime: record.getLapTime(),
             speed: 0,
+            elevationGain: record.getElevationGain(),
             distance: record.getDistance()
         };
         callTimeListeners(timeRec);
-        
         Hayate.Config.set(["geolocation", "autoLap", "on"], confAutoLap);
     }
     function loadFromDB(startTime) {

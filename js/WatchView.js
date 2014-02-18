@@ -12,12 +12,19 @@ Hayate.WatchView = function() {
         
         var ms; // milliseconds per km/mi
         if (config["distanceUnit"] === "metre") {
-            // 5 metre / sec
+            // speed === metre / sec
             ms = (1 / speed) * 1000 * 1000;
         } else {
             ms = (1 / speed) * 1609.344 * 1000;
         }
         $("#txtPace").text(Hayate.StringUtil.formatElapsedTime(ms));
+    }
+    function updateElevationGain(gain) {
+        if (gain === 0) {
+            return;
+        }
+        
+        $("#txtGain").text(convertDistance(gain));
     }
     
     function updateDistance(distance) {
@@ -45,6 +52,7 @@ Hayate.WatchView = function() {
         }
         $("#lblDistanceUnit").text(distanceUnitStr);
         $("#lblPaceUnit").text(distanceUnitStr);
+        $("#lblGainUnit").text(distanceUnitStr);
         
     }
     function updateSplitTime(splitTime) {
@@ -59,6 +67,7 @@ Hayate.WatchView = function() {
         updateLapTime(newRec.lapTime);
         updateDistance(newRec.distance);
         updatePace(newRec.speed);
+        updateElevationGain(newRec.elevationGain);
         
         distance = newRec.distance;
     }
@@ -109,6 +118,7 @@ Hayate.WatchView = function() {
         $("#txtLapTime").text("00:00:00");
         $("#txtDistance").text("0");
         $("#txtPace").text("00:00");
+        $("#txtGain").text("0");
         
         Hayate.LapsView.clear();
 

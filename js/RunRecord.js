@@ -39,6 +39,7 @@ Hayate.RunRecord = function() {
         if (realMove === 0) {
             var elevation = newAlt - prevAlt;
             realMove = Math.sqrt((latestFlatMove * latestFlatMove) + (elevation * elevation));
+            elevationGain += Math.abs(elevation);
         }
         
         return realMove;
@@ -94,17 +95,18 @@ Hayate.RunRecord = function() {
     function setCurrentPosition(newRec) {
         setCurrentTime(newRec.timestamp);
         
-        positionHistory.push(newRec);
-        
         var latestMove = calculateDistance(newRec.coords);
-        
+
         autoLap(newRec.timestamp, latestMove);
+        
+        positionHistory.push(newRec);
         
         realDistance += latestMove;
 
         prevCoords = newRec.coords;
 
     }
+
     function init() {
         if (typeof Hayate.Config === "undefined") {
             console.log("Config undefined");
@@ -120,6 +122,7 @@ Hayate.RunRecord = function() {
         prevCoords = undefined;
         realDistance = 0;
         currentTime = 0;
+        elevationGain = 0;
 
     }
 
@@ -131,6 +134,7 @@ Hayate.RunRecord = function() {
     var realDistance = 0;
     var prevCoords;
     var currentTime;
+    var elevationGain = 0;
     var config;
     
     var publicObj = {};
@@ -191,6 +195,9 @@ Hayate.RunRecord = function() {
     
     publicObj.addLap = function(newTimestamp) {
         return addLap(newTimestamp, realDistance);
+    };
+    publicObj.getElevationGain = function() {
+        return elevationGain;
     };
     return publicObj;
     

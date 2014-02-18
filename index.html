@@ -58,14 +58,21 @@
         <fieldset class="ui-grid-a">
           <div class="ui-block-a">
             <ul id="lblWatch" data-role="listview" data-inset="true">
-                <li data-l10n-id="distance">Distance</li>
-                <li data-l10n-id="pace">PACE</li>
                 <li data-l10n-id="split">Split</li>
                 <li data-l10n-id="lap">Lap</li>
+                <li data-l10n-id="distance">Distance</li>
+                <li data-l10n-id="pace">PACE</li>
+                <li data-l10n-id="elevation-gain">GAIN</li>
             </ul>          
           </div>
           <div class="ui-block-b">
             <ul id="watch" data-role="listview" data-inset="true">
+              <li>
+                <span id="txtSplitTime">00:00:00</span>
+              </li>
+              <li>
+                <span id="txtLapTime">00:00:00</span>
+              </li>
               <li>
                 <span id="txtDistance">0</span><span id="lblDistanceUnit">m</span>
               </li>
@@ -73,10 +80,7 @@
                 <span id="txtPace">00:00</span>/<span id="lblPaceUnit">m</span>
               </li>
               <li>
-                <span id="txtSplitTime">00:00:00</span>
-              </li>
-              <li>
-                <span id="txtLapTime">00:00:00</span>
+                <span id="txtGain">0</span>/<span id="lblGainUnit">m</span>
               </li>
             </ul>          
           </div>	   
