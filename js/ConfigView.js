@@ -22,7 +22,10 @@ Hayate.ConfigView = function() {
             "map": {
                 "zoom": parseInt($("#select-zoom").val(), 10)
             },
-            "debug": $("#flip-debug").val()
+            "debug": {
+                "log": $("#flip-debug-log").val(),
+                "export": $("#select-export").val()
+            }
         };
         Hayate.Config.save(config);
     }
@@ -45,12 +48,14 @@ Hayate.ConfigView = function() {
         $("#select-zoom").val(config["map"]["zoom"].toString())
             .selectmenu( "refresh" );
 
-        $("#flip-debug").val(config["debug"])
+        $("#flip-debug-log").val(config["debug"]["log"])
             .slider("refresh");
+        $("#select-export").val(config["debug"]["export"])
+            .selectmenu( "refresh" );
     }
     function init() {
         $("#flip-autolap").slider();
-        $("#flip-debug").slider();
+        $("#flip-debug-log").slider();
         $("#close-settings").on("tap", onClose);
         
         $("#Settings").on("pageshow", onOpen);
@@ -108,6 +113,13 @@ Hayate.ConfigView = function() {
                 text: document.webL10n.get(values[i])
             }));        
         }
+        values = ["gpx", "position"];
+        for (i = 0; i < values.length; i++) {
+            $('#select-export').append($('<option>', {
+                value: values[i],
+                text: values[i]
+            }));        
+        }
         
         /* doesn't work
         values = ["on", "off"];
@@ -116,7 +128,7 @@ Hayate.ConfigView = function() {
                 value: values[i],
                 text: document.webL10n.get(values[i])
             }));        
-            $('#flip-debug').append($('<option>', {
+            $('#flip-debug-log').append($('<option>', {
                 value: values[i],
                 text: document.webL10n.get(values[i])
             }));        

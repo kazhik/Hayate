@@ -106,14 +106,29 @@ Hayate.RecordsView = function() {
         function makeFilename(startTime) {
             var datetime = new Date(startTime);
             
-            return datetime.toISOString().replace(/\D/g, "") + ".gpx";
+            var extension;
+            if (exportType === "gpx") {
+                extension = ".gpx";
+            } else if (exportType === "position") {
+                extension = ".position";
+            }
+            
+            return datetime.toISOString().replace(/\D/g, "") + extension;
+        }
+        function makeFileObject(selectedStartTime) {
+            if (exportType === "position") {
+                return Hayate.Recorder.makePositionFileObject(selectedStartTime);
+            }
+            return Hayate.Recorder.makeGpxFileObject(selectedStartTime);
         }
         var selectedStartTime = selected;
+
+        var exportType = Hayate.Config.get(["debug", "export"]);
         
         var filename = makeFilename(selectedStartTime);
         Hayate.Storage.fileNotFound(filename)
             .then(Hayate.Storage.checkIfAvailable)
-            .then(Hayate.Recorder.makeGpxFileObject.bind(null, selectedStartTime))
+            .then(makeFileObject.bind(null, selectedStartTime))
             .then(Hayate.Storage.writeFile.bind(null, filename))
             .done(onWriteComplete)
             .fail(onError);

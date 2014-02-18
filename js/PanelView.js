@@ -8,7 +8,7 @@ Hayate.PanelView = function() {
         $("#LeftPanel").panel();
         $("#panel-menu").listview().listview("refresh");
 
-        if (Hayate.Config.get(["debug"]) === "on") {
+        if (Hayate.Config.get(["debug"]["log"]) === "on") {
             $("#panel-menu")
                 .append($("<li/>")
                 .append($("<a/>", {

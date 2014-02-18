@@ -218,6 +218,29 @@ Hayate.Recorder = function() {
         
         return dfd.promise();
     }
+    function makePositionFileObject(startTime) {
+        function onLoad(result) {
+            var positions = result["Position"];
+            var posStr = "";
+            for (var i = 0; i < positions.length; i++) {
+                posStr += JSON.stringify(positions[i]) + "\n";
+            }
+            var file = new Blob([posStr], {type: "application/json"});
+
+            dfd.resolve(file);
+        }
+        function onError(err) {
+            dfd.reject("Failed to load record from DB: " + err);
+        }
+        var dfd = new $.Deferred();
+
+        loadFromDB(startTime)
+            .done(onLoad)
+            .fail(onError);
+
+        return dfd.promise();
+        
+    }
     function makeGpxFileObject(startTime) {
         
         function onLoad(result) {
@@ -336,6 +359,9 @@ Hayate.Recorder = function() {
     };
     publicObj.makeGpxFileObject = function(startTime) {
         return makeGpxFileObject(startTime);  
+    };
+    publicObj.makePositionFileObject = function(startTime) {
+        return makePositionFileObject(startTime);  
     };
     publicObj.load = function(startTime) {
         load(startTime);  

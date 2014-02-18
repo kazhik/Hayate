@@ -25,7 +25,10 @@ Hayate.Config = function() {
             "longitude": 139.851058,
             "zoom": 16
         },
-        "debug": "on"
+        "debug": {
+            "log": "on",
+            "export": "position"
+        }
     };
     
     var publicObj = {};
