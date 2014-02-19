@@ -33,12 +33,12 @@ Hayate.PopupView = function() {
     }
     function toast(message) {
         function onFadeOut() {
-            $("#toast").popup("close");
+            $("#toast").popup("destroy");
         }
         function onLoad() {
             $("#toast").text(message);
             $("#toast").popup({ positionTo: "window" }).popup("open");
-            $("#toast").fadeOut(4000, onFadeOut);
+            $("#toast").fadeOut(3000, onFadeOut);
         }
         console.log(message);
         $("#popup").load("toast.html", onLoad);
