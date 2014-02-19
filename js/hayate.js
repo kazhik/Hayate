@@ -19,7 +19,7 @@ Hayate.start = function() {
         Hayate.MapView.init();
         Hayate.LapsView.init();
 
-        if (Hayate.Config.get(["debug"]) === "on") {
+        if (Hayate.Config.get(["debug", "log"]) === "on") {
             Hayate.LogView.init();
         }
         
