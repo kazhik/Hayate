@@ -106,30 +106,35 @@ Hayate.RecordsView = function() {
         function makeFilename(startTime) {
             var datetime = new Date(startTime);
             
-            var extension;
-            if (exportType === "gpx") {
-                extension = ".gpx";
-            } else if (exportType === "position") {
-                extension = ".position";
-            }
-            
-            return datetime.toISOString().replace(/\D/g, "") + extension;
+            return datetime.toISOString().replace(/\D/g, "") + exportInfo[exportType]["extension"];
         }
-        function makeFileObject(selectedStartTime) {
-            if (exportType === "position") {
-                return Hayate.Recorder.makePositionFileObject(selectedStartTime);
+
+        var exportInfo = {
+            "gpx": {
+                extension: ".gpx",
+                makeFile: Hayate.Recorder.makeGpxFileObject,
+                writeFile: Hayate.Storage.writeGpxFile
+            },
+            "position": {
+                extension: ".position",
+                makeFile: Hayate.Recorder.makePositionFileObject,
+                writeFile: Hayate.Storage.writePositionFile
             }
-            return Hayate.Recorder.makeGpxFileObject(selectedStartTime);
         }
         var selectedStartTime = selected;
 
         var exportType = Hayate.Config.get(["debug", "export"]);
         
+        if (typeof exportInfo[exportType] === "undefined") {
+            console.log("Invalid export type");
+            return;
+        }
+        
         var filename = makeFilename(selectedStartTime);
         Hayate.Storage.fileNotFound(filename)
             .then(Hayate.Storage.checkIfAvailable)
-            .then(makeFileObject.bind(null, selectedStartTime))
-            .then(Hayate.Storage.writeFile.bind(null, filename))
+            .then(exportInfo[exportType]["makeFile"].bind(null, selectedStartTime))
+            .then(exportInfo[exportType]["writeFile"].bind(null, filename))
             .done(onWriteComplete)
             .fail(onError);
         

@@ -4,25 +4,37 @@ if (Hayate === undefined) {
     var Hayate = {};
 }
 Hayate.Storage = function() {
-    var GPX_FOLDER = "Apps/hayate/gpx";
-    function getGpxFiles() {
+    var FileInfo = {
+        "gpx": {
+            "folder": "Apps/hayate/gpx",
+            "extension": "gpx"
+        },
+        "position": {
+            "folder": "Apps/hayate/position",
+            "extension": "position"
+        }
+    }
+    function getFiles(type) {
         function onSuccess() {
             var file = cursor.result;
             if (!file) {
                 // https://bugzilla.mozilla.org/show_bug.cgi?id=902565
                 dfd.resolve(files);
             }
-            
-            if (file.name.match(/\.gpx$/i) !== null &&
+            var re = new RegExp("\." + FileInfo[type]["extension"] + "$", "i");
+            if (re.test(file.name) === true &&
                 typeof files[file.name] === "undefined") {
                 
                 files[file.name] = file;
-
             }
             cursor.continue();
         }
         function onError() {
-            dfd.reject("DeviceStorage enumerate: " + cursor.error.name)
+            var msg = cursor.error.name;
+            if (cursor.error.name === "TypeMismatchError") {
+                msg += "(Folder doesn't exist)";
+            }
+            dfd.reject(msg);
         }
         
         var dfd = new $.Deferred();
@@ -32,13 +44,13 @@ Hayate.Storage = function() {
         }
 
         files = {};
-        var cursor = storage.enumerate(GPX_FOLDER);
+        var cursor = storage.enumerate(FileInfo[type]["folder"]);
         cursor.onsuccess = onSuccess;
         cursor.onerror = onError;
         
         return dfd.promise();
     }
-    function getTrackName(f, callback) {
+    function getTrackName(f) {
         function onLoaded() {
             /* Too slow.
             var $xml = $($.parseXML(reader.result));
@@ -53,7 +65,6 @@ Hayate.Storage = function() {
             } else {
                 trackName = matchCData[1];
             }
-            
             dfd.resolve(f.name, trackName);
 
         }
@@ -66,7 +77,7 @@ Hayate.Storage = function() {
         reader.readAsText(f);
         
         reader.onloadend = onLoaded;
-        request.onerror = onError;
+        reader.onerror = onError;
 
         return dfd.promise();
     }
@@ -92,7 +103,7 @@ Hayate.Storage = function() {
 
     }
     
-    function writeFile(file, filename) {
+    function writeFile(file, folder, filename) {
         function onSuccess() {
             dfd.resolve();
         }
@@ -101,7 +112,7 @@ Hayate.Storage = function() {
         }
         var dfd = new $.Deferred();
         
-        var request = storage.addNamed(file, GPX_FOLDER + "/" + filename);
+        var request = storage.addNamed(file, folder + "/" + filename);
         request.onsuccess = onSuccess;
         request.onerror = onError;
 
@@ -120,13 +131,16 @@ Hayate.Storage = function() {
         
     };
     publicObj.getGpxFiles = function() {
-        return getGpxFiles();
+        return getFiles("gpx");
     };
     publicObj.getTrackName = function(file) {
         return getTrackName(file);  
     };
-    publicObj.writeFile = function(filename, file) {
-        return writeFile(file, filename);
+    publicObj.writeGpxFile = function(filename, file) {
+        return writeFile(file, FileInfo["gpx"]["folder"], filename);
+    };
+    publicObj.writePositionFile = function(filename, file) {
+        return writeFile(file, FileInfo["position"]["folder"], filename);
     };
     publicObj.fileNotFound = function(filename) {
         return fileNotFound(filename);  

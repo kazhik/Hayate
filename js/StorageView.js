@@ -7,7 +7,6 @@ Hayate.StorageView = function() {
 
     function onFileList(gpxFiles) {
         function getTrackNameCallback(filename, trackname) {
-
             $("#importSourceList")
                 .append($("<li/>")
                 .append($("<a/>", {
@@ -40,7 +39,7 @@ Hayate.StorageView = function() {
     function onPageShow() {
         function onUnavailable(err) {
             $.mobile.back();
-            Hayate.PopupView.toast("sdcard unavailable: " + err);
+            Hayate.PopupView.toast(err);
         }
         $("#importSourceList").children().remove("li");
         
