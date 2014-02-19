@@ -26,7 +26,7 @@ Hayate.Recorder = function() {
         // store position in configured interval
         var prevTimestamp = record.getPrevPositionTimestamp();
         if (prevTimestamp !== 0) {
-            if (position.timestamp - prevTimestamp < config["min"]["timeInterval"]) {
+            if (position.timestamp - prevTimestamp < config["min"]["timeInterval"] * 1000) {
                 return;
             }
         }
