@@ -8,9 +8,9 @@ Hayate.Config = function() {
         "appname": "Hayate",
         "geolocation": {
             "min" : {
-                "accuracy": 5000,
-                "altAccuracy": 2000,
-                "timeInterval": 1000 * 5,
+                "accuracy": 200,
+                "altAccuracy": 200,
+                "timeInterval": 5,
                 "distanceInterval": 10
             },
             "autoLap": {
@@ -21,8 +21,6 @@ Hayate.Config = function() {
         },
         "map": {
             "url": "http://kazhik.github.io/Hayate/map/gmap.html",
-            "latitude": 35.693134,
-            "longitude": 139.851058,
             "zoom": 16
         },
         "debug": {
