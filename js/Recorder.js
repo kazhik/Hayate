@@ -89,6 +89,7 @@ Hayate.Recorder = function() {
             splitTime: record.getSplitTime(),
             lapTime: record.getLapTime(),
             speed: record.getSpeed(),
+            elevationGain: record.getElevationGain(),
             distance: record.getDistance()
         };
         callTimeListeners(newRec);
