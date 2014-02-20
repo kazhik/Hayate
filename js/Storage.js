@@ -151,7 +151,7 @@ Hayate.Storage = function() {
             if (request.result === "available") {
                 dfd.resolve();
             } else {
-                dfd.reject(request.result);
+                dfd.reject("Storage unavailable: " + request.result);
             }
         }
         function onError() {
