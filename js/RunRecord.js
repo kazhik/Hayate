@@ -174,11 +174,10 @@ Hayate.RunRecord = function() {
         return laptimes[0].timestamp;
     }
     publicObj.getLaps = function() {
-        var times = [];
-        for (var i = 0; i < laptimes.length; i++) {
-            times.push(laptimes[i].timestamp);
+        function makeTimestampArray(lapInfo) {
+            return lapInfo.timestamp;
         }
-        return times;  
+        return laptimes.map(makeTimestampArray);
     };
     publicObj.getPrevPositionTimestamp = function() {
         if (positionHistory.length === 0) {
