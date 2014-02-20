@@ -8,7 +8,7 @@ Hayate.ConfigView = function() {
         var config = {
             "geolocation": {
                 "min" : {
-                    "accuracy": parseInt($("#select-min-accurary").val(), 10),
+                    "accuracy": parseInt($("#select-min-accuracy").val(), 10),
                     "altAccuracy": parseInt($("#select-min-alt-accuracy").val(), 10),
                     "timeInterval": parseInt($("#select-min-time-interval").val(), 10),
                     "distanceInterval": parseInt($("#select-min-distance-interval").val(), 10)
@@ -31,7 +31,7 @@ Hayate.ConfigView = function() {
     }
     function onOpen() {
         var config = Hayate.Config.get([]);
-        $("#select-min-accurary").val(config["geolocation"]["min"]["accuracy"].toString())
+        $("#select-min-accuracy").val(config["geolocation"]["min"]["accuracy"].toString())
             .selectmenu( "refresh" );
         $("#select-min-alt-accuracy").val(config["geolocation"]["min"]["altAccuracy"].toString())
             .selectmenu( "refresh" );
