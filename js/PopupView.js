@@ -59,7 +59,7 @@ Hayate.PopupView = function() {
             $("#record-name").textinput();
             $("#record-name").val(recordName);
         
-            $("#save").on("tap", saveRecord);
+            $("#save").on("tap", callback);
 
             $("#edit-dialog").popup().popup("open");
 
