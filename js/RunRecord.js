@@ -61,15 +61,16 @@ Hayate.RunRecord = function() {
     }
     function autoLap(newTimestamp, latestRealMove) {
         if (config["autoLap"]["on"] === "off") {
-            return;
+            return 0;
         }
         var lapDistance = config["autoLap"]["distance"];
         
         var oldDistance = realDistance;
         var newDistance = realDistance + latestRealMove;
         if (Math.floor(oldDistance / lapDistance) !== Math.floor(newDistance / lapDistance)) {
-            addLap(newTimestamp, realDistance + latestRealMove);
+            return addLap(newTimestamp, realDistance + latestRealMove);
         }
+        return 0;
     }
 
     function addLap(timestamp, distance) {
@@ -97,13 +98,15 @@ Hayate.RunRecord = function() {
         
         var latestMove = calculateDistance(newRec.coords);
 
-        autoLap(newRec.timestamp, latestMove);
+        var lapTime = autoLap(newRec.timestamp, latestMove);
         
         positionHistory.push(newRec);
         
         realDistance += latestMove;
 
         prevCoords = newRec.coords;
+        
+        return lapTime;
 
     }
 

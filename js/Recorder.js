@@ -41,7 +41,15 @@ Hayate.Recorder = function() {
         var posJson = convertPositionToJSON(position);
 
         if (intervalId !== 0) {
-            record.setCurrentPosition(posJson);
+            var lapTime = record.setCurrentPosition(posJson);
+            if (lapTime > 0) {
+                var newLap = {
+                    timestamp: posJson.timestamp,
+                    laptime: lapTime
+                };
+                callLapListeners(newLap);
+            }
+        
             posJson.started = true;
         } else {
             posJson.started = false;
