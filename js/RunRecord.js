@@ -95,6 +95,11 @@ Hayate.RunRecord = function() {
     }
     function setCurrentPosition(newRec) {
         setCurrentTime(newRec.timestamp);
+
+        // discard inaccurate data        
+        if (newRec.coords.accuracy > config["min"]["accuracy"]) {
+            return 0;
+        }
         
         var latestMove = calculateDistance(newRec.coords);
 
@@ -147,7 +152,7 @@ Hayate.RunRecord = function() {
         init();
     };
     publicObj.setCurrentPosition = function(newRec) {
-        setCurrentPosition(newRec);
+        return setCurrentPosition(newRec);
     };
     publicObj.setCurrentTime = function(timestamp) {
         setCurrentTime(timestamp);

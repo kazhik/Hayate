@@ -31,12 +31,6 @@ Hayate.Recorder = function() {
             }
         }
         var currentCoords = position.coords;
-        
-        // discard inaccurate data        
-        if (currentCoords.accuracy > config["min"]["accuracy"]) {
-            console.log("accuracy: " + currentCoords.accuracy + "; min: " + config["min"]["accuracy"]);
-            return;
-        }
 
         var posJson = convertPositionToJSON(position);
 
