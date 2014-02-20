@@ -27,11 +27,12 @@ Hayate.start = function() {
    function startApp() {
         $.event.special.tap.emitTapOnTaphold = false;
         
-        Hayate.Recorder.init();
-        Hayate.Storage.init();
 
         initUI();
         
+        Hayate.Recorder.init();
+        Hayate.Storage.init();
+
         console.log("Hayate started");
     
     }
