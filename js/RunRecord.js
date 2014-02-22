@@ -26,37 +26,44 @@ Hayate.RunRecord = function() {
         return latestFlatMove;
     }
     // calculates real distance(considers altitude)
-    function calculateRealDistance(latestFlatMove, newAlt, altAccuracy) {
-        var realMove = 0;
-        if (altAccuracy > config["min"]["altAccuracy"]) {
-            console.log("altAccuracy: " + altAccuracy);
-            realMove = latestFlatMove;
-        }
-        var prevAlt = prevCoords.altitude;
-        if (newAlt === null || prevAlt === null) {
-            realMove = latestFlatMove;
-        }
-        if (realMove === 0) {
-            var elevation = newAlt - prevAlt;
-            realMove = Math.sqrt((latestFlatMove * latestFlatMove) + (elevation * elevation));
-            elevationGain += Math.abs(elevation);
-        }
-        
-        return realMove;
+    function calculateRealDistance(latestFlatMove, elevation) {
+
+        return Math.sqrt((latestFlatMove * latestFlatMove) + (elevation * elevation));
     }
     function calculateDistance(newCoords) {
+        var result = {
+            distance: 0,
+            elevation: 0
+        };
         if (typeof newCoords === "undefined") {
-            return 0;
+            return result;
         }
         if (typeof prevCoords === "undefined") {
-            return 0;
+            return result;
+        }
+        if (newCoords.accuracy > config["min"]["accuracy"]) {
+            return result;
         }
         var latestFlatMove = calculateFlatDistance(
             newCoords.latitude, newCoords.longitude);
-        var latestRealMove = calculateRealDistance(
-            latestFlatMove, newCoords.altitude, newCoords.altitudeAccuracy);
         
-        return latestRealMove;
+        if (newCoords.altAccuracy > config["min"]["altAccuracy"]) {
+            return result;
+        }
+        if (newCoords.accuracy > latestFlatMove) {
+            return result;
+        }
+        result.distance = latestFlatMove;
+        
+        if (prevCoords.altitude !== null && newCoords.altitude !== null) {
+            var elevation = Math.abs(newCoords.altitude - prevCoords.altitude);
+            if (elevation > newCoords.altitudeAccuracy) {
+                result.elevation = elevation;
+                result.distance = calculateRealDistance(latestFlatMove, elevation);
+            }
+        }
+        
+        return result;
         
     }
     function autoLap(newTimestamp, latestRealMove) {
@@ -96,20 +103,25 @@ Hayate.RunRecord = function() {
     function setCurrentPosition(newRec) {
         setCurrentTime(newRec.timestamp);
 
-        // discard inaccurate data        
-        if (newRec.coords.accuracy > config["min"]["accuracy"]) {
-            return 0;
-        }
-        
         var latestMove = calculateDistance(newRec.coords);
 
-        var lapTime = autoLap(newRec.timestamp, latestMove);
+        var lapTime = autoLap(newRec.timestamp, latestMove.distance);
         
         positionHistory.push(newRec);
-        
-        realDistance += latestMove;
 
-        prevCoords = newRec.coords;
+        if (!prevCoords) {
+            prevCoords = newRec.coords;
+        } else {
+            if (latestMove.distance > 0) {
+                realDistance += latestMove.distance;
+                prevCoords.latitude = newRec.coords.latitude;
+                prevCoords.longitude = newRec.coords.longitude;
+            }
+            if (latestMove.elevation > 0) {
+                elevationGain += latestMove.elevation;
+                prevCoords.altitude = newRec.coords.altitude;
+            }
+        }
         
         return lapTime;
 
