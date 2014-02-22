@@ -64,8 +64,9 @@ Hayate.GeopositionConverter = function() {
 			positions.push(posJson);		
 		}
         function onLoaded() {
-            var $xml = $($.parseXML(reader.result));
-            
+			var parser = new DOMParser();
+            var $xml = $(parser.parseFromString(reader.result, "application/xml"));
+			
             $xml.find("trkseg").children().each(readTrackPoint);
 			
 			var trackInfo = {
