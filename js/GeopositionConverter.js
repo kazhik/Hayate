@@ -48,13 +48,13 @@ Hayate.GeopositionConverter = function() {
     }
     
 	function readGpxFile(file) {
-		function readTrackPoint(idx) {
+		function readTrackPoint(trkpt) {
 			var posJson = {
-				timestamp: Date.parse($(this).find("time").text()),
+				timestamp: Date.parse(trkpt.getElementsByTagName("time")[0].childNodes[0].nodeValue),
 				coords: {
-					latitude: parseFloat($(this).attr("lat")),
-					longitude: parseFloat($(this).attr("lon")),
-					altitude: parseInt($(this).find("ele").text(), 10),
+					latitude: parseFloat(trkpt.getAttribute("lat")),
+					longitude: parseFloat(trkpt.getAttribute("lon")),
+					altitude: parseInt(trkpt.getElementsByTagName("ele")[0].childNodes[0].nodeValue, 10),
 					accuracy: 1,
 					altitudeAccuracy: 1,
 					heading: null,
@@ -65,14 +65,21 @@ Hayate.GeopositionConverter = function() {
 		}
         function onLoaded() {
 			var parser = new DOMParser();
-            var $xml = $(parser.parseFromString(reader.result, "application/xml"));
+			var doc = parser.parseFromString(reader.result, "application/xml");
 			
-            $xml.find("trkseg").children().each(readTrackPoint);
+			var trkInfo = doc.getElementsByTagName("trk")[0];
+
+			var trkseg = trkInfo.getElementsByTagName("trkseg")[0];
+		
+			var trkpts = trkseg.getElementsByTagName("trkpt");
+			for (var i = 0; i < trkpts.length; i++) {
+				readTrackPoint(trkpts[i]);
+			}
 			
 			var trackInfo = {
-				Name: $xml.find("trk").children("name").text(),
-				Desc: $xml.find("trk").children("desc").text(),
-				Type: $xml.find("trk").children("type").text()
+				Name: trkInfo.querySelector("name").childNodes[0].nodeValue,
+				Desc: trkInfo.querySelector("desc").childNodes[0].nodeValue,
+				Type: trkInfo.querySelector("type").childNodes[0].nodeValue
 			};
 			dfd.resolve(trackInfo, positions);
         }
@@ -82,7 +89,6 @@ Hayate.GeopositionConverter = function() {
         var dfd = new $.Deferred();
 
 		positions.length = 0;
-		
         var reader = new FileReader();
         reader.readAsText(file);
         
