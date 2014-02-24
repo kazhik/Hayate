@@ -52,21 +52,16 @@ Hayate.Storage = function() {
     }
     function getTrackName(f) {
         function onLoaded() {
-            /* Too slow.
-            var $xml = $($.parseXML(reader.result));
-            
-            var trackName = $xml.find("trk").find("name").text();
-            */
-            var matchResult = reader.result.match(/<trk>\n*<name>(.*)<\/name>/);
-            var matchCData = matchResult[1].match(/<!\[CDATA\[(.*)\]\]>/);
-            var trackName;
-            if (matchCData === null) {
-                trackName = matchResult[1];
+			var parser = new DOMParser();
+			var doc = parser.parseFromString(reader.result, "application/xml");
+			var trk = doc.getElementsByTagName("trk")[0];
+            var strTrackName = trk.getElementsByTagName("name")[0].childNodes[0].nodeValue;
+            var matchCData = strTrackName.match(/<!\[CDATA\[(.*)\]\]>/);
+            if (matchCData) {
+                dfd.resolve(f.name, matchCData[1]);
             } else {
-                trackName = matchCData[1];
+                dfd.resolve(f.name, strTrackName);
             }
-            dfd.resolve(f.name, trackName);
-
         }
         function onError() {
             dfd.reject(reader.error.name);
