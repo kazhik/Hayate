@@ -34,23 +34,29 @@ Hayate.Recorder = function() {
 
         var posJson = convertPositionToJSON(position);
 
+        var lapTime = 0;
         if (intervalId !== 0) {
-            var lapTime = record.setCurrentPosition(posJson);
+            if (!checkAccuracy(posJson)) {
+                return;
+            }
+            
+            lapTime = record.setCurrentPosition(posJson);
             if (lapTime > 0) {
                 var newLap = {
                     timestamp: posJson.timestamp,
                     laptime: lapTime
                 };
                 callLapListeners(newLap);
+
+                posJson.started = true;
+                callPositionListeners(posJson);
             }
         
-            posJson.started = true;
         } else {
             posJson.started = false;
+            callPositionListeners(posJson);
         }
         
-        // call event listeners
-        callPositionListeners(posJson);
     }
     function storeRecord() {
         if (db === null) {
@@ -169,6 +175,15 @@ Hayate.Recorder = function() {
             .fail(onFail);
         
     }
+    function checkAccuracy(position) {
+        if (position.coords.accuracy > config["min"]["accuracy"]) {
+            return false;
+        }
+        if (position.coords.altAccuracy > config["min"]["altAccuracy"]) {
+            return false;
+        }
+        return true;
+    }
 
     function loadRecord(rec) {
         var confAutoLap = Hayate.Config.get(["geolocation", "autoLap", "on"]);
@@ -188,13 +203,15 @@ Hayate.Recorder = function() {
         record.setCurrentTime(laptimes[laptimes.length - 1]);
         callLapListeners(laps);
         
-        if (rec["Position"].length > 0) {
-            var positions = rec["Position"];
-            callPositionListeners(positions);
-            for (var i = 0; i < positions.length; i++) {
-                record.setCurrentPosition(positions[i]);
+        function setPosition(position, idx) {
+            if (!checkAccuracy(position)) {
+                return false;
             }
+            record.setCurrentPosition(position);
+            return true;
         }
+        var positions = rec["Position"].filter(setPosition);
+        callPositionListeners(positions);
         
         var timeRec = {
             splitTime: record.getSplitTime(),

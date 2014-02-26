@@ -10,7 +10,6 @@ Hayate.MapView = function() {
             type: "positionlist",
             list: posArray
         }
-        
         var mapIframe = document.getElementById("map-iframe");
         mapIframe.contentWindow.postMessage(JSON.stringify(positionlist), '*');            
     }
@@ -75,7 +74,7 @@ Hayate.MapView = function() {
         
         Hayate.Recorder.addPositionListener(onPosition);
 
-        $("#map-iframe").attr("src", config["url"]);
+        $("#map-iframe").attr("src", config["url"][config["type"]]);
         
         $("#Map").on("pageshow", onPageShow);
         $("#map-iframe").on("load", onLoadMap);

@@ -51,6 +51,7 @@ asyncTest( "config test", 4, function() {
         ]
     };
     Hayate.Database.open(dbInfo)
+        .then(Hayate.Config.load)
         .done(startTest)
         .fail(onFail);    
      

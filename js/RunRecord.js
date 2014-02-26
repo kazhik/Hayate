@@ -17,9 +17,11 @@ Hayate.RunRecord = function() {
         return false;
     }
     // calculates flat distance
-    function calculateFlatDistance(newLat, newLon) {
+    function calculateFlatDistance(prevCoords, newCoords) {
         var prevLat = prevCoords.latitude;
         var prevLon = prevCoords.longitude;
+        var newLat = newCoords.latitude;
+        var newLon = newCoords.longitude;
         var x = toRad(newLon - prevLon) * Math.cos(toRad(prevLat + newLat) / 2);
         var y = toRad(newLat - prevLat);
         var latestFlatMove = Math.sqrt(x * x + y * y) * Constant.earthRadius;
@@ -41,15 +43,8 @@ Hayate.RunRecord = function() {
         if (typeof prevCoords === "undefined") {
             return result;
         }
-        if (newCoords.accuracy > config["min"]["accuracy"]) {
-            return result;
-        }
-        var latestFlatMove = calculateFlatDistance(
-            newCoords.latitude, newCoords.longitude);
+        var latestFlatMove = calculateFlatDistance(prevCoords, newCoords);
         
-        if (newCoords.altAccuracy > config["min"]["altAccuracy"]) {
-            return result;
-        }
         if (newCoords.accuracy > latestFlatMove) {
             return result;
         }
@@ -104,13 +99,17 @@ Hayate.RunRecord = function() {
         setCurrentTime(newRec.timestamp);
 
         var latestMove = calculateDistance(newRec.coords);
+        if (prevCoords && latestMove.distance === 0) {
+            return 0;
+        }
 
         var lapTime = autoLap(newRec.timestamp, latestMove.distance);
         
         positionHistory.push(newRec);
 
         if (!prevCoords) {
-            prevCoords = newRec.coords;
+            // Deep copy
+            prevCoords = $.extend(true, {}, newRec.coords);
         } else {
             if (latestMove.distance > 0) {
                 realDistance += latestMove.distance;

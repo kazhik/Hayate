@@ -4,23 +4,28 @@ if (Hayate === undefined) {
     var Hayate = {};
 }
 Hayate.Config = function() {
-    var config = {
+    var configDefault = {
         "appname": "Hayate",
         "geolocation": {
             "min" : {
-                "accuracy": 200,
-                "altAccuracy": 200,
+                "accuracy": 50,
+                "altAccuracy": 50,
                 "timeInterval": 5,
                 "distanceInterval": 10
             },
             "autoLap": {
-                "on": "on",
+                "on": "off",
                 "distance": 1000
             },
-            "distanceUnit": "mile"
+            "distanceUnit": "metre"
         },
         "map": {
-            "url": "http://kazhik.github.io/Hayate/map/gmap.html",
+            "type": "GoogleMap",
+            "url": {
+                "GoogleMap": "http://kazhik.github.io/Hayate/map/gmap.html",
+//                "GoogleMap": "http://kazhik.net/test/gmap.html",
+                "OpenStreetMap": "http://kazhik.github.io/Hayate/map/omap.html"
+            },
             "zoom": 16
         },
         "debug": {
@@ -28,10 +33,7 @@ Hayate.Config = function() {
             "export": "position"
         }
     };
-    
-    var publicObj = {};
-    
-    publicObj.get = function(keys) {
+    function get(keys) {
         var conf = config;
         for (var i = 0; i < keys.length; i++) {
             if (typeof conf[keys[i]] === "undefined") {
@@ -41,8 +43,8 @@ Hayate.Config = function() {
             conf = conf[keys[i]];
         }
         return conf;
-    };
-    publicObj.set = function(keys, value) {
+    }
+    function set(keys, value) {
         if (keys.length < 1) {
             return;
         }
@@ -51,9 +53,8 @@ Hayate.Config = function() {
             conf = conf[keys[i]];
         }
         conf[keys[keys.length - 1]] = value;
-    };
-
-    publicObj.save = function(newConfig) {
+    }
+    function save(newConfig) {
         var onSuccess = function () {
             dfd.resolve();
         };
@@ -62,22 +63,27 @@ Hayate.Config = function() {
         };
 
         config["geolocation"] = newConfig["geolocation"];
-        config["map"]["zoom"] = newConfig["map"]["zoom"];
+        config["map"] = newConfig["map"];
         config["debug"] = newConfig["debug"];
 
         var dfd = new $.Deferred();
         Hayate.Database.put("Config", config)
             .done(onSuccess)
             .fail(onError);
+        
+        return dfd.promise();
     }
-    publicObj.load = function() {
+    function load() {
         var onSuccess = function (result) {
             if (typeof result !== "undefined") {
                 config = result;
+            } else {
+                config = configDefault;
             }
             dfd.resolve();
         };
         var onError = function(err) {
+            config = configDefault;
             dfd.reject(err);
         };
         var dfd = new $.Deferred();
@@ -87,7 +93,30 @@ Hayate.Config = function() {
             .fail(onError);
 
         return dfd.promise();        
-    };
+    }
+    function reset() {
+        config = configDefault;
+        return save(config);
+    }
+    var config = {};
     
+    var publicObj = {};
+    
+    publicObj.get = function(keys) {
+        return get(keys);
+    };
+    publicObj.set = function(keys, value) {
+        set(keys, value);
+    };
+
+    publicObj.save = function(newConfig) {
+        return save(newConfig);
+    };
+    publicObj.load = function() {
+        return load();
+    };
+    publicObj.reset = function() {
+        return reset();
+    };
     return publicObj;
 }();

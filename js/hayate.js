@@ -6,6 +6,7 @@ if (typeof Hayate === "undefined") {
 
 Hayate.start = function() {
     function initUI() {
+        
         Hayate.PopupView.init();        
         
         // Panel
@@ -19,20 +20,20 @@ Hayate.start = function() {
         Hayate.MapView.init();
         Hayate.LapsView.init();
 
-        if (Hayate.Config.get(["debug", "log"]) === "on") {
-            Hayate.LogView.init();
-        }
-        
     }
    function startApp() {
         $.event.special.tap.emitTapOnTaphold = false;
         
-
-        initUI();
+        // initialize console.log first
+        if (Hayate.Config.get(["debug", "log"]) === "on") {
+            Hayate.LogView.init();
+        }
         
         Hayate.Recorder.init();
         Hayate.Storage.init();
 
+        initUI();
+        
         console.log("Hayate started");
     
     }

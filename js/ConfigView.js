@@ -20,6 +20,8 @@ Hayate.ConfigView = function() {
                 "distanceUnit": $("#select-distance-unit").val()
             },
             "map": {
+                "type": $("#select-maptype").val(),
+                "url": Hayate.Config.get(["map", "url"]),
                 "zoom": parseInt($("#select-zoom").val(), 10)
             },
             "debug": {
@@ -47,6 +49,8 @@ Hayate.ConfigView = function() {
 
         $("#select-zoom").val(config["map"]["zoom"].toString())
             .selectmenu( "refresh" );
+        $("#select-maptype").val(config["map"]["type"])
+            .selectmenu( "refresh" );
 
         $("#flip-debug-log").val(config["debug"]["log"])
             .slider("refresh");
@@ -56,10 +60,28 @@ Hayate.ConfigView = function() {
     function init() {
         $("#flip-autolap").slider();
         $("#flip-debug-log").slider();
+
         $("#close-settings").on("tap", onClose);
+        $("#reset-conf").on("tap", reset);
         
         $("#Settings").on("pageshow", onOpen);
         initValue();
+    }
+    function reset() {
+        function onFail(err) {
+            console.log(err);
+        }
+        function onConfirm() {
+            Hayate.Config.reset()
+                .done(onOpen)
+                .fail(onFail);
+        }
+
+        Hayate.PopupView.openConfirmDialog(
+            document.webL10n.get("reset-conf-title"),
+            document.webL10n.get("reset-conf-message"),
+            document.webL10n.get("reset"),
+            onConfirm);
     }
     function initValue() {
         var distanceUnit = Hayate.Config.get(["geolocation", "distanceUnit"]);
@@ -103,6 +125,13 @@ Hayate.ConfigView = function() {
             $('#select-zoom').append($('<option>', {
                 value: values[i],
                 text: values[i]
+            }));        
+        }
+        values = ["GoogleMap", "OpenStreetMap"];
+        for (i = 0; i < values.length; i++) {
+            $('#select-maptype').append($('<option>', {
+                value: values[i],
+                text: document.webL10n.get(values[i])
             }));        
         }
         
