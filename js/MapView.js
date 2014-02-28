@@ -56,9 +56,11 @@ Hayate.MapView = function() {
         }
         function onLoadMap() {
             var mapIframe = document.getElementById("map-iframe");
-            config.type = "init";
+            var mapConfig = $.extend(true, {}, config);
+
+            mapConfig.type = "init";
             console.log("MapView onLoadMap: " + mapIframe.src);
-            mapIframe.contentWindow.postMessage(JSON.stringify(config), '*');
+            mapIframe.contentWindow.postMessage(JSON.stringify(mapConfig), '*');
             
         }
         
