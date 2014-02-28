@@ -17,6 +17,9 @@ Hayate.ConfigView = function() {
                     "on": $("#flip-autolap").val(),
                     "distance": parseInt($("#input-autolap-distance").val(), 10)
                 },
+                "pace" : {
+                    "type": $("#select-pace-type").val()
+                },
                 "distanceUnit": $("#select-distance-unit").val()
             },
             "map": {
@@ -40,6 +43,8 @@ Hayate.ConfigView = function() {
         $("#select-min-time-interval").val(config["geolocation"]["min"]["timeInterval"].toString())
             .selectmenu( "refresh" );
         $("#select-min-distance-interval").val(config["geolocation"]["min"]["distanceInterval"].toString())
+            .selectmenu("refresh");
+        $("#select-pace-type").val(config["geolocation"]["pace"]["type"])
             .selectmenu("refresh");
         $("#flip-autolap").val(config["geolocation"]["autoLap"]["on"])
             .slider("refresh");
@@ -91,64 +96,57 @@ Hayate.ConfigView = function() {
         } else {
             distanceUnitStr = document.webL10n.get("distance-unit-mile");
         }
+
+        function appendDistanceOptions(eleSelect, value) {
+            var optionAttr = {
+                value: value,
+                text: value + " " + distanceUnitStr
+            };
+            $(eleSelect).append($('<option>', optionAttr));        
+        }
+        [10, 50, 100, 200, 500, 1000].forEach(
+            appendDistanceOptions.bind(null, "#select-min-accuracy"));
+        [10, 50, 100, 200, 500, 1000].forEach(
+            appendDistanceOptions.bind(null, "#select-min-alt-accuracy"));
+        [1, 5, 10, 50, 100].forEach(
+            appendDistanceOptions.bind(null, "#select-min-distance-interval"));
         
-        var values;
-        var i;
+        function appendTimeOptions(eleSelect, value) {
+            var optionAttr = {
+                value: value,
+                text: value + " " + document.webL10n.get("seconds")
+            };
+            $(eleSelect).append($('<option>', optionAttr));        
+        }
+        [0, 1, 5, 10, 30, 60].forEach(
+            appendTimeOptions.bind(null, "#select-min-time-interval"));
         
-        values = [10, 50, 100, 200];
-        for (i = 0; i < values.length; i++) {
-            $('#select-min-accuracy').append($('<option>', {
-                value: values[i],
-                text: values[i] + " " + distanceUnitStr
-            }));        
-            $('#select-min-alt-accuracy').append($('<option>', {
-                value: values[i],
-                text: values[i] + " " + distanceUnitStr
-            }));        
+        function appendStringOptions(eleSelect, value) {
+            var optionAttr = {
+                value: value,
+                text: document.webL10n.get(value)
+            };
+            $(eleSelect).append($('<option>', optionAttr));        
         }
-        values = [1, 5, 10, 30, 60];
-        for (i = 0; i < values.length; i++) {
-            $('#select-min-time-interval').append($('<option>', {
-                value: values[i],
-                text: values[i] + " " + document.webL10n.get("seconds")
-            }));        
-        }
-        values = [1, 5, 10, 50, 100];
-        for (i = 0; i < values.length; i++) {
-            $('#select-min-distance-interval').append($('<option>', {
-                value: values[i],
-                text: values[i] + " " + distanceUnitStr
-            }));        
-        }
-        values = [12, 14, 16];
-        for (i = 0; i < values.length; i++) {
-            $('#select-zoom').append($('<option>', {
-                value: values[i],
-                text: values[i]
-            }));        
-        }
-        values = ["GoogleMap", "OpenStreetMap"];
-        for (i = 0; i < values.length; i++) {
-            $('#select-maptype').append($('<option>', {
-                value: values[i],
-                text: document.webL10n.get(values[i])
-            }));        
-        }
+        ["average-pace", "current-pace"].forEach(
+            appendStringOptions.bind(null, "#select-pace-type"));
+        ["GoogleMap", "OpenStreetMap"].forEach(
+            appendStringOptions.bind(null, "#select-maptype"));
+        ["metre", "mile"].forEach(
+            appendStringOptions.bind(null, "#select-distance-unit"));
+        ["gpx", "position"].forEach(
+            appendStringOptions.bind(null, "#select-export"));
         
-        values = ["metre", "mile"];
-        for (i = 0; i < values.length; i++) {
-            $('#select-distance-unit').append($('<option>', {
-                value: values[i],
-                text: document.webL10n.get(values[i])
-            }));        
+        function appendNumberOptions(eleSelect, value) {
+            var optionAttr = {
+                value: value,
+                text: value
+            };
+            $(eleSelect).append($('<option>', optionAttr));        
         }
-        values = ["gpx", "position"];
-        for (i = 0; i < values.length; i++) {
-            $('#select-export').append($('<option>', {
-                value: values[i],
-                text: values[i]
-            }));        
-        }
+        [12, 14, 16].forEach(
+            appendNumberOptions.bind(null, "#select-zoom"));
+            
         
         /* doesn't work
         values = ["on", "off"];

@@ -17,6 +17,9 @@ Hayate.Config = function() {
                 "on": "off",
                 "distance": 1000
             },
+            "pace": {
+                "type": "average"  
+            },
             "distanceUnit": "metre"
         },
         "map": {
