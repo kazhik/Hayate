@@ -32,9 +32,7 @@ Hayate.LapsView = function() {
     function onNewLap(newLap) {
         if (Array.isArray(newLap)) {
             clear();
-            for (var i = 0; i < newLap.length; i++) {
-                addListviewItem(newLap[i]);
-            }
+            newLap.forEach(addListviewItem);
         } else {
             addListviewItem(newLap);
         }
