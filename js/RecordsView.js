@@ -8,7 +8,7 @@ Hayate.RecordsView = function() {
     function onGetItemList(result) {
         $('#recordList').children().remove('li');
 
-        for (var i = 0; i < result.length && i < result.length < 4; i++) {
+        for (var i = 0; i < result.length; i++) {
             var startTime = result[i]["StartTime"];
             var startTimeStr = Hayate.StringUtil.formatDateTime(startTime);
             var recordName = result[i]["Name"];
