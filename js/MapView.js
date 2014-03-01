@@ -59,7 +59,7 @@ Hayate.MapView = function() {
             var mapConfig = $.extend(true, {}, config);
 
             mapConfig.type = "init";
-            console.log("MapView onLoadMap: " + mapIframe.src);
+            console.log("Sending init message to: " + mapIframe.src);
             mapIframe.contentWindow.postMessage(JSON.stringify(mapConfig), '*');
             
         }
