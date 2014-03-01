@@ -173,7 +173,6 @@ Hayate.WatchView = function() {
         
     }
     function onPageShow() {
-        console.log("WatchView onPageShow");
         config = Hayate.Config.get(["geolocation"]);
         
         updateDistanceUnit();
