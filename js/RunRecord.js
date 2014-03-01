@@ -217,6 +217,9 @@ Hayate.RunRecord = function() {
     publicObj.getElevationGain = function() {
         return elevationGain;
     };
+    publicObj.getAveragePace = function() {
+        return realDistance / ((currentTime - laptimes[0].timestamp) / 1000); 
+    };
     return publicObj;
     
 }();

@@ -6,16 +6,22 @@ if (Hayate === undefined) {
 Hayate.WatchView = function() {
 
     function updatePace(speed) {
-        if (speed === 0) {
-            return;
+        var pace;
+        if (config["pace"]["type"] === "current-pace") {
+            if (speed === 0) {
+                return;
+            }
+            pace = speed;
+        } else {
+            pace = Hayate.RunRecord.getAveragePace();
         }
         
         var ms; // milliseconds per km/mi
         if (config["distanceUnit"] === "metre") {
-            // speed === metre / sec
-            ms = (1 / speed) * 1000 * 1000;
+            // pace === metre / sec
+            ms = (1 / pace) * 1000 * 1000;
         } else {
-            ms = (1 / speed) * 1609.344 * 1000;
+            ms = (1 / pace) * 1609.344 * 1000;
         }
         $("#txtPace").text(Hayate.StringUtil.formatElapsedTime(ms));
     }
