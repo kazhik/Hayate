@@ -44,7 +44,6 @@ Hayate.StorageView = function() {
         $("#importSourceList").children().remove("li");
         
         $('#importSourceList').height(Hayate.ViewUtil.getContentHeight());
-        console.log("StorageView onPageShow");
         Hayate.Storage.checkIfAvailable()
             .then(Hayate.Storage.getGpxFiles)
             .done(onFileList)
@@ -52,8 +51,16 @@ Hayate.StorageView = function() {
     }
 
     function onSelectListItem() {
+        function onDone() {
+            Hayate.PopupView.toast("Import complete");
+        }
+        function onFail(err) {
+            Hayate.PopupView.toast(err);
+        }
         var selectedFile = files[$(this).attr("data-filename")];
-        Hayate.Recorder.importGpxFile(selectedFile);
+        Hayate.Recorder.importGpxFile(selectedFile)
+            .done(onDone)
+            .fail(onFail);
                     
         $.mobile.back();
     }

@@ -141,10 +141,11 @@ Hayate.Recorder = function() {
         }
         function onRead(recInfo, positions) {
             function onDone() {
-                Hayate.PopupView.toast("Import complete");
+                dfd.resolve();
             }
 
             if (positions.length === 0) {
+                dfd.reject("No data in file");
                 return;
             }
    
@@ -161,6 +162,7 @@ Hayate.Recorder = function() {
             loadRecord(data);
             
             if (db === null) {
+                dfd.resolve();
                 return;
             }
             db.add(objStoreName, data)
@@ -168,12 +170,15 @@ Hayate.Recorder = function() {
                 .fail(onFail);
 
         }
+        var dfd = new $.Deferred();
+
         stop();
         clear();
         Hayate.GeopositionConverter.readGpxFile(file)
             .done(onRead)
             .fail(onFail);
         
+        return dfd.promise();
     }
     function checkAccuracy(position) {
         if (position.coords.accuracy > config["min"]["accuracy"]) {
@@ -375,7 +380,7 @@ Hayate.Recorder = function() {
     };
     
     publicObj.importGpxFile = function(file) {
-        importGpxFile(file);
+        return importGpxFile(file);
     };
     publicObj.makeGpxFileObject = function(startTime) {
         return makeGpxFileObject(startTime);  
