@@ -8,14 +8,13 @@ Hayate.WatchView = function() {
     function updatePace(speed) {
         var pace;
         if (config["pace"]["type"] === "current-pace") {
-            if (speed === 0) {
-                return;
-            }
             pace = speed;
         } else {
             pace = Hayate.RunRecord.getAveragePace();
         }
-        
+        if (pace === 0) {
+            return;
+        }
         var ms; // milliseconds per km/mi
         if (config["distanceUnit"] === "metre") {
             // pace === metre / sec
