@@ -31,7 +31,6 @@ Hayate.RecordsView = function() {
         console.log(err.name + "(" + err.message + ")" );
     }
     function onPageShow() {
-        console.log("RecordsView onPageShow");
         initList();
     }
     function initList() {
