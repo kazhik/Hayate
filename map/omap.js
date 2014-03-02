@@ -15,19 +15,11 @@ Hayate.Map = function() {
             return;
         }
         
-        bounds = new google.maps.LatLngBounds();        
-        
-        var latLngArray = [];
-        var latLng;
-        var i;
-        for (i = 0; i < positionList.length; i++) {
-            latLng = new google.maps.LatLng(
-                positionList[i].coords.latitude,
-                positionList[i].coords.longitude);
-            latLngArray.push(latLng);
-            
-            bounds.extend(latLng);
+        function makeLatLngArray(position) {
+            return [position.coords.latitude, position.coords.longitude];
         }
+        var latLngArray = positionList.map(makeLatLngArray);
+        bounds = L.latLngBounds(latLngArray);
 
         if (map === null) {
             var option = {
@@ -36,33 +28,29 @@ Hayate.Map = function() {
             };
             createMap(option);
         } else {
-            clearRoute();
+            map.remove();
             
-            if (mapMarker !== null) {
-                mapMarker.setMap(null);
-                mapCircle.setMap(null);
-            }
+            var mapOption = {
+                latLng: latLngArray[0],
+                zoom: config["zoom"]
+            };
+            createMap(mapOption);
         }
         
         drawRoute(latLngArray);
 
     }
     function changeView(option) {
-        function onIdle() {
-            map.setZoom(map.getZoom() + 1);
-            
-        }
         if (bounds !== null) {
             map.fitBounds(bounds);
-            google.maps.event.addListenerOnce(map, "idle", onIdle);
         }
 
     }
     function clearRoute() {
-        var newPath = new google.maps.Polyline({
-          map: map
-        });
-        newPath.setMap(null);
+        if (!polyline) {
+            return;
+        }
+        polyline.setLatLngs([]);
     }
     function onPosition(position) {
         var currentCoords = position.coords;
@@ -70,29 +58,22 @@ Hayate.Map = function() {
             alert("Invalid position data: " + JSON.stringify(position));
             return;
         }
-        var newPosition = new google.maps.LatLng(
-            currentCoords.latitude,
-            currentCoords.longitude);
         
+        var newPosition = [currentCoords.latitude, currentCoords.longitude];
         if (map === null) {
             var mapOption = {
-                latlng: newPosition,
+                latLng: newPosition,
                 zoom: config["zoom"]
             };
             createMap(mapOption);
             var markerOption = {
-                latlng: newPosition,
-                icon: {
-                    path: google.maps.SymbolPath.CIRCLE,
-                    fillColor: "yellow",
-                    scale: 2
-                },
+                latLng: newPosition
             };
             createMarker(markerOption);
-        } else if (!newPosition.equals(prevPosition)) {
+        } else if (newPosition[0] !== prevPosition[0] || newPosition[1] !== prevPosition[1]) {
             map.setCenter(newPosition);
-            mapMarker.setPosition(newPosition);
-            mapCircle.setCenter(newPosition);
+            mapMarker.setLatLng(newPosition);
+            mapCircle.setLatLng(newPosition);
             mapCircle.setRadius(currentCoords.accuracy);
             
             if (position.started) {
@@ -103,16 +84,7 @@ Hayate.Map = function() {
         prevPosition = newPosition;
     }
     function drawRoute(latLngArray) {
-        
-        var newPath = new google.maps.Polyline({
-          path: latLngArray,
-          geodesic: true,
-          strokeColor: '#FF0000',
-          strokeOpacity: 1.0,
-          strokeWeight: 2
-        });
-      
-        newPath.setMap(map);        
+        polyline = L.polyline(latLngArray).addTo(map);        
     }
     function drawNewRoute(newPosition) {
         var newPathCoords = [
@@ -124,32 +96,21 @@ Hayate.Map = function() {
     }
     
     function createMap(option) {
-        var mapOptions = {
-            mapTypeId: google.maps.MapTypeId.ROADMAP,
-            center: option.latlng,
-            zoom: option.zoom
-        };
-        map = new google.maps.Map(document.getElementById("map-canvas"), mapOptions);
+        map = L.map("map-canvas").setView([option.latLng[0], option.latLng[1]], option.zoom);
+
+        L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
+            attribution : '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
+        }).addTo(map);
     }
     function createMarker(option) {
-        
-        var markerOption = {
-            map: map,
-            position: option.latlng
-        };
-        mapMarker = new google.maps.Marker(markerOption);
-
+        mapMarker = L.marker([option.latLng[0], option.latLng[1]]).addTo(map);
         var circleOption = {
-            center: option.latlng,
-            radius: 1,
-            map: map,
-            fillColor: "#0000ff",
-            fillOpacity: 0.1,
-            strokeColor: "#ff0000",
-            strokeOpacity: 0.1
+            color: 'red',
+            fillColor: '#f03',
+            fillOpacity: 0.5
         };
-        mapCircle = new google.maps.Circle(circleOption);
-        
+        mapCircle = L.circle([option.latLng[0], option.latLng[1]], 500, circleOption)
+            .addTo(map);        
     }
     
     function init() {
@@ -161,8 +122,8 @@ Hayate.Map = function() {
             return;
         }
         
-        if (typeof google === "undefined") {
-            alert("init error: google undefined");
+        if (typeof L === "undefined") {
+            alert("init error: L undefined");
             return;
         }
     }
@@ -186,6 +147,7 @@ Hayate.Map = function() {
     var map = null;
     var mapMarker = null;
     var mapCircle = null;
+    var polyline = null;
     var prevPosition;
     var bounds = null;
     var config;
