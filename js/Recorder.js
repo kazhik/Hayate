@@ -48,9 +48,9 @@ Hayate.Recorder = function() {
                 };
                 callLapListeners(newLap);
 
-                posJson.started = true;
-                callPositionListeners(posJson);
             }
+            posJson.started = true;
+            callPositionListeners(posJson);
         
         } else {
             posJson.started = false;
