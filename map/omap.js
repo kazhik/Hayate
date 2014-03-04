@@ -67,11 +67,12 @@ Hayate.Map = function() {
             };
             createMap(mapOption);
             var markerOption = {
-                latLng: newPosition
+                latLng: newPosition,
+                radius: currentCoords.accuracy
             };
             createMarker(markerOption);
         } else if (newPosition[0] !== prevPosition[0] || newPosition[1] !== prevPosition[1]) {
-            map.setCenter(newPosition);
+            map.setView(newPosition);
             mapMarker.setLatLng(newPosition);
             mapCircle.setLatLng(newPosition);
             mapCircle.setRadius(currentCoords.accuracy);
@@ -96,20 +97,20 @@ Hayate.Map = function() {
     }
     
     function createMap(option) {
-        map = L.map("map-canvas").setView([option.latLng[0], option.latLng[1]], option.zoom);
+        map = L.map("map-canvas").setView(option.latLng, option.zoom);
 
         L.tileLayer('http://{s}.tile.osm.org/{z}/{x}/{y}.png', {
             attribution : '&copy; <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
         }).addTo(map);
     }
     function createMarker(option) {
-        mapMarker = L.marker([option.latLng[0], option.latLng[1]]).addTo(map);
+        mapMarker = L.marker(option.latLng).addTo(map);
         var circleOption = {
             color: 'red',
             fillColor: '#f03',
             fillOpacity: 0.5
         };
-        mapCircle = L.circle([option.latLng[0], option.latLng[1]], 500, circleOption)
+        mapCircle = L.circle(option.latLng, option.radius, circleOption)
             .addTo(map);        
     }
     

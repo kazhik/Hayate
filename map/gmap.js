@@ -82,6 +82,7 @@ Hayate.Map = function() {
             createMap(mapOption);
             var markerOption = {
                 latlng: newPosition,
+                radius: currentCoords.accuracy,
                 icon: {
                     path: google.maps.SymbolPath.CIRCLE,
                     fillColor: "yellow",
@@ -141,7 +142,7 @@ Hayate.Map = function() {
 
         var circleOption = {
             center: option.latlng,
-            radius: 1,
+            radius: option.radius,
             map: map,
             fillColor: "#0000ff",
             fillOpacity: 0.1,
