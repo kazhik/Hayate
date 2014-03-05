@@ -1,7 +1,7 @@
 {
     "name": "Hayate",
     "description": "Running recorder",
-	"version": "0.1",
+	"version": "0.2",
     "launch_path": "/index.html",
     "icons": {
         "60": "/img/hayate60.png",
