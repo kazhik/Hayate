@@ -48,8 +48,7 @@ Hayate.start = function() {
         }
         var dfd = new $.Deferred();
     
-        // https://bugzilla.mozilla.org/show_bug.cgi?id=882592
-        window.addEventListener("localized", onLocalized, false);
+        navigator.mozL10n.ready(onLocalized);
             
         return dfd.promise();
         

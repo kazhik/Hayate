@@ -88,9 +88,9 @@ Hayate.RecordsView = function() {
 
         }
         Hayate.PopupView.openConfirmDialog(
-            document.webL10n.get("delete-record-title"),
-            document.webL10n.get("delete-record-message"),
-            document.webL10n.get("delete"),
+            navigator.mozL10n.get("delete-record-title"),
+            navigator.mozL10n.get("delete-record-message"),
+            navigator.mozL10n.get("delete"),
             onConfirm);
         
     }
@@ -156,9 +156,9 @@ Hayate.RecordsView = function() {
         }
         
         Hayate.PopupView.openConfirmDialog(
-            document.webL10n.get("clear-records-title"),
-            document.webL10n.get("clear-records-message"),
-            document.webL10n.get("clear"),
+            navigator.mozL10n.get("clear-records-title"),
+            navigator.mozL10n.get("clear-records-message"),
+            navigator.mozL10n.get("clear"),
             onConfirm);
         
     }

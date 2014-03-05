@@ -16,7 +16,7 @@ Hayate.PopupView = function() {
             $("#confirm-title").text(txtTitle);
             $("#confirm-message").text(txtMessage);
             $("#confirm-yes").text(txtButton);
-            $("#confirm-no").text(document.webL10n.get("no"));
+            $("#confirm-no").text(navigator.mozL10n.get("no"));
         
             $("#confirm-yes").on("tap", callback);
 
@@ -51,10 +51,10 @@ Hayate.PopupView = function() {
                 }
             }
             
-            $("#edit-record-title").text(document.webL10n.get("edit-record-title"));
-            $("#label-record-name").text(document.webL10n.get("record-name"));
-            $("#cancel").text(document.webL10n.get("cancel"));
-            $("#save").text(document.webL10n.get("save"));
+            $("#edit-record-title").text(navigator.mozL10n.get("edit-record-title"));
+            $("#label-record-name").text(navigator.mozL10n.get("record-name"));
+            $("#cancel").text(navigator.mozL10n.get("cancel"));
+            $("#save").text(navigator.mozL10n.get("save"));
             
             $("#record-name").textinput();
             $("#record-name").val(recordName);

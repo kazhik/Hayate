@@ -26,9 +26,7 @@ Hayate.Config = function() {
             "type": "GoogleMap",
             "url": {
                 "GoogleMap": "http://kazhik.github.io/Hayate/map/gmap.html",
-//                "GoogleMap": "http://kazhik.net/test/gmap.html",
                 "OpenStreetMap": "http://kazhik.github.io/Hayate/map/omap.html"
-//                "OpenStreetMap": "http://kazhik.net/test/omap.html",
             },
             "zoom": 16
         },

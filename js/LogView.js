@@ -41,9 +41,9 @@ Hayate.LogView = function() {
         }
 
         Hayate.PopupView.openConfirmDialog(
-            document.webL10n.get("clear-log-title"),
-            document.webL10n.get("clear-log-message"),
-            document.webL10n.get("clear"),
+            navigator.mozL10n.get("clear-log-title"),
+            navigator.mozL10n.get("clear-log-message"),
+            navigator.mozL10n.get("clear"),
             onConfirm);
 
 

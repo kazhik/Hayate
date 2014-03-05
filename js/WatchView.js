@@ -47,9 +47,9 @@ Hayate.WatchView = function() {
     function updateDistanceUnit() {
         var distanceUnitStr;
         if (config["distanceUnit"] === "metre") {
-            distanceUnitStr = document.webL10n.get("distance-unit-kilometre");
+            distanceUnitStr = navigator.mozL10n.get("distance-unit-kilometre");
         } else {
-            distanceUnitStr = document.webL10n.get("distance-unit-mile");
+            distanceUnitStr = navigator.mozL10n.get("distance-unit-mile");
         }
         if (distanceUnitStr !== $("#lblDistanceUnit").text()) {
             updateDistance(distance);
@@ -82,11 +82,11 @@ Hayate.WatchView = function() {
         Hayate.LapsView.clear();
 
         recorder.start();
-        $("#btnStart").text(document.webL10n.get("stop"));
+        $("#btnStart").text(navigator.mozL10n.get("stop"));
         status.Start = "started";
         
         if (config["autoLap"]["on"] === "off") {
-            $("#btnLap").text(document.webL10n.get("lap"));
+            $("#btnLap").text(navigator.mozL10n.get("lap"));
             $("#btnLap").button("enable");
             status.Lap = "lap";
         } else {
@@ -97,10 +97,10 @@ Hayate.WatchView = function() {
     function onTapStop() {
         releaseCpuLock();
         recorder.stop();
-        $("#btnStart").text(document.webL10n.get("start"));
+        $("#btnStart").text(navigator.mozL10n.get("start"));
         status.Start = "stopped";
 
-        $("#btnLap").text(document.webL10n.get("reset"));
+        $("#btnLap").text(navigator.mozL10n.get("reset"));
         $("#btnLap").button("enable");
         status.Lap = "reset";
         
@@ -163,8 +163,8 @@ Hayate.WatchView = function() {
     }
     
     function localize() {
-        $("#btnStart").text(document.webL10n.get("start"));
-        $("#btnLap").text(document.webL10n.get("reset"));
+        $("#btnStart").text(navigator.mozL10n.get("start"));
+        $("#btnLap").text(navigator.mozL10n.get("reset"));
         
         updateDistanceUnit();
     }

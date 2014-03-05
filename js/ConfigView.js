@@ -83,18 +83,18 @@ Hayate.ConfigView = function() {
         }
 
         Hayate.PopupView.openConfirmDialog(
-            document.webL10n.get("reset-conf-title"),
-            document.webL10n.get("reset-conf-message"),
-            document.webL10n.get("reset"),
+            navigator.mozL10n.get("reset-conf-title"),
+            navigator.mozL10n.get("reset-conf-message"),
+            navigator.mozL10n.get("reset"),
             onConfirm);
     }
     function initValue() {
         var distanceUnit = Hayate.Config.get(["geolocation", "distanceUnit"]);
         var distanceUnitStr;
         if (distanceUnit === "metre") {
-            distanceUnitStr = document.webL10n.get("distance-unit-metre");
+            distanceUnitStr = navigator.mozL10n.get("distance-unit-metre");
         } else {
-            distanceUnitStr = document.webL10n.get("distance-unit-mile");
+            distanceUnitStr = navigator.mozL10n.get("distance-unit-mile");
         }
 
         function appendDistanceOptions(eleSelect, value) {
@@ -114,7 +114,7 @@ Hayate.ConfigView = function() {
         function appendTimeOptions(eleSelect, value) {
             var optionAttr = {
                 value: value,
-                text: value + " " + document.webL10n.get("seconds")
+                text: value + " " + navigator.mozL10n.get("seconds")
             };
             $(eleSelect).append($('<option>', optionAttr));        
         }
@@ -124,7 +124,7 @@ Hayate.ConfigView = function() {
         function appendStringOptions(eleSelect, value) {
             var optionAttr = {
                 value: value,
-                text: document.webL10n.get(value)
+                text: navigator.mozL10n.get(value)
             };
             $(eleSelect).append($('<option>', optionAttr));        
         }
@@ -153,11 +153,11 @@ Hayate.ConfigView = function() {
         for (i = 0; i < values.length; i++) {
             $('#flip-autolap').append($('<option>', {
                 value: values[i],
-                text: document.webL10n.get(values[i])
+                text: navigator.mozL10n.get(values[i])
             }));        
             $('#flip-debug-log').append($('<option>', {
                 value: values[i],
-                text: document.webL10n.get(values[i])
+                text: navigator.mozL10n.get(values[i])
             }));        
         }
         */

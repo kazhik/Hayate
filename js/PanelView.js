@@ -14,7 +14,7 @@ Hayate.PanelView = function() {
                 .append($("<a/>", {
                     "href": "#Log",
                     "id": "open-log",
-                    "text": document.webL10n.get("log")
+                    "text": navigator.mozL10n.get("log")
                     })))
                 .listview("refresh");
         }
