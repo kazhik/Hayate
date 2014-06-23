@@ -8,7 +8,7 @@
     <link rel="stylesheet" href="style/hayate.css" />
     <link rel="resource" type="application/l10n" href="locales/locales.ini">
 
-    <script src="lib/js/jquery-2.1.0.min.js"></script>
+    <script src="lib/js/jquery-2.1.1.min.js"></script>
     <script src="lib/js/jquery.mobile-1.4.2.min.js"></script>
     <script src="lib/js/l10n.js"></script>
 
@@ -221,82 +221,84 @@
 
         <a href="#" id="reset-conf" data-icon="refresh" data-iconpos="notext">Reset</a>
       </div>
-      <ul data-role="listview" >
-        <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
-          <h2 data-l10n-id="geolocation">Geolocation</h2>
-          <form>
-            <label for="select-min-accuracy"
-                   data-l10n-id="min-accuracy">Latitude/Longitude accuracy</label>
-            <select name="select-min-accuracy" id="select-min-accuracy" data-mini="true">
-            </select>
-  
-            <label for="select-min-alt-accuracy"
-                   data-l10n-id="min-alt-accuracy">Altitude accuracy</label>
-            <select name="select-min-alt-accuracy" id="select-min-alt-accuracy" data-mini="true">
-            </select>
-  
-            <label for="select-min-time-interval"
-                   data-l10n-id="min-time-interval">Recording time interval</label>
-            <select name="select-min-time-interval" id="select-min-time-interval" data-mini="true">
-            </select>
-  
-            <label for="select-min-distance-interval"
-                   data-l10n-id="min-distance-interval">Recording distance interval</label>
-            <select name="select-min-distance-interval"
-                    id="select-min-distance-interval" data-mini="true">
-            </select>
-            
-            <label for="select-pace-type"
-                   data-l10n-id="pace">Pace</label>
-            <select name="select-pace-type" id="select-pace-type" data-mini="true">
-            </select>
-            
-            <label for="flip-autolap"
-                   data-l10n-id="autolap">Auto lap</label>
-            <select name="flip-autolap" id="flip-autolap" data-role="slider" data-mini="true">
-                <option value="on">On</option>
-                <option value="off">Off</option>
-            </select>
-            
-            <label for="input-autolap-distance"
-                   data-l10n-id="autolap-distance">Auto lap distance</label>
-            <input pattern="[0-9]*" id="input-autolap-distance" value="1000" type="number">
+      <div data-role="content" data-theme="a">
+        <ul data-role="listview">
+          <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
+            <h2 data-l10n-id="geolocation">Geolocation</h2>
+            <form>
+              <label for="select-min-accuracy"
+                     data-l10n-id="min-accuracy">Latitude/Longitude accuracy</label>
+              <select name="select-min-accuracy" id="select-min-accuracy" data-mini="true">
+              </select>
     
-            <label for="select-distance-unit"
-                   data-l10n-id="distance-unit">Distance units</label>
-            <select name="select-distance-unit" id="select-distance-unit" data-mini="true">
-            </select>
-            
-          </form>
-        </li>
-        <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
-          <h2 data-l10n-id="map">Map</h2>
-          <form>
-            <label data-l10n-id="zoom-level" for="select-zoom">Zoom</label>
-            <select name="select-zoom" id="select-zoom" data-mini="true">
-            </select>
-            <label data-l10n-id="maptype" for="select-maptype">MAPTYPE</label>
-            <select name="select-maptype" id="select-maptype" data-mini="true">
-            </select>
-            
-          </form>
-        </li>
-        <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
-          <h2 data-l10n-id="debug">Debug</h2>
-          <form>
-            <label data-l10n-id="log" for="flip-debug-log">Log</label>
-            <select id="flip-debug-log" name="flip-debug-log" data-role="slider" data-mini="true">
-                <option value="on">On</option>
-                <option value="off">Off</option>
-            </select>            
-            <label data-l10n-id="export" for="select-export">Export</label>
-            <select name="select-export" id="select-export" data-mini="true">
-            </select>
-          </form>
-        </li>
-
-      </ul>
-
+              <label for="select-min-alt-accuracy"
+                     data-l10n-id="min-alt-accuracy">Altitude accuracy</label>
+              <select name="select-min-alt-accuracy" id="select-min-alt-accuracy" data-mini="true">
+              </select>
+    
+              <label for="select-min-time-interval"
+                     data-l10n-id="min-time-interval">Recording time interval</label>
+              <select name="select-min-time-interval" id="select-min-time-interval" data-mini="true">
+              </select>
+    
+              <label for="select-min-distance-interval"
+                     data-l10n-id="min-distance-interval">Recording distance interval</label>
+              <select name="select-min-distance-interval"
+                      id="select-min-distance-interval" data-mini="true">
+              </select>
+              
+              <label for="select-pace-type"
+                     data-l10n-id="pace">Pace</label>
+              <select name="select-pace-type" id="select-pace-type" data-mini="true">
+              </select>
+              
+              <label for="flip-autolap"
+                     data-l10n-id="autolap">Auto lap</label>
+              <select name="flip-autolap" id="flip-autolap" data-role="slider" data-mini="true">
+                  <option value="on">On</option>
+                  <option value="off">Off</option>
+              </select>
+              
+              <label for="input-autolap-distance"
+                     data-l10n-id="autolap-distance">Auto lap distance</label>
+              <input pattern="[0-9]*" id="input-autolap-distance" value="1000" type="number">
+      
+              <label for="select-distance-unit"
+                     data-l10n-id="distance-unit">Distance units</label>
+              <select name="select-distance-unit" id="select-distance-unit" data-mini="true">
+              </select>
+              
+            </form>
+          </li>
+          <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
+            <h2 data-l10n-id="map">Map</h2>
+            <form>
+              <label data-l10n-id="zoom-level" for="select-zoom">Zoom</label>
+              <select name="select-zoom" id="select-zoom" data-mini="true">
+              </select>
+              <label data-l10n-id="maptype" for="select-maptype">MAPTYPE</label>
+              <select name="select-maptype" id="select-maptype" data-mini="true">
+              </select>
+              
+            </form>
+          </li>
+          <li data-role="collapsible" data-iconpos="right" data-shadow="false" data-corners="false">
+            <h2 data-l10n-id="debug">Debug</h2>
+            <form>
+              <label data-l10n-id="log" for="flip-debug-log">Log</label>
+              <select id="flip-debug-log" name="flip-debug-log" data-role="slider" data-mini="true">
+                  <option value="on">On</option>
+                  <option value="off">Off</option>
+              </select>            
+              <label data-l10n-id="export" for="select-export">Export</label>
+              <select name="select-export" id="select-export" data-mini="true">
+              </select>
+            </form>
+          </li>
+        </ul>
+          
+        
+      </div>
         
     </div><!-- /page Settings -->
     
