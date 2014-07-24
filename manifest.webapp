@@ -1,7 +1,7 @@
 {
     "name": "Hayate",
     "description": "Running recorder",
-	"version": "0.4",
+    "version": "0.5",
     "launch_path": "/index.html",
     "icons": {
         "60": "/img/hayate60.png",
@@ -23,6 +23,9 @@
         "url": "https://github.com/kazhik"
     },
     "type": "privileged",    
+    "messages": [
+        { "alarm": "/index.html" }
+    ],
     "permissions": {
         "geolocation": {
             "description": "geolocation API"
@@ -30,7 +33,9 @@
         "device-storage:sdcard": {
             "description": "DeviceStorage API",
             "access": "readwrite"
+        },
+        "alarms": {
+            "description": "Alarm API"
         }
-
     }    
 }
