@@ -5,22 +5,26 @@ if (Hayate === undefined) {
 }
 Hayate.Alarm = function() {
     function setAlarm() {
-        function onSuccess() {
+        function onAlarmAdded() {
             alarmId = request.result;
         }
         var alarmDate = new Date(Date.now() + (60 * 1000)); // 60 seconds later
         var request = navigator.mozAlarms.add(alarmDate, "ignoreTimezone");
-        request.onsuccess = onSuccess;
+        request.onsuccess = onAlarmAdded;
     }
-    function stopAlarm() {
-        navigator.mozAlarms.remove(alarmId);
-    }
-    function startAlarm() {
+    function setHandler() {
         function onAlarm(mozAlarm) {
+            // set next alarm
             setAlarm();
         }
         navigator.mozSetMessageHandler("alarm", onAlarm);
+    }
+    function startAlarm() {
+        setHandler();
         setAlarm();
+    }
+    function stopAlarm() {
+        navigator.mozAlarms.remove(alarmId);
     }
     var alarmId = 0;
     
