@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.WatchView = function() {
+Hayate.WatchView = (function() {
 
     function updatePace(speed) {
         var pace;
@@ -124,6 +124,7 @@ Hayate.WatchView = function() {
         $("#txtPace").text("00:00");
         $("#txtGain").text("0");
         
+        Hayate.MapView.clear();
         Hayate.LapsView.clear();
 
     }
@@ -195,11 +196,7 @@ Hayate.WatchView = function() {
     };
     var config = null;
     
-    var publicObj = {};
-    publicObj.init = function() {
-        init();
-    };
-
-    
-    return publicObj;
-}();
+    return {
+        init: init
+    };    
+}());

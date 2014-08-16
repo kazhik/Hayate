@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.MapView = function() {
+Hayate.MapView = (function() {
 
     function loadData(posArray) {
         var positionlist = {
@@ -41,6 +41,12 @@ Hayate.MapView = function() {
     }
     function stop() {
         Hayate.Recorder.removeListener(onPosition);
+        
+    }
+    function clear() {
+        var msg = {};
+        msg.type = "clear";
+        mapIframe.contentWindow.postMessage(JSON.stringify(msg), '*');
         
     }
     function init() {
@@ -83,18 +89,13 @@ Hayate.MapView = function() {
         
     }
     
-    var publicObj = {};
     var recorder;
     var prevCoords;
     var config;
     
-    publicObj.init = function() {
-        init();
+    return {
+        init: init,
+        stop: stop,
+        clear: clear
     };
-    publicObj.stop = function() {
-        stop();
-    };
-
-    
-    return publicObj;
-}();
+}());
