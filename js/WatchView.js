@@ -78,6 +78,7 @@ Hayate.WatchView = (function() {
     }
     function onTapStart() {
         Hayate.LapsView.clear();
+        clearView();
 
         recorder.start();
         Hayate.Alarm.start();
@@ -114,15 +115,18 @@ Hayate.WatchView = (function() {
             onTapStop();
         }
     }
-    function onTapReset() {
-        $("#btnLap").button("disable");
-        status.Lap = "disabled";
-        
+    function clearView() {
         $("#txtSplitTime").text("00:00:00");
         $("#txtLapTime").text("00:00:00");
         $("#txtDistance").text("0");
         $("#txtPace").text("00:00");
         $("#txtGain").text("0");
+    }
+    function onTapReset() {
+        $("#btnLap").button("disable");
+        status.Lap = "disabled";
+        
+        clearView();
         
         Hayate.MapView.clear();
         Hayate.LapsView.clear();
