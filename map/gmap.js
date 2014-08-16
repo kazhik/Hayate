@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.Map = function() {
+Hayate.Map = (function() {
 
     function loadPositionList(positionList) {
         if (!Array.isArray(positionList)) {
@@ -36,16 +36,23 @@ Hayate.Map = function() {
             };
             createMap(option);
         } else {
-            clearRoute();
-            
-            if (mapMarker !== null) {
-                mapMarker.setMap(null);
-                mapCircle.setMap(null);
-            }
+            clear();
         }
         
         drawRoute(latLngArray);
 
+    }
+    function clear() {
+        var newPath = new google.maps.Polyline({
+          map: map
+        });
+        newPath.setMap(null);
+        
+        if (mapMarker !== null) {
+            mapMarker.setMap(null);
+            mapCircle.setMap(null);
+        }
+        
     }
     function changeView(option) {
         function onIdle() {
@@ -58,12 +65,7 @@ Hayate.Map = function() {
         }
 
     }
-    function clearRoute() {
-        var newPath = new google.maps.Polyline({
-          map: map
-        });
-        newPath.setMap(null);
-    }
+
     function onPosition(position) {
         var currentCoords = position.coords;
         if (typeof currentCoords === "undefined") {
@@ -172,6 +174,8 @@ Hayate.Map = function() {
         if (jsonObj.type === "init") {
             config = jsonObj;
             init();
+        } else if (jsonObj.type === "clear") {
+            clear();
         } else if (jsonObj.type === "position") {
             onPosition(jsonObj);
         } else if (jsonObj.type === "view") {
@@ -183,7 +187,6 @@ Hayate.Map = function() {
         }
     }
     
-    var publicObj = {};
     var map = null;
     var mapMarker = null;
     var mapCircle = null;
@@ -192,5 +195,5 @@ Hayate.Map = function() {
     var config;
     window.addEventListener("message", receiveMessage, false);
 
-    return publicObj;
-}();
+    return {};
+}());

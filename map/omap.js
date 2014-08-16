@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.Map = function() {
+Hayate.Map = (function() {
 
     function loadPositionList(positionList) {
         if (!Array.isArray(positionList)) {
@@ -21,21 +21,14 @@ Hayate.Map = function() {
         var latLngArray = positionList.map(makeLatLngArray);
         bounds = L.latLngBounds(latLngArray);
 
-        if (map === null) {
-            var option = {
-                latlng: latLngArray[0],
-                zoom: config["zoom"]
-            };
-            createMap(option);
-        } else {
+        if (map !== null) {
             map.remove();
-            
-            var mapOption = {
-                latLng: latLngArray[0],
-                zoom: config["zoom"]
-            };
-            createMap(mapOption);
         }
+        var mapOption = {
+            latLng: latLngArray[0],
+            zoom: config["zoom"]
+        };
+        createMap(mapOption);
         
         drawRoute(latLngArray);
 
@@ -44,9 +37,8 @@ Hayate.Map = function() {
         if (bounds !== null) {
             map.fitBounds(bounds);
         }
-
     }
-    function clearRoute() {
+    function clear() {
         if (!polyline) {
             return;
         }
@@ -133,6 +125,8 @@ Hayate.Map = function() {
         if (jsonObj.type === "init") {
             config = jsonObj;
             init();
+        } else if (jsonObj.type === "clear") {
+            clear();
         } else if (jsonObj.type === "position") {
             onPosition(jsonObj);
         } else if (jsonObj.type === "view") {
@@ -144,7 +138,6 @@ Hayate.Map = function() {
         }
     }
     
-    var publicObj = {};
     var map = null;
     var mapMarker = null;
     var mapCircle = null;
@@ -154,5 +147,5 @@ Hayate.Map = function() {
     var config;
     window.addEventListener("message", receiveMessage, false);
 
-    return publicObj;
-}();
+    return {};
+}());
