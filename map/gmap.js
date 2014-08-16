@@ -43,10 +43,11 @@ Hayate.Map = (function() {
 
     }
     function clear() {
-        var newPath = new google.maps.Polyline({
-          map: map
-        });
-        newPath.setMap(null);
+        function removePolyline(polyline) {
+            polyline.setMap(null);
+        }
+        polylines.forEach(removePolyline);
+        polylines.length = 0;
         
         if (mapMarker !== null) {
             mapMarker.setMap(null);
@@ -115,7 +116,8 @@ Hayate.Map = (function() {
           strokeWeight: 2
         });
       
-        newPath.setMap(map);        
+        newPath.setMap(map);
+        polylines.push(newPath);
     }
     function drawNewRoute(newPosition) {
         var newPathCoords = [
@@ -190,6 +192,7 @@ Hayate.Map = (function() {
     var map = null;
     var mapMarker = null;
     var mapCircle = null;
+    var polylines = [];
     var prevPosition;
     var bounds = null;
     var config;
