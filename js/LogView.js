@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.LogView = function() {
+Hayate.LogView = (function() {
     function init() {
         $("#logList").listview().listview("refresh");
         $("#delete-log").on("tap", clearLog);
@@ -49,11 +49,7 @@ Hayate.LogView = function() {
 
     }
     
-    var publicObj = {};
-    
-    publicObj.init = function() {
-        init();
+    return {
+        init: init
     };
-    
-    return publicObj;
-}();
+}());

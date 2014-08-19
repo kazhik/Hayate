@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.RecordsView = function() {
+Hayate.RecordsView = (function() {
 
     function onGetItemList(result) {
         $('#recordList').children().remove('li');
@@ -180,11 +180,7 @@ Hayate.RecordsView = function() {
     }
     var selected;
     
-    var publicObj = {};
-    
-    publicObj.init = function() {
-        init();
+    return {
+        init: init
     };
-    
-    return publicObj;
-}();
+}());

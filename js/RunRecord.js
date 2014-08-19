@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.RunRecord = function() {
+Hayate.RunRecord = (function() {
     function toRad(x) {
         return x * Math.PI / 180;
     }
@@ -222,6 +222,6 @@ Hayate.RunRecord = function() {
     };
     return publicObj;
     
-}();
+}());
 
 

@@ -3,8 +3,8 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.GeopositionConverter = function() {
-    function makeGpxFileObject(positions, trackName, trackDesc, trackType) {
+Hayate.GeopositionConverter = (function() {
+    function makeGpxFileObject(positions, trackInfo) {
         function createCDATAElement(name, text) {
             var element = gpxDoc.createElement(name);
             var textNode = gpxDoc.createCDATASection(text);
@@ -21,9 +21,9 @@ Hayate.GeopositionConverter = function() {
         var gpxDoc = document.implementation.createDocument(null, "gpx", null);
         
         var trkElement = gpxDoc.createElement("trk");
-        trkElement.appendChild(createCDATAElement("name", trackName));
-        trkElement.appendChild(createCDATAElement("desc", trackDesc));
-        trkElement.appendChild(createCDATAElement("type", trackType));
+        trkElement.appendChild(createCDATAElement("name", trackInfo.name));
+        trkElement.appendChild(createCDATAElement("desc", trackInfo.desc));
+        trkElement.appendChild(createCDATAElement("type", trackInfo.type));
         
         var trkSeg = gpxDoc.createElement("trkseg");
         for (var i = 0; i < positions.length; i++) {
@@ -97,20 +97,15 @@ Hayate.GeopositionConverter = function() {
 
         return dfd.promise();
     }
+    function clear() {
+        positions.length = 0;
+    }
 
     var positions = [];
-    var publicObj = {};
     
-    publicObj.clear = function() {
-        positions.length = 0;
+    return {
+        clear: clear,
+        readGpxFile: readGpxFile,
+        makeGpxFileObject: makeGpxFileObject
     };
-    
-    publicObj.readGpxFile = function(file) {
-        return readGpxFile(file);
-    };
-    publicObj.makeGpxFileObject = function(positions, recInfo) {
-        return makeGpxFileObject(positions, recInfo.Name, recInfo.Desc, recInfo.Type);  
-    };
-
-    return publicObj;
-}();
+}());

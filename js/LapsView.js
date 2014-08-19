@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.LapsView = function() {
+Hayate.LapsView = (function() {
 
     function init() {
         $("#datetimeList").listview().listview("refresh");
@@ -42,14 +42,9 @@ Hayate.LapsView = function() {
         $('#datetimeList').children().remove('li');
         $('#laptimeList').children().remove('li');
     }
-    var publicObj = {};
     
-    publicObj.init = function() {
-        init();
+    return {
+        init: init,
+        clear: clear
     };
-    publicObj.clear = function() {
-        clear();
-    };
-
-    return publicObj;
-}();
+}());

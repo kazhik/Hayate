@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.ViewUtil = function() {
+Hayate.ViewUtil = (function() {
     function getRealContentHeight() {
         var header = $.mobile.activePage.find("div[data-role='header']:visible");
         var headerFooterHeight = 0;
@@ -43,14 +43,8 @@ Hayate.ViewUtil = function() {
         return contentHeight;
     }
     
-    var publicObj = {};
-    
-    publicObj.getRealContentHeight = function() {
-        return getRealContentHeight();    
+    return {
+        getRealContentHeight: getRealContentHeight,
+        getContentHeight: getContentHeight
     };
-    publicObj.getContentHeight = function() {
-        return getContentHeight();    
-    };
-    
-    return publicObj;
-}();
+}());

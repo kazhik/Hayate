@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.StringUtil = function() {
+Hayate.StringUtil = (function() {
 
     function formatElapsedTime(msec) {
         var hour = ("0" + Math.floor(msec / (1000 * 60 * 60))).slice(-2);
@@ -21,17 +21,9 @@ Hayate.StringUtil = function() {
         return datetime.toLocaleTimeString(); 
     }
     
-    var publicObj = {};
-    
-    publicObj.formatElapsedTime = function(msec) {
-        return formatElapsedTime(msec);
+    return {
+        formatElapsedTime: formatElapsedTime,
+        formatDateTime: formatDateTime,
+        formatTime: formatTime
     };
-    publicObj.formatDateTime = function(msec) {
-        return formatDateTime(msec);
-    };
-    publicObj.formatTime = function(msec) {
-        return formatTime(msec);
-    };
-    
-    return publicObj;
-}();
+}());

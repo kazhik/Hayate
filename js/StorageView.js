@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.StorageView = function() {
+Hayate.StorageView = (function() {
 
     function onFileList(gpxFiles) {
         function getTrackNameCallback(filename, trackname) {
@@ -64,14 +64,13 @@ Hayate.StorageView = function() {
                     
         $.mobile.back();
     }
-    
-    var publicObj = {};
-    var files = {};
-    
-    publicObj.init = function() {
+    function init() {
         $("#Import").on("pageshow", onPageShow);
         $("#importSourceList").on("tap", "li a", onSelectListItem);     
+    }
+    var files = {};
+    
+    return {
+        init: init
     };
-   
-    return publicObj;
-}();
+}());

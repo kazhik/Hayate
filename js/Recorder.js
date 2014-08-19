@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.Recorder = function() {
+Hayate.Recorder = (function() {
     
     function convertPositionToJSON(position) {
         var coords = position.coords;
@@ -393,4 +393,4 @@ Hayate.Recorder = function() {
     };
     
     return publicObj;
-}();
+}());

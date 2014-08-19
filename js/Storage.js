@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.Storage = function() {
+Hayate.Storage = (function() {
     var FileInfo = {
         "gpx": {
             "folder": "Apps/hayate/gpx",
@@ -163,4 +163,4 @@ Hayate.Storage = function() {
 
    
     return publicObj;
-}();
+}());

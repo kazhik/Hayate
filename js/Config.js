@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.Config = function() {
+Hayate.Config = (function() {
     var configDefault = {
         "appname": "Hayate",
         "geolocation": {
@@ -102,6 +102,7 @@ Hayate.Config = function() {
     }
     var config = {};
     
+    /*
     var publicObj = {};
     
     publicObj.get = function(keys) {
@@ -121,4 +122,12 @@ Hayate.Config = function() {
         return reset();
     };
     return publicObj;
-}();
+    */
+    return {
+        get: get,
+        set: set,
+        save: save,
+        load: load,
+        reset: reset
+    };
+}());

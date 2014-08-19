@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.PopupView = function() {
+Hayate.PopupView = (function() {
 
     function init() {
 
@@ -69,23 +69,12 @@ Hayate.PopupView = function() {
         $("#popup").load("edit-dialog.html", onLoad);
         
     }
-    var publicObj = {};
     
-    publicObj.init = function() {
-        init();
+    return {
+        init: init,
+        openAboutDialog: openAboutDialog,
+        openConfirmDialog: openConfirmDialog,
+        openEditRecordDialog: openEditRecordDialog,
+        toast: toast
     };
-    publicObj.openAboutDialog = function() {
-        openAboutDialog();  
-    };
-    publicObj.openConfirmDialog = function(txtTitle, txtMessage, txtButton, callback) {
-        openConfirmDialog(txtTitle, txtMessage, txtButton, callback);
-    };
-    publicObj.openEditRecordDialog = function(recordName, callback) {
-        openEditRecordDialog(recordName, callback);
-    };
-    publicObj.toast = function(message) {
-        toast(message);
-    };
-    
-    return publicObj;
-}();
+}());

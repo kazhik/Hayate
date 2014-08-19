@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.ConfigView = function() {
+Hayate.ConfigView = (function() {
     function onClose() {
         var config = {
             "geolocation": {
@@ -164,13 +164,7 @@ Hayate.ConfigView = function() {
         
     }
     
-    var publicObj = {};
-    
-    publicObj.init = function() {
-        init();
-        
+    return {
+        init: init
     };
-    
-    
-    return publicObj;
-}();
+}());

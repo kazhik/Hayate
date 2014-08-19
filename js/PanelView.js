@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.PanelView = function() {
+Hayate.PanelView = (function() {
     function init() {
         $("#LeftPanel").panel();
         $("#panel-menu").listview().listview("refresh");
@@ -22,11 +22,7 @@ Hayate.PanelView = function() {
 
     }
     
-    var publicObj = {};
-    
-    publicObj.init = function() {
-        init();
+    return {
+        init: init
     };
-    
-    return publicObj;
-}();
+}());

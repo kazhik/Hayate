@@ -3,7 +3,7 @@
 if (Hayate === undefined) {
     var Hayate = {};
 }
-Hayate.Alarm = function() {
+Hayate.Alarm = (function() {
     function setAlarm() {
         function onAlarmAdded() {
             alarmId = request.result;
@@ -28,14 +28,8 @@ Hayate.Alarm = function() {
     }
     var alarmId = 0;
     
-    var publicObj = {};
-    publicObj.start = function() {
-        startAlarm();
+    return {
+        start: startAlarm,
+        stop: stopAlarm
     };
-    publicObj.stop = function() {
-        stopAlarm();
-    }
-
-    
-    return publicObj;
-}();
+}());
