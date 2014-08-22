@@ -77,6 +77,8 @@ Hayate.WatchView = (function() {
         distance = newRec.distance;
     }
     function onTapStart() {
+        obtainCpuLock();
+        Hayate.MapView.clear();
         Hayate.LapsView.clear();
         clearView();
 
@@ -95,6 +97,7 @@ Hayate.WatchView = (function() {
         }
     }
     function onTapStop() {
+        releaseCpuLock();
         recorder.stop();
         Hayate.Alarm.stop();
         $("#btnStart").text(navigator.mozL10n.get("start"));
@@ -146,7 +149,21 @@ Hayate.WatchView = (function() {
             onTapReset();
         }
     }
-    
+    function obtainCpuLock() {
+        if (!window.navigator) {
+            return;
+        }
+        var ua = navigator.userAgent;
+        if (ua.match(/Mobile/) === null) {
+            return;
+        }
+        
+        lock = window.navigator.requestWakeLock("cpu");
+        
+    }
+    function releaseCpuLock() {
+        lock.unlock();
+    }
     function localize() {
         $("#btnStart").text(navigator.mozL10n.get("start"));
         $("#btnLap").text(navigator.mozL10n.get("reset"));
@@ -191,6 +208,7 @@ Hayate.WatchView = (function() {
         $("#Stopwatch").on("pageshow", onPageShow);
         
     }
+    var lock;
     var distance = 0;
     var recorder;
 
