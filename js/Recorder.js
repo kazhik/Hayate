@@ -102,7 +102,8 @@ Hayate.Recorder = (function() {
         };
         callTimeListeners(newRec);
     }
-    function lap(timestamp) {
+    function lap() {
+        var timestamp = Date.now();
         var lapTime = record.addLap(timestamp);
         
         var newLap = {
@@ -131,7 +132,7 @@ Hayate.Recorder = (function() {
         record.init();
 
     }
-    function stop() {
+    function stopTimer() {
         clearInterval(intervalId);
         intervalId = 0;
     }
@@ -304,7 +305,7 @@ Hayate.Recorder = (function() {
         function onError(err) {
             console.log(err);
         }
-        stop();
+        stopTimer();
         clear();
         loadFromDB(startTime)
             .done(onLoad)
@@ -312,6 +313,48 @@ Hayate.Recorder = (function() {
         
     }
 
+    function init() {
+        config = Hayate.Config.get(["geolocation"]);
+        
+        if (typeof Hayate.Database !== "undefined") {
+            db = Hayate.Database;
+        }
+        record = Hayate.RunRecord;
+        
+        startWatchPosition();
+        
+    }
+    function start() {
+        clear();
+        lap();
+        intervalId = setInterval(onTimeout, 100);
+    }
+    function stop() {
+        lap();
+        stopTimer();
+        
+        storeRecord();
+        
+    }
+    function addPositionListener(listener) {
+        positionListeners[listener.name] = listener;   
+    }
+    function removePositionListener(listener) {
+        delete positionListeners[listener.name];
+    }
+    function addTimeListener(listener) {
+        timeListeners[listener.name] = listener;   
+    }
+    function removeTimeListener(listener) {
+        delete timeListeners[listener.name];
+    }
+    function addLapListener(listener) {
+        lapListeners[listener.name] = listener;   
+    }
+    function removeLapListener(listener) {
+        delete lapListeners[listener.name];
+    }
+    
     var positionListeners = {};
     var timeListeners = {};
     var lapListeners = {};
@@ -328,69 +371,23 @@ Hayate.Recorder = (function() {
 
     var record;
     
-    publicObj.init = function() {
-        config = Hayate.Config.get(["geolocation"]);
-        
-        if (typeof Hayate.Database !== "undefined") {
-            db = Hayate.Database;
-        }
-        record = Hayate.RunRecord;
-        
-        startWatchPosition();
-    };
-    publicObj.terminate = function() {
-        stopWatchPosition();
-    };
-    publicObj.start = function() {
-        clear();
-        lap(Date.now());
-        intervalId = setInterval(onTimeout, 100);
-    };
-    publicObj.clear = function() {
-        clear();
-    };
-    publicObj.stop = function() {
-        lap(Date.now());
-        stop();
-        
-        storeRecord();
-        
-    };
-    publicObj.lap = function() {
-        lap(Date.now());
+    return {
+        addPositionListener: addPositionListener,
+        removePositionListener: removePositionListener,
+        addTimeListener: addTimeListener,
+        removeTimeListener: removeTimeListener,
+        addLapListener: addLapListener,
+        removeLapListener: removeLapListener,
+        init: init,
+        terminate: stopWatchPosition,
+        start: start,
+        clear: clear,
+        stop: stop,
+        lap: lap,
+        importGpxFile: importGpxFile,
+        makeGpxFileObject: makeGpxFileObject,
+        makePositionFileObject: makePositionFileObject,
+        load: load
     };
     
-    publicObj.addPositionListener = function(listener) {
-        positionListeners[listener.name] = listener;   
-    };
-    publicObj.removePositionListener = function(listener) {
-        delete positionListeners[listener.name];
-    };
-    publicObj.addTimeListener = function(listener) {
-        timeListeners[listener.name] = listener;   
-    };
-    publicObj.removeTimeListener = function(listener) {
-        delete timeListeners[listener.name];
-    };
-    publicObj.addLapListener = function(listener) {
-        lapListeners[listener.name] = listener;   
-    };
-    publicObj.removeLapListener = function(listener) {
-        delete lapListeners[listener.name];
-    };
-    
-    publicObj.importGpxFile = function(file) {
-        return importGpxFile(file);
-    };
-    publicObj.makeGpxFileObject = function(startTime) {
-        return makeGpxFileObject(startTime);  
-    };
-    publicObj.makePositionFileObject = function(startTime) {
-        return makePositionFileObject(startTime);  
-    };
-    publicObj.load = function(startTime) {
-        load(startTime);  
-    };
-    
-    return publicObj;
 }());
