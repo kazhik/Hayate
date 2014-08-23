@@ -21,9 +21,9 @@ Hayate.GeopositionConverter = (function() {
         var gpxDoc = document.implementation.createDocument(null, "gpx", null);
         
         var trkElement = gpxDoc.createElement("trk");
-        trkElement.appendChild(createCDATAElement("name", trackInfo.name));
-        trkElement.appendChild(createCDATAElement("desc", trackInfo.desc));
-        trkElement.appendChild(createCDATAElement("type", trackInfo.type));
+        trkElement.appendChild(createCDATAElement("name", trackInfo.Name));
+        trkElement.appendChild(createCDATAElement("desc", trackInfo.Desc));
+        trkElement.appendChild(createCDATAElement("type", trackInfo.Type));
         
         var trkSeg = gpxDoc.createElement("trkseg");
         for (var i = 0; i < positions.length; i++) {
