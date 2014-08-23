@@ -58,14 +58,26 @@ Hayate.MapView = (function() {
         recordType = "";
     }
     function init() {
-        function onPageShow(e, data) {
+        function showMap() {
             $('#map-iframe').height(Hayate.ViewUtil.getContentHeight());
 
-            var mapIframe = document.getElementById("map-iframe");
-                
             var msg = {};
             msg.type = "view";
+            var mapIframe = document.getElementById("map-iframe");
             mapIframe.contentWindow.postMessage(JSON.stringify(msg), '*');
+            
+        }
+        function onPageShow(e, data) {
+            var currentMapType = config["type"];
+            config = Hayate.Config.get(["map"]);
+            if (config["type"] !== currentMapType) {
+                $("#map-iframe").attr("src", config["url"][config["type"]]);
+                onLoadMap();
+                reload = true;
+            } else {
+                reload = false;
+                showMap();
+            }
         
         }
         function onLoadMap() {
@@ -75,6 +87,10 @@ Hayate.MapView = (function() {
             mapConfig.type = "init";
             console.log("Sending init message to: " + mapIframe.src);
             mapIframe.contentWindow.postMessage(JSON.stringify(mapConfig), '*');
+            
+            if (reload) {
+                showMap();
+            }
             
         }
         
@@ -96,7 +112,7 @@ Hayate.MapView = (function() {
         $("#map-iframe").on("load", onLoadMap);
         
     }
-    
+    var reload = false;
     var recorder;
     var prevCoords;
     var config;
