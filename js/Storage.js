@@ -17,17 +17,18 @@ Hayate.Storage = (function() {
     function getFiles(type) {
         function onSuccess() {
             var file = cursor.result;
-            if (!file) {
-                // https://bugzilla.mozilla.org/show_bug.cgi?id=902565
+            if (cursor.done) {
+                console.log("files: " + JSON.stringify(files));
                 dfd.resolve(files);
+            } else {
+                var re = new RegExp("\." + FileInfo[type]["extension"] + "$", "i");
+                if (re.test(file.name) === true &&
+                    typeof files[file.name] === "undefined") {
+                    
+                    files[file.name] = file;
+                }
+                cursor.continue();
             }
-            var re = new RegExp("\." + FileInfo[type]["extension"] + "$", "i");
-            if (re.test(file.name) === true &&
-                typeof files[file.name] === "undefined") {
-                
-                files[file.name] = file;
-            }
-            cursor.continue();
         }
         function onError() {
             var msg = cursor.error.name;
