@@ -77,7 +77,7 @@ Hayate.Map = (function() {
         prevPosition = newPosition;
     }
     function drawRoute(latLngArray) {
-        polyline = L.polyline(latLngArray, {weight: 3}).addTo(map);        
+        polyline = L.polyline(latLngArray).addTo(map);        
     }
     function drawNewRoute(newPosition) {
         var newPathCoords = [
