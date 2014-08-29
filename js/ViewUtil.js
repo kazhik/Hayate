@@ -12,7 +12,7 @@ Hayate.ViewUtil = (function() {
         }
 
         var footer = $.mobile.activePage.find("div[data-role='footer']:visible");
-        if (footer.length > 0) {
+        if (footer !== null && footer.length > 0) {
             headerFooterHeight += footer.outerHeight()
         }
 
@@ -33,7 +33,7 @@ Hayate.ViewUtil = (function() {
         }
 
         var footer = $.mobile.activePage.find("div[data-role='footer']:visible");
-        if (footer.length > 0) {
+        if (footer !== null && footer.length > 0) {
             headerFooterHeight += footer.outerHeight()
         }
 

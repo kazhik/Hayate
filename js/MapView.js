@@ -6,9 +6,9 @@ if (Hayate === undefined) {
 Hayate.MapView = (function() {
 
     function loadData(posArray) {
-        recordType = "positionlist";
+        status = "fixed";
         var positionlist = {
-            type: recordType,
+            type: "positionlist",
             list: posArray
         }
         var mapIframe = document.getElementById("map-iframe");
@@ -34,11 +34,10 @@ Hayate.MapView = (function() {
             return;
         }
         
-        if (recordType === "positionlist") {
+        if (status === "fixed") {
             return;
         }
-        recordType = "position";
-        newPosition.type = recordType;
+        newPosition.type = "position";
 
         var mapIframe = document.getElementById("map-iframe");
         mapIframe.contentWindow.postMessage(JSON.stringify(newPosition), '*');
@@ -46,8 +45,7 @@ Hayate.MapView = (function() {
         prevCoords = newCoords;
     }
     function stop() {
-        Hayate.Recorder.removeListener(onPosition);
-        
+        status = "fixed";
     }
     function clear() {
         var msg = {};
@@ -55,7 +53,7 @@ Hayate.MapView = (function() {
         var mapIframe = document.getElementById("map-iframe");
         mapIframe.contentWindow.postMessage(JSON.stringify(msg), '*');
         
-        recordType = "";
+        status = "free";
     }
     function init() {
         function showMap() {
@@ -111,12 +109,13 @@ Hayate.MapView = (function() {
         $("#Map").on("pageshow", onPageShow);
         $("#map-iframe").on("load", onLoadMap);
         
+        status = "free";
     }
     var reload = false;
     var recorder;
     var prevCoords;
     var config;
-    var recordType = "";
+    var status = "";
     
     return {
         init: init,

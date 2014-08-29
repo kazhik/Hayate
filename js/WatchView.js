@@ -98,6 +98,7 @@ Hayate.WatchView = (function() {
     }
     function onTapStop() {
         releaseCpuLock();
+        Hayate.MapView.stop();
         recorder.stop();
         Hayate.Alarm.stop();
         $("#btnStart").text(navigator.mozL10n.get("start"));
