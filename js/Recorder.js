@@ -321,8 +321,6 @@ Hayate.Recorder = (function() {
         }
         record = Hayate.RunRecord;
         
-        startWatchPosition();
-        
     }
     function start() {
         clear();
@@ -379,7 +377,8 @@ Hayate.Recorder = (function() {
         addLapListener: addLapListener,
         removeLapListener: removeLapListener,
         init: init,
-        terminate: stopWatchPosition,
+        startWatchPosition: startWatchPosition,
+        stopWatchPosition: stopWatchPosition,
         start: start,
         clear: clear,
         stop: stop,

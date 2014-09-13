@@ -28,8 +28,8 @@ Hayate.MapView = (function() {
  
         var newCoords = newPosition.coords;
 
-        if (typeof prevCoords !== "undefined" &&
-            newCoords.latitude === prevCoords.latitude &&
+        if (typeof prevCoords === "undefined") {
+        } else if (newCoords.latitude === prevCoords.latitude &&
             newCoords.longitude === prevCoords.longitude) {
             return;
         }
@@ -89,7 +89,7 @@ Hayate.MapView = (function() {
             if (reload) {
                 showMap();
             }
-            
+            Hayate.Recorder.startWatchPosition();
         }
         
         if (typeof Hayate.Config === "undefined") {
