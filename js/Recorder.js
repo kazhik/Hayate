@@ -128,6 +128,13 @@ Hayate.Recorder = (function() {
         }
         navigator.geolocation.clearWatch(watchId);
     }
+    function getCurrentPosition() {
+        var option = {
+            enableHighAccuracy: true,
+            maximumAge: Infinity
+        };
+        navigator.geolocation.getCurrentPosition(onNewPosition, onError, option);
+    }
     function clear() {
         record.init();
 
@@ -379,6 +386,7 @@ Hayate.Recorder = (function() {
         init: init,
         startWatchPosition: startWatchPosition,
         stopWatchPosition: stopWatchPosition,
+        getCurrentPosition: getCurrentPosition,
         start: start,
         clear: clear,
         stop: stop,
