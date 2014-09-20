@@ -57,6 +57,9 @@ Hayate.MapView = (function() {
     }
     function init() {
         function showMap() {
+            if (typeof prevCoords === "undefined") {
+                Hayate.Recorder.getCurrentPosition();
+            }
             $('#map-iframe').height(Hayate.ViewUtil.getContentHeight());
 
             var msg = {};
@@ -69,14 +72,20 @@ Hayate.MapView = (function() {
             var currentMapType = config["type"];
             config = Hayate.Config.get(["map"]);
             if (config["type"] !== currentMapType) {
-                $("#map-iframe").attr("src", config["url"][config["type"]]);
-                onLoadMap();
+                if (navigator.onLine) {
+                    loadMap();
+                } else {
+                    $(window).on("online", loadMap);
+                }
                 reload = true;
             } else {
                 reload = false;
                 showMap();
             }
         
+        }
+        function loadMap() {
+            $("#map-iframe").attr("src", config["url"][config["type"]]);
         }
         function onLoadMap() {
             var mapIframe = document.getElementById("map-iframe");
@@ -89,25 +98,21 @@ Hayate.MapView = (function() {
             if (reload) {
                 showMap();
             }
-            Hayate.Recorder.startWatchPosition();
         }
         
-        if (typeof Hayate.Config === "undefined") {
-            console.log("Config undefined");
-            return;
-        }
-        if (typeof Hayate.Recorder === "undefined") {
-            console.log("Recorder undefined");
-            return;
-        }
         config = Hayate.Config.get(["map"]);
         
         Hayate.Recorder.addPositionListener(onPosition);
-
-        $("#map-iframe").attr("src", config["url"][config["type"]]);
         
+        if (navigator.onLine) {
+            loadMap();
+        } else {
+            $(window).on("online", loadMap);
+        }
         $("#Map").on("pageshow", onPageShow);
         $("#map-iframe").on("load", onLoadMap);
+        
+        Hayate.Recorder.startWatchPosition();
         
         status = "free";
     }
