@@ -178,7 +178,11 @@ Hayate.WatchView = (function() {
         
         $("#btnStart").on("tap", onTapStartStop);
         $("#btnLap").on("tap", onTapLapReset);
-     
+
+        $(document).on("visibilitychange", onVisibilityChange);
+    }
+    function onVisibilityChange() {
+//        console.log("document.visibilityState: " + document.visibilityState);
     }
     function onPageShow() {
         config = Hayate.Config.get(["geolocation"]);
