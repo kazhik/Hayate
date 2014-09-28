@@ -162,6 +162,33 @@ Hayate.WatchView = (function() {
         lock = window.navigator.requestWakeLock("cpu");
         
     }
+    
+    function checkGeolocation() {
+        function onGeolocationAvailable() {
+            $.mobile.loading("hide");
+            Hayate.PopupView.toast(
+                navigator.mozL10n.get("geolocation-available"));
+            Hayate.Recorder.startWatchPosition();
+        }
+        function onGeolocationUnavailable(error) {
+            $.mobile.loading("hide");
+            Hayate.PopupView.toast(
+                navigator.mozL10n.get("geolocation-unavailable", {errmsg: error.message}));
+        }
+        
+        var loaderOption = {
+            text: navigator.mozL10n.get("checking-geolocation"),
+            textVisible: true
+        };
+
+        $.mobile.loading("show", loaderOption);
+        
+        Hayate.Recorder.checkGeolocation()
+            .done(onGeolocationAvailable)
+            .fail(onGeolocationUnavailable);
+        
+    }
+    
     function releaseCpuLock() {
         lock.unlock();
     }
@@ -178,6 +205,7 @@ Hayate.WatchView = (function() {
         
         $("#btnStart").on("tap", onTapStartStop);
         $("#btnLap").on("tap", onTapLapReset);
+        $("#check-geolocation").on("tap", checkGeolocation);
 
         $(document).on("visibilitychange", onVisibilityChange);
     }
@@ -188,20 +216,9 @@ Hayate.WatchView = (function() {
         config = Hayate.Config.get(["geolocation"]);
         
         updateDistanceUnit();
+        
     }
     function init() {
-        if (typeof Hayate.Config === "undefined") {
-            console.log("Config undefined");
-            return;
-        }
-        if (typeof Hayate.Recorder === "undefined") {
-            console.log("Recorder undefined");
-            return;
-        }
-        if (typeof Hayate.RunRecord === "undefined") {
-            console.log("RunRecord undefined");
-            return;
-        }        
         config = Hayate.Config.get(["geolocation"]);
         
         recorder = Hayate.Recorder;
@@ -212,6 +229,7 @@ Hayate.WatchView = (function() {
         
         $("#Stopwatch").on("pageshow", onPageShow);
         
+        checkGeolocation();
     }
     var lock;
     var distance = 0;

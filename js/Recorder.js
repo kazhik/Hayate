@@ -116,6 +116,7 @@ Hayate.Recorder = (function() {
         if (!("geolocation" in navigator)) {
             return;
         }
+        navigator.geolocation.clearWatch(watchId);
         var option = {
             enableHighAccuracy: true,
             maximumAge: 0
@@ -134,6 +135,24 @@ Hayate.Recorder = (function() {
             maximumAge: Infinity
         };
         navigator.geolocation.getCurrentPosition(onNewPosition, onError, option);
+    }
+    function checkGeolocation() {
+        function onSuccess() {
+            dfd.resolve();    
+            
+        }
+        function onError(error) {
+            dfd.reject(error);
+        }
+        var dfd = new $.Deferred();
+    
+        var option = {
+            timeout: 10 * 1000,
+            maximumAge: 0
+        };
+        navigator.geolocation.getCurrentPosition(onSuccess, onError, option);
+    
+        return dfd.promise();
     }
     function clear() {
         record.init();
@@ -387,6 +406,7 @@ Hayate.Recorder = (function() {
         startWatchPosition: startWatchPosition,
         stopWatchPosition: stopWatchPosition,
         getCurrentPosition: getCurrentPosition,
+        checkGeolocation: checkGeolocation,
         start: start,
         clear: clear,
         stop: stop,

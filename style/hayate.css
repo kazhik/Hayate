@@ -29,3 +29,6 @@
     background: #555;
     width: 100%;
 }
+span.ui-icon-loading {
+    background-image: url('../lib/images/ajax-loader.gif');
+}

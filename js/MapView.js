@@ -112,8 +112,6 @@ Hayate.MapView = (function() {
         $("#Map").on("pageshow", onPageShow);
         $("#map-iframe").on("load", onLoadMap);
         
-        Hayate.Recorder.startWatchPosition();
-        
         status = "free";
     }
     var reload = false;
