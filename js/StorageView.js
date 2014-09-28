@@ -19,13 +19,14 @@ Hayate.StorageView = (function() {
         }
         function onError(err) {
             $.mobile.back();
-            Hayate.PopupView.toast("Failed to get track name: " + err);
+            Hayate.PopupView.toast(
+                navigator.mozL10n.get("track-name-error", {errmsg: err.message}));
         }       
         files = gpxFiles;
         var keys = Object.keys(gpxFiles);
         if (keys.length === 0) {
             $.mobile.back();
-            Hayate.PopupView.toast("No file");
+            Hayate.PopupView.toast(navigator.mozL10n.get("no-file"));
             return;
         }
         for (var i = 0; i < keys.length; i++) {
@@ -52,7 +53,7 @@ Hayate.StorageView = (function() {
 
     function onSelectListItem() {
         function onDone() {
-            Hayate.PopupView.toast("Import complete");
+            Hayate.PopupView.toast(navigator.mozL10n.get("import-done"));
         }
         function onFail(err) {
             Hayate.PopupView.toast(err);

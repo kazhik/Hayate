@@ -99,7 +99,7 @@ Hayate.RecordsView = (function() {
             Hayate.PopupView.toast(err);
         }
         function onWriteComplete() {
-            Hayate.PopupView.toast("Exported to sdcard");
+            Hayate.PopupView.toast(navigator.mozL10n.get("exported-sdcard"));
         }
         function makeFilename(startTime) {
             var datetime = new Date(startTime);
